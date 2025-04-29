@@ -374,9 +374,9 @@ app.post('/admisiones_admidet', async (req, res) => {
     }
   });  
 
-  app.get('/opciones_factura', async (req, res) => {
+  app.get('/api/opciones_factura', async (req, res) => {
     
-      const { id_cli } = req.body;
+      const { id_cli } = req.query;
       
       if (!id_cli){
         return res.status(400).json({
@@ -416,8 +416,7 @@ app.post('/admisiones_admidet', async (req, res) => {
             FROM 
                 opt_factura
             WHERE   
-                id_cli = ?
-            AND activo=1`,
+                id_cli = ?`,
           params
         );       
                
@@ -435,6 +434,49 @@ app.post('/admisiones_admidet', async (req, res) => {
         formatos: formatos
       });
   });
+
+  app.get('/api/consecutivos', async (req, res) => {
+    
+    const { id_cli } = req.query;
+    
+    if (!id_cli){
+      return res.status(400).json({
+          success:false,
+          message: 'Error CON01'
+      })
+    }
+    if (isNaN(id_cli)){
+      return res.status(400).json({
+          success:false,
+          message: 'Error CON03'
+      })
+    }
+    let consecutivos = "";
+    
+      let sql =`
+        SELECT 
+            MAX(factura) as num_factura,
+            MAX(num_control) as num_control
+        FROM 
+            facturas
+        WHERE 
+            id_cli = ?`;
+
+      const params = [id_cli]
+      try {
+        consecutivos = await retornar_query(sql, params);
+      } catch (error) {
+          res.json({
+              success: false,
+              message: 'Error CON01',
+              error: error.message
+          });
+      }
+     res.json({ 
+      success: true,
+      consecutivos: consecutivos
+    });
+});
 
 
 app.listen(PORT, () => {
