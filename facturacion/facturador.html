@@ -11,6 +11,9 @@
     <link href="https://siac.empresas.historiaclinica.org/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://siac.empresas.historiaclinica.org/js/jquery-3.7.1.js"></script>
     <script src="https://siac.empresas.historiaclinica.org/js/lordicon.js"></script>
+    <script src="js/funciones_externas.js"></script>
+    <script src="js/funcionalidades.js"></script>
+    <script src="js/manejo_data.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <style>
@@ -90,7 +93,7 @@
         border: 1px solid #ccc;
         color: #333;
     }
-    input[type="text"] {
+    input[type="text"].encabezados {
         width: 100%;
         padding: 2px;
         border-radius: 4px;
@@ -118,11 +121,11 @@
             <div class="col-8 rounded-1 border border-1 border-info-subtle">
                 <div class="row mb-1 mt-1">
                     <div class="col-2"><span class="text-nowrap">Razon Social</span></div>
-                    <div class="col-10"><input type="text" id="razon_social" readonly/> </div>
+                    <div class="col-10"><input type="text" class="encabezados" id="razon_social" readonly/> </div>
                 </div>
                 <div class="row mb-1 ">
                     <div class="col-2"><span>RIF</span></div>
-                    <div class="col-10"><input id="rif" type="text" readonly/> </div>
+                    <div class="col-10"><input id="rif" type="text" class="encabezados" readonly/> </div>
                 </div>
                 <div class="row ">
                     <div class="col-2"><span>Dirección Fiscal</span></div>
@@ -137,11 +140,11 @@
             <div class="col-4 rounded-1 border border-1 border-info-subtle">
                 <div class="row mb-1 mt-1">
                     <div class="col-5 text-end"><span>Control</span></div>
-                    <div class="col-7"><input class="text-end fw-bold" type="text" id="num_control" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold encabezados" type="text" id="num_control" readonly/> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end"><span>Factura</span></div>
-                    <div class="col-7"><input class="text-end fw-bold" type="text" id="num_factura" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold encabezados" type="text" id="num_factura" readonly/> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end text-nowrap"><span>F. Atención</span></div>
@@ -218,23 +221,23 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-4 text-end"><span>Exento: </span></div>
-                    <div class="col-8"><input type="text" id="exento" class="text-end" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end" id="exento"readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>BI 16:</span></div>
-                    <div class="col-8"><input type="text" id="base_imponible" class="text-end" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end" id="base_imponible"  readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>IGTF:</span></div>
-                    <div class="col-8"><input type="text" id="igtf" class="text-end" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end" id="igtf"  readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>IVA(16)</span></div>
-                    <div class="col-8"><input type="text" id="iva" class="text-end" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end" id="iva" readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>Total:</span></div>
-                    <div class="col-8"><input type="text" id="total_factura" class="text-end" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end" id="total_factura"  readonly/></div>
                 </div>
                 <div class="botonera d-flex justify-content-center align-items-center flex-row mt-1">
             
@@ -277,7 +280,7 @@
         
     </div>
 
-    <div class="modal fade" id="modal_admisiones" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal_admisiones" tabindex="-1" aria-labelledby="exampleModalLabel" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -353,8 +356,137 @@
         <div class="card-body card_detalle-body">
           <table class="table table-hover card_detalle-table"></table>
         </div>
-      </div>
+    </div>
+<div class="modal fade" id="modal_pagos" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Registrar Pagos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class='col-12 d-flex mb-1' style="align-items: center;">
+                    <div class="fac_num col-6 d-flex datos">
+                        <label for="factura_modal" class="col-4" style="text-align: end;">No. Factura</label>
+                        <input type="text" id="factura_modal" class='col-8 ' maxlength="8" value="">
+                        <script>
+                            $("#num_factura").on("input", function () {
+                                this.value = this.value.replace(/[^0-9]/g, "");
+                            });
+                            $("#factura_modal").on("input", function () {
+                                this.value = this.value.replace(/[^0-9]/g, "");
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="desglose">
+                    <div>
+                        <div>Desglose de pago</div>
+                        <div class="cabecera d-flex" style="    justify-content: center;">
+                            <input type="text" id=desglose_valor placeholder="Valor" maxlength="10"
+                                class="form-control" style="width:100px;">
+                            <script>
+                                $('#desglose_valor').on('input', function () {
+                                    this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
+                                });
+                                $('#desglose_valor').on('blur', function () {
+                                    validar_monto_bs("desglose_valor");
+                                });
+                            </script>
+                            <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select"
+                                style="width:auto;">
+                                <option value="V">V</option>
+                                <option value="G">G</option>
+                            </select>
+                            <select id="forma_de_pago" name=forma_de_pago class="form-control form-select"
+                                style="width:auto;">
+                                <option value="">Seleccione</option>
+                            </select>
+                            
+                            <input type="text" placeholder="nota" style="width:250px;" maxlength=50
+                                class="form-control" id=desglose_nota>
+                          
+                            <div class="">
+                                <div id="div_agregar">
+                                    <lord-icon id="btn_agregar_fp" src="../images/plus-circle.json" trigger="hover"
+                                        style="width:40px;height:40px" class="svg disk_save  "
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar">
+                                    </lord-icon>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="div_tabla">
+                        <table class="table table-striped">
+                            <tbody id="tabla_desglose">
+                                <tr id="tabla_desglose_header">
+                                    <th>Valor</th>
+                                    <th>IGTF</th>
+                                    <th>Forma</th>
+                                    <th>Nota</th>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="col-12 row">
+                    <div class="sub_total col-4  datos">
+                        <div class="d-flex">
+                            <label for="total_modal" class="col-4">FACTURA BS:</label>
+                            <input type="text" id="total_modal" class=" col-8" readonly
+                                data-ph-valor=""
+                                value="">
+                        </div>
+                        <div class="d-flex">
+                            <label for="total_usd_modal" class="col-4">FACTURA USD:</label>
+                            <input type="text" id="total_usd_modal" class=" col-8" readonly value="">
+                        </div>
+                    </div>
+                    <div class="sub_total col-4  datos">
+                        <div class="d-flex">
+                            <label for="total_modal_pago_bs" class="col-4">SUMA EN BS:</label>
+                            <input type="text" id="total_modal_pago_bs" class=" col-8" readonly value="">
+                        </div>
+                        <div class="d-flex">
+                            <label for="total_usd_modal_pago" class="col-4">SUMA EN USD:</label>
+                            <input type="text" id="total_usd_modal_pago" class=" col-8" readonly value="">
+                        </div>
+                    </div>
+                    <div class="sub_total col-4  datos">
+                        <div class="d-flex">
+                            <label for="resto_pago_bs" class="col-4">RESTO EN BS:</label>
+                            <input type="text" id="resto_pago_bs" class=" col-8" readonly value="">
+                        </div>
+                        <div class="d-flex">
+                            <label for="resto_pago_us" class="col-4">RESTO EN USD:</label>
+                            <input type="text" id="resto_pago_us" class=" col-8" readonly value="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <div class="fac_num col-6 d-flex datos">
+                    <label for="factura_igtf" class="col-4" style="text-align: end;">IGTF</label>
+                    <input type="text" id="factura_igtf" class='col-8 ' value="" readonly>
+                    <input type="hidden" value="" id="igtf_validador">
+                </div>
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="aceptar_modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
 
 <script src="js/facturador.js"></script>
+<script src="js/cargar_selects.js"></script>
