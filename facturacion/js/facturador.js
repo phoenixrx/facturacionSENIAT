@@ -1,5 +1,3 @@
-
-
     //const HOST = "https://facturacion.siac.historiaclinica.org";
     const HOST = "http://localhost:3001";
     const id_cli = 3;
@@ -103,7 +101,11 @@ document.getElementById('aceptar_lista').addEventListener('click', function () {
     const selectedMontos = selectedAdmisiones.map(admision => admision.getAttribute('data-monto'));
     const selectedTasa = selectedAdmisiones.map(admision => admision.getAttribute('data-tasa'));
     fetchDetalles(selectedIds)
-    
+    if(obtenerPrimerValorNoVacio(selectedTitulares)!='Vacio'){
+        document.getElementById('titular').value =obtenerPrimerValorNoVacio(selectedTitulares);
+    }else{
+        document.getElementById('titular').value ="";
+    }
 })
 
 document.querySelector('.card_detalle-close').addEventListener('click', function (){
@@ -136,6 +138,9 @@ document.getElementById("dir_fiscal").addEventListener("dblclick", function () {
 document.getElementById("pacientes").addEventListener("dblclick", function () {
     this.readOnly = !this.readOnly;
 });
+document.getElementById("titular").addEventListener("dblclick", function () {
+    this.readOnly = !this.readOnly;
+});
 
 document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
     switchElement.addEventListener('change', function () {
@@ -144,7 +149,36 @@ document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
                 case "chk_tasa_actual":
                     const nuevaTasa = parseFloat(this.dataset.tasa);
                     cambiar_tasa_actual(nuevaTasa)
-                    break;            
+                    break;     
+                case "chk_tasa_perso":
+                    this.dataset.tasa= document.getElementById('tasa_pers').value;
+                    if(this.dataset.tasa <=0){
+                        Swal.fire({
+                            title: "Tasa invalida",
+                            text: "La tasa personalizada no es valida",
+                            icon: "info",
+                            allowOutsideClick: () => false,
+                        });
+                        document.getElementById('tasa_pers').focus();
+                        document.getElementById("chk_tasa_perso").checked = false;
+                        return;
+                    }
+                    const nuevaTasaPerso = parseFloat(this.dataset.tasa);
+                    if(validar_monto(this.dataset.tasa)){
+                        cambiar_tasa_personalizada(nuevaTasaPerso)
+                    }else{
+                        Swal.fire({
+                            title: "Tasa invalida",
+                            text: `La tasa personalizada no es valida (${this.dataset.tasa})`,
+                            icon: "info",
+                            allowOutsideClick: () => false,
+                        });
+                        document.getElementById('tasa_pers').focus();
+                        document.getElementById("chk_tasa_perso").checked = false;
+                        return;
+                    }
+                    break    
+                       
                 default:
                     cambiar_tasa_admision(document.getElementById('tasa_admi').textContent)
                     break;
@@ -157,7 +191,7 @@ document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
 document.getElementById('div_imprimir').addEventListener('click', imprimirFactura)
 
 function pagar_factura (){
-    const table = document.getElementById("table_detalle");
+    /*const table = document.getElementById("table_detalle");
     const rowCount = table.getElementsByTagName("tr").length;
     if(rowCount ===0){
         Swal.fire({
@@ -167,7 +201,7 @@ function pagar_factura (){
             allowOutsideClick: () => false,
         });
         return;
-    }
+    }*/
     const STATUS_FACTURA =1
     switch (STATUS_FACTURA) {
         case '2' || 2:
@@ -240,5 +274,11 @@ function anular_factura (){
         });
         return;
     }
-    
+   
 }
+
+document.getElementById('tasa_pers').addEventListener('change', function () {
+    
+        document.getElementById('chk_tasa_perso').dataset.tasa = this.value;
+    
+});

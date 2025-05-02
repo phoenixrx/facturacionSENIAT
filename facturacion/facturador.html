@@ -20,6 +20,11 @@
     h2{
         color:#204b5e;
     }
+    #tasa_pers{
+        width: 7ch;    
+        border-radius: 4px; 
+        display: inline-block;   
+    }
     #nota{
         height: auto;
     }
@@ -125,12 +130,15 @@
                 </div>
                 <div class="row mb-1 ">
                     <div class="col-2"><span>RIF</span></div>
-                    <div class="col-10"><input id="rif" type="text" class="encabezados" readonly/> </div>
+                    <div class="col-4"><input id="rif" type="text" class="encabezados" readonly/> </div>
+                    <div class="col-2 text-end"><span class="">Titular</span></div>
+                    <div class="col-4"><input id="titular" type="text" class="encabezados" readonly/> </div>
                 </div>
                 <div class="row ">
                     <div class="col-2"><span>Dirección Fiscal</span></div>
                     <div class="col-10"><textarea id="dir_fiscal" readonly></textarea> </div>
                 </div>
+                
                 <div class="row">
                     <div class="col-2"><span>Paciente(s)</span></div>
                     <div class="col-10"><textarea type="text" id="pacientes"  readonly></textarea></div>
@@ -183,39 +191,62 @@
                     <label for="nota">Nota</label>
                 </div>
                 <div class="row">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input tasa_chk" type="radio" id="chk_tasa_admision" name='tasa_chk' data-tasa="0.00" checked>
-                        <label class="form-check-label" for="chk_tasa_admision">Tasa Admision (<span id="tasa_admi" class="tasa_admi"></span>)</label>
-                    </div>
-                    <div class="form-check form-switch tasa_chk">
-                        <input class="form-check-input " type="radio" id="chk_tasa_actual" name='tasa_chk' >
-                        <label class="form-check-label" for="chk_tasa_actual">Tasa Actual (<span id="tasa_actual" >0.00</span>)</label>
-                    </div>
-                    <div class="form-check form-switch  tasa_chk">
-                        <input class="form-check-input " type="checkbox" id="chk_contado" name='contado' checked>
-                        <label class="form-check-label" for="chk_contado">Pago Contado</label>
-                    </div>
-                    <div class="row row_credito mt-1 d-none">
-                        <input type="hidden" id=moneda_credito>
-                        <input type="hidden" id=monto_credito>
-                        <div class="form-floating col-8">
-                            <input type="date" name="fecha_vencimiento" id="fecha_vencimiento"
-                            class="fecha_vencimiento form-control form-date border border-primary-subtle" 
-                            value='' min='2024-11-01'/>
-                            <label for="fecha_vencimiento">Fecha Vencimiento</label>
+                    <div class="col">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input tasa_chk" type="radio" id="chk_tasa_admision" name='tasa_chk' data-tasa="0.00" checked>
+                            <label class="form-check-label" for="chk_tasa_admision">Tasa Admision (<span id="tasa_admi" class="tasa_admi"></span>)</label>
                         </div>
-                        <div class="form-floating col-4 ">
-                            <input type="text" class="form-control text-center border border-primary-subtle" 
-                            id=cuotas
-                            value="" maxlength="2">
-                            <label for="cuotas">Cuotas</label>
-                            <script>                                               
-                                $("#cuotas").on("input", function () {
-                                    this.value = this.value.replace(/[^0-9]/g, "").replace(/,/g, ".");
+                        <div class="form-check form-switch tasa_chk">
+                            <input class="form-check-input " type="radio" id="chk_tasa_actual" name='tasa_chk' >
+                            <label class="form-check-label" for="chk_tasa_actual">Tasa Actual (<span id="tasa_actual" >0.00</span>)</label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div  class="form-check form-switch tasa_chk d-flex align-items-center ">
+                            <input class="form-check-input me-1" type="radio" id="chk_tasa_perso" name='tasa_chk' data-tasa="0.00">
+                            <label class="form-check-label" for="chk_tasa_perso">Tasa Personal (<input id="tasa_pers" class="form-control text-center" type="text" value="0.00">)</label>
+                            <script>
+                                $('#tasa_pers').on('input', function () {
+                                    this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
+                                });
+                                $('#tasa_pers').on('blur', function () {
+                                    validar_monto_bs(document.getElementById("tasa_pers"));
+                                    //console.log(validar_monto_bs(document.getElementById("tasa_pers")))
                                 });
                             </script>
+                        </div >
+                    </div>
+                    
+                </div> 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-check form-switch  tasa_chk ">
+                            <input class="form-check-input " type="checkbox" id="chk_contado" name='contado' checked>
+                            <label class="form-check-label" for="chk_contado">Pago Contado</label>
+                        </div>
+                        <div class="row row_credito mt-1 d-none">
+                            <input type="hidden" id=moneda_credito>
+                            <input type="hidden" id=monto_credito>
+                            <div class="form-floating col-8">
+                                <input type="date" name="fecha_vencimiento" id="fecha_vencimiento"
+                                class="fecha_vencimiento form-control form-date border border-primary-subtle" 
+                                value='' min='2024-11-01'/>
+                                <label for="fecha_vencimiento">Fecha Vencimiento</label>
+                            </div>
+                            <div class="form-floating col-4 ">
+                                <input type="text" class="form-control text-center border border-primary-subtle" 
+                                id=cuotas
+                                value="" maxlength="2">
+                                <label for="cuotas">Cuotas</label>
+                                <script>                                               
+                                    $("#cuotas").on("input", function () {
+                                        this.value = this.value.replace(/[^0-9]/g, "").replace(/,/g, ".");
+                                    });
+                                </script>
+                            </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             <div class="col-6">
@@ -391,13 +422,12 @@
                                     this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
                                 });
                                 $('#desglose_valor').on('blur', function () {
-                                    validar_monto_bs("desglose_valor");
+                                    validar_monto_bs(document.getElementById("desglose_valor"));
                                 });
                             </script>
                             <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select"
                                 style="width:auto;">
-                                <option value="V">V</option>
-                                <option value="G">G</option>
+                                <option value="">...</option>
                             </select>
                             <select id="forma_de_pago" name=forma_de_pago class="form-control form-select"
                                 style="width:auto;">
@@ -490,3 +520,4 @@
 
 <script src="js/facturador.js"></script>
 <script src="js/cargar_selects.js"></script>
+<script src="js/control_pagos.js"></script>

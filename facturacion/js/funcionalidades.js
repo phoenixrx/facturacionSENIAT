@@ -33,6 +33,7 @@ function cambiar_tasa_actual(nuevaTasa) {
         });
         document.getElementById("chk_tasa_actual").checked = false;
         document.getElementById("chk_tasa_admision").checked = true;
+        document.getElementById("chk_tasa_perso").checked = false;
         return;
     }
 
@@ -105,6 +106,8 @@ function cambiar_tasa_admision(nuevaTasa) {
         });
         document.getElementById("chk_tasa_actual").checked = false;
         document.getElementById("chk_tasa_admision").checked = true;
+        document.getElementById("chk_tasa_perso").checked = false;
+         
         return;
     }
     Swal.fire({
@@ -118,7 +121,7 @@ function cambiar_tasa_admision(nuevaTasa) {
         if (result.isConfirmed) {
 
             detalles.forEach((detalle) => {
-                detalle.tasa = Number(detalle.tasa_anterior);
+                detalle.tasa = Number(detalle.tasa_admision);
                 detalle.tasa_anterior = Number(0);                
                 detalle.precio = Number(Number(detalle.precio_usd) * Number(detalle.tasa)).toFixed(2);
                 detalle.precio_bs_cant = Number(Number(detalle.precio_usd_cant) * Number(detalle.tasa)).toFixed(2);
@@ -146,6 +149,62 @@ function cambiar_tasa_admision(nuevaTasa) {
     });
 };
 
+function cambiar_tasa_personalizada(nuevaTasa) {
+    const table = document.getElementById("table_detalle");
+    const rowCount = table.getElementsByTagName("tr").length;
+    if(rowCount ===0){
+        Swal.fire({
+            title: "Error",
+            text: "No hay detalles para cambiar la tasa",
+            icon: "error",
+            allowOutsideClick: () => false,
+        });
+        document.getElementById("chk_tasa_actual").checked = false;
+        document.getElementById("chk_tasa_admision").checked = true;
+        document.getElementById("chk_tasa_perso").checked = false;
+         
+        return;
+    }
+    Swal.fire({
+        title: "¿Desea cambiar la tasa de las admisiones?",
+        text: "Esto actualizará la tasa de todas las admisiones seleccionadas.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, cambiar",
+        cancelButtonText: "Cancelar",
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            detalles.forEach((detalle) => {
+                let tasa =  nuevaTasa;
+                detalle.tasa = Number(tasa); 
+                detalle.precio = Number(Number(detalle.precio_usd) * Number(detalle.tasa)).toFixed(2);
+                detalle.precio_bs_cant = Number(Number(detalle.precio_usd_cant) * Number(detalle.tasa)).toFixed(2);
+            });
+            Swal.fire({
+                title: "Tasa actualizada",
+                text: "La tasa de las admisiones ha sido actualizada correctamente.",
+                icon: "success",
+            });
+            const tipoAgrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
+            switch (tipoAgrupamiento) {
+                case "tipo":
+                    agruparPorTipo(detalles)
+                    break;               
+                case "agrupada":
+                    agruparPorTipo(detalles, "agrupada")
+                    break;    
+                default:
+                    detalles_fatura(detalles)
+                    break;
+            }
+            calcularTotales(nuevaTasa)
+
+        }
+    });
+};
+
+
 function calcularTotales (tasa_final){
     let totales = clasificarMontosImpuestos(detalles)
 
@@ -169,26 +228,38 @@ function calcularTotales (tasa_final){
 }
 
 function validar_monto_bs(objeto) {
+    
     var objeto_objetivo = objeto;
-    var monto = objeto_objetivo.value;
+    var monto = objeto.value;
+    
     if (!validar_monto(monto)) {
-    objeto_objetivo.classList.add('is-invalid')
-    objeto_objetivo.focus();
-    const quitar_validacion = setTimeout(() => {
-            objeto_objetivo.classList.remove('is-invalid')
-            clearTimeout(quitar_validacion);
-        }, "5000");
-        return "invalido";
+        objeto.classList.add('is-invalid')
+        objeto.focus();
+        const quitar_validacion = setTimeout(() => {
+                objeto_objetivo.classList.remove('is-invalid')
+                clearTimeout(quitar_validacion);
+            }, "5000");
+            return "invalido";
     }
+    objeto_objetivo.classList.remove('is-invalid')
+    
     return true;
 }
 
 function validar_monto(monto) {
-    var filter = /^-?(\d{0,9}[.\s]?|)\d{0,3}$/;
+    // Expresión regular para validar números con un punto decimal opcional
+    var filter = /^-?\d+(\.\d+)?$/;
+    return filter.test(monto);
+}
+
+function obtenerPrimerValorNoVacio(array) {
     
-    if (filter.test(monto)) {
-        return true;
-    } else {
-        return false;
+    for (let i = 0; i < array.length; i++) {
+    
+        if (array[i].trim() !== "") {
+            return array[i].trim(); 
+        }
     }
+    
+    return "Vacio";
 }
