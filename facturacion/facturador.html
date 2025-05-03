@@ -398,15 +398,24 @@
             </div>
             <div class="modal-body">
                 <div class='col-12 d-flex mb-1' style="align-items: center;">
-                    <div class="fac_num col-6 d-flex datos">
-                        <label for="factura_modal" class="col-4" style="text-align: end;">No. Factura</label>
-                        <input type="text" id="factura_modal" class='col-8 ' maxlength="8" value="">
+                    <div class="form-floating fac_num col-auto me-auto d-flex datos">
+                        <input type="text" id="factura_modal" class='form-control' maxlength="8" value="" placeholder="00000000">
+                        <label for="factura_modal" class="" style="text-align: end;">No. Factura</label>
                         <script>
                             $("#num_factura").on("input", function () {
                                 this.value = this.value.replace(/[^0-9]/g, "");
                             });
                             $("#factura_modal").on("input", function () {
                                 this.value = this.value.replace(/[^0-9]/g, "");
+                            });
+                        </script>
+                    </div>
+                    <div class="col-2 form-floating ">
+                        <input type="text" id="tasa_modal" class='form-control' maxlength="8" value="" placeholder="00.00">
+                        <label for="tasa_modal" class="" >Tasa</label>
+                        <script>
+                            $("#tasa_modal").on("input", function () {
+                                this.value = this.value.replace(/[^0-9.]/g, "");
                             });
                         </script>
                     </div>
@@ -422,6 +431,9 @@
                                     this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
                                 });
                                 $('#desglose_valor').on('blur', function () {
+                                    if(this.value==""){
+                                        return
+                                    }
                                     validar_monto_bs(document.getElementById("desglose_valor"));
                                 });
                             </script>

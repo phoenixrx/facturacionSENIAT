@@ -218,8 +218,21 @@ function pagar_factura (){
         return
     }
 
-    let tasa = (document.getElementById('chk_tasa_actual').checked) ? document.getElementById('chk_tasa_actual').dataset.tasa : document.getElementById('chk_tasa_admision').dataset.tasa;
-      
+    let tasa = Array.from(document.querySelectorAll('input[name="tasa_chk"]'))
+        .find(input => input.checked)?.dataset.tasa;
+
+    if (!tasa) {
+        Swal.fire({
+            title: "Error",
+            text: "Debe seleccionar una tasa válida",
+            icon: "error",
+            allowOutsideClick: () => false,
+        });
+        return;
+    }
+
+    tasa_modal.value=tasa;
+    
     const max_lines = document.querySelector('.table-danger');
     if (max_lines) {        
         Swal.fire({
