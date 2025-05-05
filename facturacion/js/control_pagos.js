@@ -82,10 +82,13 @@ let IGFT  = 0.03
     <input class="form-check-input chk-igtf" type="checkbox" id="igtf_${id_igtf}"  data-toggle="tooltip" 
     data-placement="left" title="Calcular IGTF" value='${igtf_val}' data-base_igtf_bs='${base_igtf_bs}'  data-valorusd="${valor_desglose}" >
   </div>`;
+   let clase ="";
     if (tipo_moneda != "Bs") {
           tipo_moneda ='pago-en-dolares';
+          clase = 'table-success';
       }else{
           tipo_moneda ='pago-en-bolivares';
+          clase = 'table-info';
           igtf_chk = `<div class="form-check form-switch">
             <input class="form-check-input chk-igtf d-none" type="checkbox" id="igtf_${id_igtf}"  value='0' >`;
      }
@@ -93,7 +96,7 @@ let IGFT  = 0.03
   var quitar =`<lord-icon src="../images/minus-circle.json" data-toggle="tooltip" data-placement="left" title="Quitar" id='quitar_${listaN}' trigger="hover" style="width:20px;height:20px" class="svg disk_save botonera" id=agregar_descuento>
                               </lord-icon>`;
   
-    let row = `<tr class="rowdesg control row${tipo_moneda}" id="rowidesg${listaN}"><td><span>${
+    let row = `<tr class="rowdesg control row${tipo_moneda} ${clase}" id="rowidesg${listaN}"><td><span>${
       moneda_desg.options[moneda_desg.selectedIndex].text
     }</span> <span class="${tipo_moneda} ${clase_igtf}" >${valor_desglose}</span><span id="id_moneda_pago_${listaN}" class="d-none">${
       moneda_desg.value
@@ -110,13 +113,11 @@ let IGFT  = 0.03
   
   var  quitar_row = document.getElementById(`quitar_${listaN}`)
   document.getElementById('igtf_'+id_igtf).addEventListener('click', function(){
-  
-    calcular_igtf()
+      calcular_igtf()
   })
   
   quitar_row.addEventListener('click', function (){
       document.getElementById(`rowidesg${listaN}`).remove()
-
       calcular_desglose();
       calcular_igtf();
       document.getElementById('desglose_nota').value = '';
@@ -131,15 +132,6 @@ let IGFT  = 0.03
       add_desgl()
   })
   
-  document
-    .getElementById("desglose_nota")
-    .addEventListener("keypress", function (e) {
-      if (e.key === "Enter" || e.key === "Intro") {
-        add_desgl();
-      }
-    });
-  
-  
   function calcular_desglose() {
       var lista_bolivares = document.querySelectorAll('.pago-en-bolivares');
       var lista_dolares = document.querySelectorAll('.pago-en-dolares');
@@ -149,15 +141,12 @@ let IGFT  = 0.03
           total_bs_acum +=Number(element.innerText);
       });
       lista_dolares.forEach(element => {
-          total_us_acum +=Number(element.innerText)
-          
+          total_us_acum +=Number(element.innerText)          
       });
+      
       var total_bs_acum_2=0;
       var total_us_acum_2=0;
-      var tasa = document.getElementById('tasa_actual').innerText
-        if(document.getElementById('chk_tasa_admision').checked){
-            tasa =document.getElementById('chk_tasa_admision').dataset.tasa
-        }
+      var tasa = tasa_modal.value
       total_us_acum_2=Number(total_us_acum)*Number(tasa);
       total_bs_acum_2=Number(total_bs_acum)/Number(tasa);
   
@@ -168,6 +157,7 @@ let IGFT  = 0.03
       document.getElementById('resto_pago_us').value = Number(Number(document.getElementById('total_usd_modal').value) -Number(document.getElementById('total_usd_modal_pago').value)).toFixed(2) 
   
       document.getElementById('resto_pago_bs').value = Number(Number(document.getElementById('total_modal').value) -Number(document.getElementById('total_modal_pago_bs').value)).toFixed(2) 
+
       if(document.getElementById('resto_pago_bs').value >0){
           document.getElementById('resto_pago_bs').style.fontWeight = 'bold';
           document.getElementById('resto_pago_bs').style.color = 'red';
@@ -175,6 +165,7 @@ let IGFT  = 0.03
           document.getElementById('resto_pago_bs').style.fontWeight = 'normal';
           document.getElementById('resto_pago_bs').style.color = 'green';
       }
+
       if(document.getElementById('resto_pago_us').value >0){
           document.getElementById('resto_pago_us').style.fontWeight = 'bold';
           document.getElementById('resto_pago_us').style.color = 'red';
@@ -186,6 +177,7 @@ let IGFT  = 0.03
       document.getElementById('desglose_valor').focus()
   }
   function calcular_igtf() {
+
       var chkigtf =document.querySelectorAll('.chk-igtf')
       var valor_igtf =0
       var valor_neto=0
@@ -201,22 +193,20 @@ let IGFT  = 0.03
       document.getElementById('total_modal').value=Number(Number(valor)+Number(valor_igtf)).toFixed(2)
       document.getElementById('total_factura').value=Number(Number(valor)+Number(valor_igtf)).toFixed(2)
       
-      var tasa = document.getElementById('tasa_actual').innerText
-        if(document.getElementById('chk_tasa_admision').checked){
-            tasa =document.getElementById('chk_tasa_admision').dataset.tasa
-        }
-        document.getElementById('total_usd_modal').value = Number(Number(document.getElementById('total_modal').value)/Number(tasa)).toFixed(2)
+      var tasa = document.getElementById('tasa_modal').value;
+      document.getElementById('total_usd_modal').value = Number(Number(document.getElementById('total_modal').value)/Number(tasa)).toFixed(2)
       document.getElementById('desglose_valor').value=Number(valor_igtf).toFixed(2);
       document.getElementById('desglose_nota').value="IGTF aplica sobre $"+Number(valor_neto).toFixed(2);
       
       document.getElementById('desglose_nota').disabled=true;
-      document.getElementById('moneda_desglose').value="2";
-      document.getElementById('forma_de_pago').value="1";
+      document.getElementById('moneda_desglose').value="";
+      document.getElementById('forma_de_pago').value="";
       calcular_desglose()
       document.getElementById('desglose_nota').focus()
   }
   
-function json_formas_pago(id_admision, tabla, tipo) {
+function json_formas_pago(tabla, tipo) {
+
   if (
     Number(document.getElementById("resto_pago_bs").value) > 0 ||
     document.getElementById("resto_pago_bs").value == ""
@@ -239,13 +229,18 @@ function json_formas_pago(id_admision, tabla, tipo) {
 
   let elementos = [];
   let igtf_pay = false;
-let por_pagar =false;
-  tabla.forEach((element) => {
-    let tipo_p = tipo;
-    var json_pagos = {};
-    json_pagos.id_externa = id_admision;
-    json_pagos.monto = element.children[0].children[1].innerText;
-    json_pagos.nota = element.children[3].innerText;
+  let por_pagar =false;
+  const ID_ADMISION = new Set();
+    detalles.forEach((element) => {
+      ID_ADMISION.add(element.id_admision);    
+    });
+    let id_admision = Array.from(ID_ADMISION).join(','); 
+    tabla.forEach((element) => {
+      let tipo_p = tipo;
+      var json_pagos = {};
+      json_pagos.id_externa = id_admision;
+      json_pagos.monto = element.children[0].children[1].innerText;
+      json_pagos.nota = element.children[3].innerText;
     if (has_igtf && igtf_pay == false) {
       igtf_pay = element.children[3].innerText.startsWith("IGTF");
     }
@@ -268,8 +263,8 @@ let por_pagar =false;
     }
     json_pagos.id_moneda = id_moneda;
     json_pagos.id_forma_pago = element.children[2].children[0].innerText;
-    json_pagos.id_usuario = ID_USUARIO;
-    json_pagos.id_cli = ID_CLI;
+    json_pagos.id_usuario = id_usuario;
+    json_pagos.id_cli = id_cli;
     elementos.push(json_pagos);
   });
   if (has_igtf && igtf_pay == false) {
@@ -282,10 +277,19 @@ let por_pagar =false;
   return elementos;
 }
 let aceptar_modal = document.getElementById('aceptar_modal')
+
 aceptar_modal.addEventListener('click', function () {
+  
     let restante = document.getElementById('resto_pago_bs')
     let tabla = document.querySelectorAll('.rowdesg.control')
-    let json_forma = json_formas_pago(ID_ADMISION, tabla, 'Factura ' + factura_modal.value)
+   
+  const ID_ADMISION = new Set();
+    detalles.forEach((element) => {
+      ID_ADMISION.add(element.id_admision);    
+    });
+    
+    let json_forma = json_formas_pago(tabla, 'Factura ' + factura_modal.value)
+ 
     let lista_impuesto = document.querySelectorAll('.impuesto_ig');
     let total_impuesto = 0
     lista_impuesto.forEach(element =>{
@@ -384,6 +388,7 @@ if(total_cant_igtf_chk>=1 && total_cant_igtf_row==0){
 })
 
 async function json_principal(desglose_pago) {
+  console.log(desglose_pago)
     let row_detalle = document.querySelectorAll('.row_detalle');
         if (row_detalle.length == 0) {
             activar_modal('Nada que facturar', 'err');

@@ -36,9 +36,9 @@
         cursor: pointer;
     }
     .card_detalle{
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;        
     }
+  
     .botonera{
         gap:10px;
     }
@@ -263,7 +263,7 @@
                     <div class="col-8"><input type="text" class="encabezados text-end" id="igtf"  readonly/></div>
                 </div>
                 <div class="row">
-                    <div class="col-4 text-end"><span>IVA(16)</span></div>
+                    <div class="col-4 text-end"><span>IVA(16):</span></div>
                     <div class="col-8"><input type="text" class="encabezados text-end" id="iva" readonly/></div>
                 </div>
                 <div class="row">
@@ -363,8 +363,8 @@
                     
                 </div>
 
-                <div class="modal-footer row">
-                    <div class="row justify-content-between">
+                <div class="modal-footer ">
+                    <div class="row justify-content-between w-100">
                         <div class="col">
                             <h4>Monto a facturar Bs. <span class=sumatoria>0,00</span></h4>
                         </div>
@@ -411,7 +411,7 @@
                         </script>
                     </div>
                     <div class="col-2 form-floating ">
-                        <input type="text" id="tasa_modal" class='form-control' maxlength="8" value="" placeholder="00.00">
+                        <input type="text" id="tasa_modal" class='form-control' maxlength="8" value="" placeholder="00.00" disabled>
                         <label for="tasa_modal" class="" >Tasa</label>
                         <script>
                             $("#tasa_modal").on("input", function () {
@@ -425,7 +425,7 @@
                         <div>Desglose de pago</div>
                         <div class="cabecera d-flex" style="    justify-content: center;">
                             <input type="text" id=desglose_valor placeholder="Valor" maxlength="10"
-                                class="form-control" style="width:100px;">
+                                class="form-control desgloses" style="width:100px;">
                             <script>
                                 $('#desglose_valor').on('input', function () {
                                     this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
@@ -437,17 +437,17 @@
                                     validar_monto_bs(document.getElementById("desglose_valor"));
                                 });
                             </script>
-                            <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select"
+                            <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select desgloses"
                                 style="width:auto;">
                                 <option value="">...</option>
                             </select>
-                            <select id="forma_de_pago" name=forma_de_pago class="form-control form-select"
+                            <select id="forma_de_pago" name=forma_de_pago class="form-control form-select desgloses"
                                 style="width:auto;">
                                 <option value="">Seleccione</option>
                             </select>
                             
                             <input type="text" placeholder="nota" style="width:250px;" maxlength=50
-                                class="form-control" id=desglose_nota>
+                                class="form-control desgloses" id=desglose_nota>
                           
                             <div class="">
                                 <div id="div_agregar">
@@ -493,21 +493,21 @@
                     <div class="sub_total col-4  datos">
                         <div class="d-flex">
                             <label for="total_modal_pago_bs" class="col-4">SUMA EN BS:</label>
-                            <input type="text" id="total_modal_pago_bs" class=" col-8" readonly value="">
+                            <input type="text" id="total_modal_pago_bs" class="totalizables_modal col-8" readonly value="">
                         </div>
                         <div class="d-flex">
                             <label for="total_usd_modal_pago" class="col-4">SUMA EN USD:</label>
-                            <input type="text" id="total_usd_modal_pago" class=" col-8" readonly value="">
+                            <input type="text" id="total_usd_modal_pago" class="totalizables_modal col-8" readonly value="">
                         </div>
                     </div>
                     <div class="sub_total col-4  datos">
                         <div class="d-flex">
                             <label for="resto_pago_bs" class="col-4">RESTO EN BS:</label>
-                            <input type="text" id="resto_pago_bs" class=" col-8" readonly value="">
+                            <input type="text" id="resto_pago_bs" class="totalizables_modal col-8" readonly value="">
                         </div>
                         <div class="d-flex">
                             <label for="resto_pago_us" class="col-4">RESTO EN USD:</label>
-                            <input type="text" id="resto_pago_us" class=" col-8" readonly value="">
+                            <input type="text" id="resto_pago_us" class="totalizables_modal col-8" readonly value="">
                         </div>
                     </div>
                 </div>
@@ -517,8 +517,8 @@
 
                 <div class="fac_num col-6 d-flex datos">
                     <label for="factura_igtf" class="col-4" style="text-align: end;">IGTF</label>
-                    <input type="text" id="factura_igtf" class='col-8 ' value="" readonly>
-                    <input type="hidden" value="" id="igtf_validador">
+                    <input type="text" id="factura_igtf" class='totalizables_modal col-8 ' value="" readonly>
+                    <input type="hidden" value="" id="igtf_validador" class="totalizables_modal">
                 </div>
 
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

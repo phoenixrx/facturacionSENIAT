@@ -1,12 +1,46 @@
     //const HOST = "https://facturacion.siac.historiaclinica.org";
     const HOST = "http://localhost:3001";
-    const id_cli = 3;
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    
+    if (token) {
+      localStorage.setItem("token", token);
+      get_config_token()
+    }
+    let configs_token = [];
+    
+    function get_config_token () {
+        const token = localStorage.getItem("token");
+
+        fetch("https://pruebas.siac.historiaclinica.org/decodifica", {
+          method: "GET",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            configs_token = data;
+            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+            const expirationTime = configs_token.exp; // Expiration time in seconds
+            const timeRemaining = expirationTime - currentTime;
+      
+            if (timeRemaining <= 0) {
+                console.log("Token has already expired.");
+                window.location.href = 'https://siac.empresas.historiaclinica.org/login.php'
+                return;
+          }})
+            return configs_token;
+    }
+
+    const id_cli = configs_token.id_cli || 3;
+    const id_usuario = configs_token.id_usuario || 1;
     let detalles = [];
     let opciones_formatos = [];
     let generada = false;
-    var myModal = new bootstrap.Modal(document.getElementById('modal_pagos'), {
-        keyboard: false
-    })
+
+    var myModal = new bootstrap.Modal(document.getElementById('modal_pagos'), {keyboard: false});
+
 document.addEventListener("DOMContentLoaded", function(){
     opciones();
     tasa();
@@ -22,19 +56,18 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 });
 
-document.getElementById("chk_contado").addEventListener("change", function() {
-        
-        if (this.checked) {
-            document.querySelector(".row_credito").classList.add('d-none');            
-        } else {
-            document.querySelector(".row_credito").classList.remove('d-none');
-        }
-    });
+document.getElementById("chk_contado").addEventListener("change", function() {        
+    if (this.checked) {
+        document.querySelector(".row_credito").classList.add('d-none');            
+    } else {
+        document.querySelector(".row_credito").classList.remove('d-none');
+    }
+});
 
 document.querySelectorAll('input[name="tipo_admision"]').forEach((radio) => {
     radio.addEventListener('change', function () {
         document.getElementById("tabla-admisiones").innerHTML = '';
-        document.querySelector(".sumatoria").innerText = "0,00"
+        document.querySelector(".sumatoria").innerText = "0,00";
         if (this.checked) {
             switch (this.value) {
                 case "E":
@@ -66,7 +99,7 @@ document.querySelectorAll('input[name="tipo_admision"]').forEach((radio) => {
                     fetchAdmisiones(1,1000,'P')
                     break;
             }
-       }
+        };
     });
 });
 
@@ -100,12 +133,22 @@ document.getElementById('aceptar_lista').addEventListener('click', function () {
     const selectedCedTitulars = selectedAdmisiones.map(admision => admision.getAttribute('data-cedtitular'));
     const selectedMontos = selectedAdmisiones.map(admision => admision.getAttribute('data-monto'));
     const selectedTasa = selectedAdmisiones.map(admision => admision.getAttribute('data-tasa'));
-    fetchDetalles(selectedIds)
+    document.querySelectorAll('.rowdesg').forEach(element => {
+        element.remove();
+    });
+    calcular_desglose()
+    document.querySelectorAll('.totalizables_modal').forEach(input => {
+        input.value = "0.00";
+    });
+
+    fetchDetalles(selectedIds);
+
     if(obtenerPrimerValorNoVacio(selectedTitulares)!='Vacio'){
-        document.getElementById('titular').value =obtenerPrimerValorNoVacio(selectedTitulares);
+        document.getElementById('titular').value=obtenerPrimerValorNoVacio(selectedTitulares);
     }else{
-        document.getElementById('titular').value ="";
+        document.getElementById('titular').value="";        
     }
+
 })
 
 document.querySelector('.card_detalle-close').addEventListener('click', function (){
@@ -143,7 +186,15 @@ document.getElementById("titular").addEventListener("dblclick", function () {
 });
 
 document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
+    
     switchElement.addEventListener('change', function () {
+        document.querySelectorAll('.rowdesg').forEach(element => {
+            element.remove();
+        });
+        calcular_desglose()
+        document.querySelectorAll('.totalizables_modal').forEach(input => {
+            input.value = "0.00";
+        });
         if (this.checked) {
             switch (this.id) {
                 case "chk_tasa_actual":
@@ -218,6 +269,30 @@ function pagar_factura (){
         return
     }
 
+    if(document.getElementById('chk_tasa_admision').checked==true && document.getElementById('tasa_admi').textContent.trim()== "Tasas varias"){
+        let tasa_prom = document.getElementById('chk_tasa_admision').dataset.tasa;
+        Swal.fire({
+            title: "Tasas",
+            text: "Las tasas debe unificarse con la tasa del dia o con una tasa personalizada, el promedio de las admisiones actualmente seleccionadas es de " +
+                    tasa_prom + ", pero las admisiones tienen tasas diferentes, ¿desea usar este promedio como tasa de cobro?",
+            showCancelButton: true,
+            confirmButtonColor: "#008b8b",
+            confirmButtonText: "Usar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('tasa_pers').value = tasa_prom;
+                document.getElementById('chk_tasa_perso').dataset.tasa = tasa_prom;
+                document.getElementById('chk_tasa_perso').checked=true;
+                cambiar_tasa_personalizada(tasa_prom);
+            } else if (result.isDenied) {
+              Swal.fire("Seleccione la tasa de la factura", "", "info");
+              return;
+            }
+        });     
+        return;            
+    }
+    
     let tasa = Array.from(document.querySelectorAll('input[name="tasa_chk"]'))
         .find(input => input.checked)?.dataset.tasa;
 
@@ -290,8 +365,15 @@ function anular_factura (){
    
 }
 
-document.getElementById('tasa_pers').addEventListener('change', function () {
-    
-        document.getElementById('chk_tasa_perso').dataset.tasa = this.value;
-    
+document.getElementById('tasa_pers').addEventListener('change', function () {    
+    document.getElementById('chk_tasa_perso').dataset.tasa = this.value;    
+});
+
+document.querySelectorAll('.desgloses').forEach((element) => {
+    element.addEventListener('keypress', function (e) {
+        if (e.key === "Enter" || e.key === "Intro") {
+            e.preventDefault;
+            add_desgl();
+          }
+    });
 });

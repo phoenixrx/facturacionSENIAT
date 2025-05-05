@@ -174,7 +174,6 @@ function cambiar_tasa_personalizada(nuevaTasa) {
         cancelButtonText: "Cancelar",
     }).then((result) => {
         if (result.isConfirmed) {
-
             detalles.forEach((detalle) => {
                 let tasa =  nuevaTasa;
                 detalle.tasa = Number(tasa); 
@@ -200,6 +199,8 @@ function cambiar_tasa_personalizada(nuevaTasa) {
             }
             calcularTotales(nuevaTasa)
 
+        }else{
+            document.getElementById('chk_tasa_perso').checked =false;
         }
     });
 };
@@ -217,6 +218,11 @@ function calcularTotales (tasa_final){
     document.getElementById("iva").value = iva16.toFixed(2);
     document.getElementById("igtf").value = "0.00";
     document.getElementById("total_factura").value = Number(exento + bi16 + iva16).toFixed(2);
+    let valor = Number(exento + bi16 + iva16).toFixed(2)
+    document.getElementById("total_modal").setAttribute("data-ph-valor", valor);
+
+    
+
     let total_usd = "0,00";
     total_usd = totales.reduce((sum, item) => sum + item.total_precio_usd_cant, 0).toFixed(2);
     let nota = `El valor total representa USD ${total_usd} calculados en base a ${tasa_final} BS/USD `

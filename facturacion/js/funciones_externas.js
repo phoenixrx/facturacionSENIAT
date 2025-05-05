@@ -280,11 +280,15 @@ async function fetchDetalles(admisiones) {
         const Titulares = detalles.map(detalle => detalle.nombre_titular.trim());
          
         let titular=obtenerPrimerValorNoVacio(Titulares)
-
+        if (titular =='Vacio'){
+            titular="";
+        }
         document.getElementById("dir_fiscal").value = detalles[0].direccion_join || detalles[0].direccion;
         document.getElementById("rif").value = detalles[0].rif.trim() || detalles[0].cedula_titular.trim() ||detalles[0].cedula_paciente.trim();
         document.getElementById("razon_social").value = detalles[0].seguro_empresa || titular || detalles[0].nombre_paciente.trim();
         document.getElementById("fecha_atencion").value = new Date(detalles[0].fecha_admision).toISOString().split('T')[0];
+
+
         const pacientes = detalles.map(detalle => detalle.nombre_paciente);
         const uniquePacientes = [...new Set(pacientes)];
 
