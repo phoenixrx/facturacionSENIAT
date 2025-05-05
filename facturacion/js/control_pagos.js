@@ -389,12 +389,130 @@ if(total_cant_igtf_chk>=1 && total_cant_igtf_row==0){
 
 async function json_principal(desglose_pago) {
   console.log(desglose_pago)
-    let row_detalle = document.querySelectorAll('.row_detalle');
-        if (row_detalle.length == 0) {
-            activar_modal('Nada que facturar', 'err');
-            return
-        }
 
+  let table_detalle = document.getElementById('table_detalle');
+  let rows = table_detalle.querySelectorAll('tr');
+  let json_detalle = [];
+
+  rows.forEach(row => {
+    let cells = row.querySelectorAll('td');
+    if (cells.length > 0) {
+      let row_data = {
+        descripcion: cells[0].innerText.trim(),
+        cantidad: cells[1].innerText.trim(),
+        precio: cells[2].innerText.trim(),
+        precio_usd_tasa: cells[3].innerText.trim(),
+        impuesto: cells[4].innerText.trim()
+      };
+      json_detalle.push(row_data);
+    }
+  });
+
+  console.log((json_detalle));
+
+  let inputs = document.querySelectorAll('.container input[type="text"], .container textarea, .container input[type="date"]');
+  let json_factura = {};
+
+  inputs.forEach(input => {
+    json_factura[input.id] = input.value;
+  });
+  json_factura.condicion_pago = (document.getElementById('chk_contado').checked==true)?1:0;
+  json_factura.tasa_modal = document.getElementById('tasa_modal').value;
+  json_factura.id_formato = document.getElementById('sel_formato').value;
+  console.log(json_factura);
+  
+    
+    if (json_detalle.length == 0) {
+        Swal.fire({
+          title:"Facturación",
+          text: "Nada que facturar",
+          icon: 'error',
+          confirmButtonColor: "#008b8b",
+        });
+        return 
+    }
+
+    if(document.getElementById('razon_social').value.trim()==""){
+      Swal.fire({
+        title:"Facturación",
+        text: "Razon social no puede estar vacio",
+        icon: 'error',
+        confirmButtonColor: "#008b8b",
+      });
+      return 
+    }
+
+    if(document.getElementById('rif').value.trim()==""){
+      Swal.fire({
+        title:"Facturación",
+        text: "RIF no puede estar vacio",
+        icon: 'error',
+        confirmButtonColor: "#008b8b",
+      });
+      return 
+    }
+
+    if(document.getElementById('dir_fiscal').value.trim()==""){
+      Swal.fire({
+        title:"Facturación",
+        text: "Direccion Fiscal no puede estar vacio",
+        icon: 'error',
+        confirmButtonColor: "#008b8b",
+      });
+      return 
+    }
+    if(document.getElementById('num_control').value.trim()==""){
+      Swal.fire({
+        title:"Facturación",
+        text: "Numero de control no puede estar vacio",
+        icon: 'error',
+        confirmButtonColor: "#008b8b",
+      });
+      return 
+    }
+    if(document.getElementById('num_factura').value.trim()==""){
+      Swal.fire({
+        title:"Facturación",
+        text: "Numero de factura no puede estar vacia",
+        icon: 'error',
+        confirmButtonColor: "#008b8b",
+      });
+      return 
+    }
+    if(isNaN(document.getElementById('total_factura').value)||document.getElementById('total_factura').value==0||document.getElementById('total_factura').value==""){
+      Swal.fire({
+        title:"Facturación",
+        text: "Error en el monto de facturacion",
+        icon: 'error',
+        confirmButtonColor: "#008b8b",
+      });
+      return 
+    }
+
+    if(document.getElementById('chk_contado').checked!=true){
+      if(isNaN(document.getElementById('cuotas').value) || Number(document.getElementById('cuotas').value)<1){
+        Swal.fire({
+          title:"Facturación",
+          text: "Numero de cuotas invalidas",
+          icon: 'error',
+          confirmButtonColor: "#008b8b",
+        });
+        return 
+      }
+      if (document.getElementById('fecha_vencimiento').value) {
+        let fechaVencimiento = new Date(document.getElementById('fecha_vencimiento').value);
+        let fechaHoy = new Date();
+        if (fechaVencimiento < fechaHoy) {
+          Swal.fire({
+            title: "Facturación",
+            text: "La fecha de vencimiento no puede ser menor a la fecha actual",
+            icon: 'error',
+            confirmButtonColor: "#008b8b",
+          });
+          return;
+        }
+      }
+    }
     //validar en be factura duplicada o control duplicado
     
     let elementos = [];
@@ -430,7 +548,7 @@ async function json_principal(desglose_pago) {
     if(razon_social==''){
         razon_social=representante;
     }
-    var json_factura = {};
+    var json_factura1 = {};
     
     json_factura.paciente = document.getElementById('paciente').value;
     representante=(representante=='')?document.getElementById('paciente').value:representante;

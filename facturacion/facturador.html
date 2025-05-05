@@ -160,7 +160,7 @@
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end text-nowrap"><span>F. Emisión</span></div>
-                    <div class="col-7"><input class="text-end fw-bold w-100" type="date" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold w-100" id="fecha_emision" type="date" readonly/> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end"><span>Formato</span></div>
@@ -388,145 +388,145 @@
           <table class="table table-hover card_detalle-table"></table>
         </div>
     </div>
-<div class="modal fade" id="modal_pagos" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Registrar Pagos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class='col-12 d-flex mb-1' style="align-items: center;">
-                    <div class="form-floating fac_num col-auto me-auto d-flex datos">
-                        <input type="text" id="factura_modal" class='form-control' maxlength="8" value="" placeholder="00000000">
-                        <label for="factura_modal" class="" style="text-align: end;">No. Factura</label>
-                        <script>
-                            $("#num_factura").on("input", function () {
-                                this.value = this.value.replace(/[^0-9]/g, "");
-                            });
-                            $("#factura_modal").on("input", function () {
-                                this.value = this.value.replace(/[^0-9]/g, "");
-                            });
-                        </script>
-                    </div>
-                    <div class="col-2 form-floating ">
-                        <input type="text" id="tasa_modal" class='form-control' maxlength="8" value="" placeholder="00.00" disabled>
-                        <label for="tasa_modal" class="" >Tasa</label>
-                        <script>
-                            $("#tasa_modal").on("input", function () {
-                                this.value = this.value.replace(/[^0-9.]/g, "");
-                            });
-                        </script>
-                    </div>
+    <div class="modal fade" id="modal_pagos" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Registrar Pagos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="desglose">
-                    <div>
-                        <div>Desglose de pago</div>
-                        <div class="cabecera d-flex" style="    justify-content: center;">
-                            <input type="text" id=desglose_valor placeholder="Valor" maxlength="10"
-                                class="form-control desgloses" style="width:100px;">
+                <div class="modal-body">
+                    <div class='col-12 d-flex mb-1' style="align-items: center;">
+                        <div class="form-floating fac_num col-auto me-auto d-flex datos">
+                            <input type="text" id="factura_modal" class='form-control' maxlength="8" value="" placeholder="00000000">
+                            <label for="factura_modal" class="" style="text-align: end;">No. Factura</label>
                             <script>
-                                $('#desglose_valor').on('input', function () {
-                                    this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
+                                $("#num_factura").on("input", function () {
+                                    this.value = this.value.replace(/[^0-9]/g, "");
                                 });
-                                $('#desglose_valor').on('blur', function () {
-                                    if(this.value==""){
-                                        return
-                                    }
-                                    validar_monto_bs(document.getElementById("desglose_valor"));
+                                $("#factura_modal").on("input", function () {
+                                    this.value = this.value.replace(/[^0-9]/g, "");
                                 });
                             </script>
-                            <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select desgloses"
-                                style="width:auto;">
-                                <option value="">...</option>
-                            </select>
-                            <select id="forma_de_pago" name=forma_de_pago class="form-control form-select desgloses"
-                                style="width:auto;">
-                                <option value="">Seleccione</option>
-                            </select>
+                        </div>
+                        <div class="col-2 form-floating ">
+                            <input type="text" id="tasa_modal" class='form-control' maxlength="8" value="" placeholder="00.00" disabled>
+                            <label for="tasa_modal" class="" >Tasa</label>
+                            <script>
+                                $("#tasa_modal").on("input", function () {
+                                    this.value = this.value.replace(/[^0-9.]/g, "");
+                                });
+                            </script>
+                        </div>
+                    </div>
+                    <div class="desglose">
+                        <div>
+                            <div>Desglose de pago</div>
+                            <div class="cabecera d-flex" style="    justify-content: center;">
+                                <input type="text" id=desglose_valor placeholder="Valor" maxlength="10"
+                                    class="form-control desgloses" style="width:100px;">
+                                <script>
+                                    $('#desglose_valor').on('input', function () {
+                                        this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
+                                    });
+                                    $('#desglose_valor').on('blur', function () {
+                                        if(this.value==""){
+                                            return
+                                        }
+                                        validar_monto_bs(document.getElementById("desglose_valor"));
+                                    });
+                                </script>
+                                <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select desgloses"
+                                    style="width:auto;">
+                                    <option value="">...</option>
+                                </select>
+                                <select id="forma_de_pago" name=forma_de_pago class="form-control form-select desgloses"
+                                    style="width:auto;">
+                                    <option value="">Seleccione</option>
+                                </select>
+                                
+                                <input type="text" placeholder="nota" style="width:250px;" maxlength=50
+                                    class="form-control desgloses" id=desglose_nota>
                             
-                            <input type="text" placeholder="nota" style="width:250px;" maxlength=50
-                                class="form-control desgloses" id=desglose_nota>
-                          
-                            <div class="">
-                                <div id="div_agregar">
-                                    <lord-icon id="btn_agregar_fp" src="../images/plus-circle.json" trigger="hover"
-                                        style="width:40px;height:40px" class="svg disk_save  "
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar">
-                                    </lord-icon>
+                                <div class="">
+                                    <div id="div_agregar">
+                                        <lord-icon id="btn_agregar_fp" src="../images/plus-circle.json" trigger="hover"
+                                            style="width:40px;height:40px" class="svg disk_save  "
+                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Agregar">
+                                        </lord-icon>
+                                    </div>
+
                                 </div>
 
+
                             </div>
-
-
                         </div>
-                    </div>
-                    <div class="div_tabla">
-                        <table class="table table-striped">
-                            <tbody id="tabla_desglose">
-                                <tr id="tabla_desglose_header">
-                                    <th>Valor</th>
-                                    <th>IGTF</th>
-                                    <th>Forma</th>
-                                    <th>Nota</th>
-                                </tr>
+                        <div class="div_tabla">
+                            <table class="table table-striped">
+                                <tbody id="tabla_desglose">
+                                    <tr id="tabla_desglose_header">
+                                        <th>Valor</th>
+                                        <th>IGTF</th>
+                                        <th>Forma</th>
+                                        <th>Nota</th>
+                                    </tr>
 
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="col-12 row">
+                        <div class="sub_total col-4  datos">
+                            <div class="d-flex">
+                                <label for="total_modal" class="col-4">FACTURA BS:</label>
+                                <input type="text" id="total_modal" class=" col-8" readonly
+                                    data-ph-valor=""
+                                    value="">
+                            </div>
+                            <div class="d-flex">
+                                <label for="total_usd_modal" class="col-4">FACTURA USD:</label>
+                                <input type="text" id="total_usd_modal" class=" col-8" readonly value="">
+                            </div>
+                        </div>
+                        <div class="sub_total col-4  datos">
+                            <div class="d-flex">
+                                <label for="total_modal_pago_bs" class="col-4">SUMA EN BS:</label>
+                                <input type="text" id="total_modal_pago_bs" class="totalizables_modal col-8" readonly value="">
+                            </div>
+                            <div class="d-flex">
+                                <label for="total_usd_modal_pago" class="col-4">SUMA EN USD:</label>
+                                <input type="text" id="total_usd_modal_pago" class="totalizables_modal col-8" readonly value="">
+                            </div>
+                        </div>
+                        <div class="sub_total col-4  datos">
+                            <div class="d-flex">
+                                <label for="resto_pago_bs" class="col-4">RESTO EN BS:</label>
+                                <input type="text" id="resto_pago_bs" class="totalizables_modal col-8" readonly value="">
+                            </div>
+                            <div class="d-flex">
+                                <label for="resto_pago_us" class="col-4">RESTO EN USD:</label>
+                                <input type="text" id="resto_pago_us" class="totalizables_modal col-8" readonly value="">
+                            </div>
+                        </div>
                     </div>
 
                 </div>
-                <div class="col-12 row">
-                    <div class="sub_total col-4  datos">
-                        <div class="d-flex">
-                            <label for="total_modal" class="col-4">FACTURA BS:</label>
-                            <input type="text" id="total_modal" class=" col-8" readonly
-                                data-ph-valor=""
-                                value="">
-                        </div>
-                        <div class="d-flex">
-                            <label for="total_usd_modal" class="col-4">FACTURA USD:</label>
-                            <input type="text" id="total_usd_modal" class=" col-8" readonly value="">
-                        </div>
+                <div class="modal-footer">
+
+                    <div class="fac_num col-6 d-flex datos">
+                        <label for="factura_igtf" class="col-4" style="text-align: end;">IGTF</label>
+                        <input type="text" id="factura_igtf" class='totalizables_modal col-8 ' value="" readonly>
+                        <input type="hidden" value="" id="igtf_validador" class="totalizables_modal">
                     </div>
-                    <div class="sub_total col-4  datos">
-                        <div class="d-flex">
-                            <label for="total_modal_pago_bs" class="col-4">SUMA EN BS:</label>
-                            <input type="text" id="total_modal_pago_bs" class="totalizables_modal col-8" readonly value="">
-                        </div>
-                        <div class="d-flex">
-                            <label for="total_usd_modal_pago" class="col-4">SUMA EN USD:</label>
-                            <input type="text" id="total_usd_modal_pago" class="totalizables_modal col-8" readonly value="">
-                        </div>
-                    </div>
-                    <div class="sub_total col-4  datos">
-                        <div class="d-flex">
-                            <label for="resto_pago_bs" class="col-4">RESTO EN BS:</label>
-                            <input type="text" id="resto_pago_bs" class="totalizables_modal col-8" readonly value="">
-                        </div>
-                        <div class="d-flex">
-                            <label for="resto_pago_us" class="col-4">RESTO EN USD:</label>
-                            <input type="text" id="resto_pago_us" class="totalizables_modal col-8" readonly value="">
-                        </div>
-                    </div>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="aceptar_modal">Aceptar</button>
                 </div>
-
-            </div>
-            <div class="modal-footer">
-
-                <div class="fac_num col-6 d-flex datos">
-                    <label for="factura_igtf" class="col-4" style="text-align: end;">IGTF</label>
-                    <input type="text" id="factura_igtf" class='totalizables_modal col-8 ' value="" readonly>
-                    <input type="hidden" value="" id="igtf_validador" class="totalizables_modal">
-                </div>
-
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="aceptar_modal">Aceptar</button>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>
 
