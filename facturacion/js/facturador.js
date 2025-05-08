@@ -167,6 +167,9 @@ document.querySelectorAll('input[name="rad_tipo_agrupamiento"]').forEach((radio)
             case "agrupada":
                 agruparPorTipo(detalles, "agrupada")
                 break;    
+            case "porcentual":
+                agruparPorcentual(detalles)
+                break;  
             default:
                 detalles_fatura(detalles)
                 break;

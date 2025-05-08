@@ -84,6 +84,9 @@ function cambiar_tasa_actual(nuevaTasa) {
                 case "agrupada":
                     agruparPorTipo(detalles, "agrupada")
                     break;    
+                case "porcentual":
+                    agruparPorcentual(detalles)
+                    break;    
                 default:
                     detalles_fatura(detalles)
                     break;
@@ -139,6 +142,9 @@ function cambiar_tasa_admision(nuevaTasa) {
                 case "agrupada":
                     agruparPorTipo(detalles, "agrupada")
                     break;    
+                case "porcentual":
+                    agruparPorcentual(detalles)
+                    break;  
                 default:
                     detalles_fatura(detalles)
                     break;
@@ -193,6 +199,9 @@ function cambiar_tasa_personalizada(nuevaTasa) {
                 case "agrupada":
                     agruparPorTipo(detalles, "agrupada")
                     break;    
+                case "porcentual":
+                    agruparPorcentual(detalles)
+                    break;   
                 default:
                     detalles_fatura(detalles)
                     break;

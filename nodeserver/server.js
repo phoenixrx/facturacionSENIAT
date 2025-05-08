@@ -478,6 +478,75 @@ app.post('/admisiones_admidet', async (req, res) => {
     });
 });
 
+  app.post('/api/detalle_porcentual', async (req, res)=>{
+
+    const { admisiones } = req.body;
+    
+    // Validate that all admisiones are numeric
+    if (!admisiones || !Array.isArray(admisiones) || admisiones.some(isNaN)) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Error DP02' 
+        });
+    }
+    
+    const admisionesPlaceholders = admisiones.map(() => '?').join(',');
+
+
+
+    let query = `SELECT
+    ad.id_admidet,
+    ad.precio,
+    ad.precio_usd,
+    ad.cantidad,
+    e.descripcion AS estudio_descripcion,
+    e.id_estudio,
+    e.id_impuesto,
+    i.valor AS impuesto,
+    dce.id_estudio AS desglose_estudio_id,
+    dce.activo AS estudio_activo,
+    dc.activo AS concepto_activo,
+    dc.descripcion AS descripcion,
+    ddc.descripcion AS detalle_descripcion,
+    ddc.val_porcent,
+    ddc.activo AS detalle_activo
+FROM 
+    admisiones_det ad
+INNER JOIN 
+    estudios e ON ad.id_estudio = e.id_estudio
+INNER JOIN 
+    impuestos i ON e.id_impuesto = i.id_impuesto
+LEFT JOIN 
+    desgloses_conceptos_estudios dce ON e.id_estudio = dce.id_estudio
+LEFT JOIN 
+    desgloses_conceptos dc ON dce.id_desgloses_conceptos = dc.id_desglose_concepto
+LEFT JOIN 
+    detalles_desgloses_conceptos ddc ON dc.id_desglose_concepto = ddc.id_desglose_concepto
+WHERE
+    ad.activo = 1
+    AND ad.id_admidet IN (${admisionesPlaceholders});    `
+
+    const params = [
+      ...admisiones
+    ].filter(p => p !== undefined);
+
+
+  try{
+    const result = await retornar_query(query, params);
+
+    res.json({ 
+      success: true,
+      resultados: result
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Error al procesar la solicitud DP01',
+      error: error.message
+    });
+  }
+  })
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT} `);
 });

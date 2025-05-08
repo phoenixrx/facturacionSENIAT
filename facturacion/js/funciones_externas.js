@@ -335,6 +335,9 @@ async function fetchDetalles(admisiones) {
             case "agrupada":
                 agruparPorTipo(detalles, "agrupada")
                 break;     
+            case "porcentual":
+                    agruparPorcentual(detalles)
+                    break;   
             default:
                 detalles_fatura(detalles)
                 break;

@@ -169,8 +169,8 @@ function agruparPorTipo(data, formato ="tipo") {
 
         // Sumamos los valores correspondientes
         resultado[tipo].cantidad_total += item.cantidad;
-        resultado[tipo].precio_total += parseFloat(item.precio);
-        resultado[tipo].precio_usd_total += parseFloat(item.precio_usd);
+        resultado[tipo].precio_total += parseFloat(item.precio)*parseFloat(item.cantidad);
+        resultado[tipo].precio_usd_total += parseFloat(item.precio_usd)*parseFloat(item.cantidad);
         resultado[tipo].impuesto_total = parseFloat(item.impuesto);
 
         // Agregamos el detalle del registro al grupo
@@ -217,8 +217,8 @@ function agruparPorTipo(data, formato ="tipo") {
                 <tr>
                     <td>${det.estudio}</td>
                     <td class="text-center">${det.cantidad}</td>
-                    <td class="text-end">${Number(det.precio).toFixed(2)}</td>
-                    <td class="text-end">${Number(det.precio_usd).toFixed(2)}</td>
+                    <td class="text-end">${Number(det.precio*det.cantidad).toFixed(2)}</td>
+                    <td class="text-end">${Number(det.precio_usd*det.cantidad).toFixed(2)}</td>
                     <td class="text-center">${(Number(det.impuesto).toFixed(2)==0.00)?"E":Number(det.impuesto).toFixed(2)}</td>
                 </tr>`;
             }).join('');
@@ -243,6 +243,145 @@ function agruparPorTipo(data, formato ="tipo") {
     marcar_max_lines()
 }
 
+async function agruparPorcentual(data) {
+    const resultado = {};
+
+    const admisiones = data.map(item => item.id_detalle);
+console.log(admisiones)
+    try {                        
+        Swal.fire({
+            title: "Generando la data",
+            allowOutsideClick: () => false,
+        });
+        
+        Swal.showLoading();
+        const response = await fetch(`${HOST}/api/detalle_porcentual`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                admisiones: admisiones
+            }),
+        });
+
+        if (!response.ok) {
+        throw new Error("Error al obtener admisiones");
+        }
+
+        const data = await response.json();
+        if (data.success == false){
+            Swal.fire({
+                title: "La admision no ha sido encontrada",
+                allowOutsideClick: () => false,
+            });
+            alert("La admision no ha sido encontrada")
+            return;
+        }
+        
+
+        const table = document.getElementById("table_detalle");
+            const tbody = document.createElement("tbody");
+            table.innerHTML="";
+            const thead = document.createElement("thead");
+            thead.innerHTML = `
+                <tr>
+                <th>Descripcion</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-end">Precio</th>
+                <th class="text-end">Precio USD</th>
+                <th class="text-center">Impuesto</th>
+                </tr>
+            `;
+            table.appendChild(thead);
+
+            tbody.innerHTML =generarTabla(data.resultados)
+            table.appendChild(tbody);
+
+            marcar_max_lines()
+
+        Swal.close();
+    } catch (error) {
+        Swal.fire({
+        title: "Error",
+        text: error,
+        icon: "error",
+        allowOutsideClick: () => false,
+        });
+        Swal.hideLoading();
+    }     
+}
+function generarTabla(json_data) {
+
+    // Paso 1: Filtrar los datos donde estudio_activo sea null o "1"
+    const datosFiltrados = json_data.filter(item => 
+        item.estudio_activo === null || item.estudio_activo === "1" || item.estudio_activo === "0"
+    );
+
+    // Paso 2: Agrupar por estudio_descripcion
+    const grupos = {};
+    datosFiltrados.forEach(item => {
+        if (!grupos[item.estudio_descripcion]) {
+            grupos[item.estudio_descripcion] = [];
+        }
+        grupos[item.estudio_descripcion].push(item);
+    });
+
+    // Paso 3: Generar la tabla HTML
+    let tablaHTML = "";
+    for (const estudioDescripcion in grupos) {
+        const grupo = grupos[estudioDescripcion];
+
+        // Si el primer elemento del grupo tiene descripcion null, insertar directamente
+        if (grupo[0].descripcion === null) {
+            const item = grupo[0];
+            const cantidad = item.cantidad || 1; // Asegurar que cantidad no sea null
+            const precio = parseFloat(item.precio) || 0;
+            const precioUSD = parseFloat(item.precio_usd) || 0;
+            const valPorcent = parseFloat(item.val_porcent) / 100 || 1; // Convertir a decimal
+
+            const precioCalculado = (precio * cantidad) * valPorcent;
+            const precioUSDCalculado = (precioUSD * cantidad) * valPorcent;
+            let impuesto = (item.impuesto==0.00)?"E":item.impuesto;
+            tablaHTML += `
+                <tr>
+                    <td>${estudioDescripcion}</td>
+                    <td class='text-center'>${cantidad}</td>
+                    <td class='text-end'>${precioCalculado.toFixed(2)}</td>
+                    <td class='text-end'>${precioUSDCalculado.toFixed(2)}</td>
+                    <td class='text-center'>${impuesto}</td>
+                </tr>
+            `;
+        } else {
+            // Agregar fila para el nombre del estudio
+            tablaHTML += `<tr><td class='' colspan="6">${estudioDescripcion}</td></tr>`;
+
+            // Iterar sobre los detalles del grupo
+            grupo.forEach(detalle => {
+                const cantidad = detalle.cantidad || 1; // Asegurar que cantidad no sea null
+                const precio = parseFloat(detalle.precio) || 0;
+                const precioUSD = parseFloat(detalle.precio_usd) || 0;
+                const valPorcent = parseFloat(detalle.val_porcent) / 100 || 1; // Convertir a decimal
+
+                const precioCalculado = (precio * cantidad) * valPorcent;
+                const precioUSDCalculado = (precioUSD * cantidad) * valPorcent;
+                let impuesto = (detalle.impuesto==0.00)?"E":item.impuesto;
+                tablaHTML += `
+                    <tr>
+                        <td class='text-end fw-bold' style="font-size:small">${detalle.detalle_descripcion || "N/A"}</td>
+                        <td class='text-center'>${cantidad}</td>
+                        <td class='text-end'>${precioCalculado.toFixed(2)}</td>
+                        <td class='text-end'>${precioUSDCalculado.toFixed(2)}</td>
+                        <td class='text-center'>${impuesto}</td>
+                    </tr>
+                `;
+            });
+        }
+    }
+    tablaHTML += "</table>";
+
+    return tablaHTML;
+}
 function clasificarMontosImpuestos(data) {
     // Creamos un objeto para almacenar los resultados agrupados por impuesto
     const resultados = {};
