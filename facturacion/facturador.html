@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facturas - SIAC</title>
     <link rel="icon" type="image/x-icon" href="https://siac.empresas.historiaclinica.org/images/Imagen1.ico">
-    <script src="https://siac.empresas.historiaclinica.org/js/sweetalert2.all.min.js"></script>
-    <link href="https://siac.empresas.historiaclinica.org/css/sweetalert2.min.css" rel="stylesheet" />
-    <script src="https://siac.empresas.historiaclinica.org/js/bootstrap.bundle.min.js"></script>
-    <link href="https://siac.empresas.historiaclinica.org/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="https://siac.empresas.historiaclinica.org/js/jquery-3.7.1.js"></script>
-    <script src="https://siac.empresas.historiaclinica.org/js/lordicon.js"></script>
+    <script src="js/sweetalert2.all.min.js"></script>
+    <link href="css/sweetalert2.min.css" rel="stylesheet" />
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jquery-3.7.1.js"></script>
+    <script src="js/lordicon.js"></script>
     <script src="js/funciones_externas.js"></script>
     <script src="js/funcionalidades.js"></script>
     <script src="js/manejo_data.js"></script>
@@ -186,6 +186,7 @@
                 </div>
             </div>
             <table class="table table-striped" id="table_detalle"></table>
+            <table class="table table-striped" id="table_detalle_descuento"></table>
         </div>
         <div class="row ">
             <div class="col-6">
@@ -255,23 +256,27 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-4 text-end"><span>Exento: </span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end" id="exento"readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="exento"readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>BI 16:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end" id="base_imponible"  readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="base_imponible"  readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>IGTF:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end" id="igtf"  readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="igtf"  readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>IVA(16):</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end" id="iva" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="iva" readonly/></div>
+                </div>
+                <div class="row descuento_div ">
+                    <div class="col-4 text-end"><span>Descuentos:</span></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="descuentos" readonly/></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>Total:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end" id="total_factura"  readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="total_factura"  readonly/></div>
                 </div>
                 <div class="botonera d-flex justify-content-center align-items-center flex-row mt-1">
             

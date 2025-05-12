@@ -5,7 +5,7 @@ async function tasa(){
         allowOutsideClick: () => false,
     }); 
     Swal.showLoading()
-    var url = `https://pruebas.siac.historiaclinica.org/api/bcv`;
+    var url = `${HOST2}/api/bcv`;
     try {
         let data = await fetch(url);
         let tasas = await data.json();
@@ -179,7 +179,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
         }
 
         const data = await response.json();
-        console.log(data)
+        //console.log(data)
         Swal.close();
 
         mostrarResultados(data, tipos);
@@ -357,7 +357,7 @@ async function fetchDetalles(admisiones) {
 async function fetchMoneda() {
     document.getElementById('moneda_desglose').innerHTML = '<option value="">Cargando...</option>';
     const response = await fetch(
-        "https://pruebas.siac.historiaclinica.org/cargar_query",
+        `${HOST2}/cargar_query`,
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -381,7 +381,7 @@ async function fetchFormaPago() {
         return;
     }
     const response = await fetch(
-        "https://pruebas.siac.historiaclinica.org/cargar_query",
+        `${HOST2}/cargar_query`,
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -401,4 +401,54 @@ async function fetchFormaPago() {
         opciones += `<option value=${fp.id_forma_pago}>${fp.descripcion}</option>`
     })
     document.getElementById('forma_de_pago').innerHTML = opciones;
+    
 }
+
+async function fetchDescuentos(admisiones) {
+    const response = await fetch(
+        `${HOST2}/api/promociones_admi/?admisiones=${admisiones}`,
+        {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },            
+        }
+    );     
+    let formas_pago = await response.json();
+    
+    if(formas_pago.success==false){
+        return
+    }
+    let detalles=formas_pago.resultados;
+
+    const filtrados = detalles.filter(item => item.activo === 1);
+    if (filtrados.length === 0) {
+      return;
+    }
+    const total = filtrados.reduce((suma, item) => {
+        return suma + parseFloat(item.promo_monto);
+    }, 0);
+    const table = document.getElementById("table_detalle");
+    const tbody = document.createElement("tbody");
+
+    filtrados.forEach(detalle => {
+        const row = document.createElement("tr");
+        row.classList.add('table-info')
+        row.innerHTML = `<td>${detalle.promo}</td>
+            <td class="text-center">1</td>
+            <td class="text-end">-${Number(detalle.promo_monto).toFixed(2)}</td>
+            <td class="text-end">-</td>
+            <td class="text-center">-</td>`;
+        tbody.appendChild(row);    
+        })
+        
+    table.appendChild(tbody);
+    document.getElementById('descuentos').value=Number(total).toFixed(2);
+    document.getElementById('total_factura').value =Number((
+        Number(document.getElementById('exento').value)+
+        Number(document.getElementById('base_imponible').value)+
+        Number(document.getElementById('igtf').value)+
+        Number(document.getElementById('iva').value))-total).toFixed(2)
+    document.getElementById('total_modal').value =document.getElementById('total_factura').value 
+    document.getElementById('total_usd_modal').value =Number(Number(document.getElementById('total_modal').value)/Number(document.getElementById('tasa_modal').value)).toFixed(2)
+
+}
+

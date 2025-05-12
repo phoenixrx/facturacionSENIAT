@@ -1,5 +1,8 @@
     //const HOST = "https://facturacion.siac.historiaclinica.org";
-    const HOST = "http://localhost:3001";
+    //const HOST2 = "https://pruebas.siac.historiaclinica.org";
+    const HOST = "http://localhost:3000";
+    const HOST2 = "http://localhost:3001";
+    
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     
@@ -12,7 +15,7 @@
     function get_config_token () {
         const token = localStorage.getItem("token");
 
-        fetch("https://pruebas.siac.historiaclinica.org/decodifica", {
+        fetch(`${HOST2}/decodifica`, {
           method: "GET",
           headers: {
               Authorization: `Bearer ${token}`,
@@ -33,7 +36,7 @@
             return configs_token;
     }
 
-    const id_cli = configs_token.id_cli || 3;
+    const id_cli = configs_token.id_cli || 29;
     const id_usuario = configs_token.id_usuario || 1;
     let detalles = [];
     let opciones_formatos = [];
@@ -53,7 +56,24 @@ document.addEventListener("DOMContentLoaded", function(){
     const admision = urlParams.get('admision');
     if (admision && !isNaN(admision)) {
         fetchDetalles([admision]);
+    }else{
+        const myModal = document.getElementById('modal_admisiones')
+              const myInput = document.getElementById('inp_part');  
+        const modalInstance = new bootstrap.Modal(myModal);
+
+        // Escuchar evento 'shown.bs.modal' para enfocar el input
+        myModal.addEventListener('shown.bs.modal', () => {
+            const myInput = document.getElementById('inp_part');
+            if (myInput) {
+                myInput.focus();
+            }
+        });
+
+        // Mostrar el modal usando la instancia
+        modalInstance.show();
+      
     }
+
 });
 
 document.getElementById("chk_contado").addEventListener("change", function() {        
@@ -140,7 +160,7 @@ document.getElementById('aceptar_lista').addEventListener('click', function () {
     document.querySelectorAll('.totalizables_modal').forEach(input => {
         input.value = "0.00";
     });
-
+    
     fetchDetalles(selectedIds);
 
     if(obtenerPrimerValorNoVacio(selectedTitulares)!='Vacio'){
@@ -322,13 +342,18 @@ function pagar_factura (){
         denyButtonText: `Cancelar`
     }).then((result) => {
         if (result.isConfirmed) {
-            myModal.show()
+               document.getElementById('total_modal').value =document.getElementById('total_factura').value 
+                document.getElementById('total_usd_modal').value =Number(Number(document.getElementById('total_modal').value)/Number(document.getElementById('tasa_modal').value)).toFixed(2)
+                myModal.show()
         } else if (result.isDenied) {
             return;
         }
     })
 
     } else {
+           document.getElementById('total_modal').value =document.getElementById('total_factura').value 
+            document.getElementById('total_usd_modal').value =Number(Number(document.getElementById('total_modal').value)/Number(document.getElementById('tasa_modal').value)).toFixed(2)
+
         myModal.show()
     }
 
@@ -380,3 +405,6 @@ document.querySelectorAll('.desgloses').forEach((element) => {
           }
     });
 });
+document.getElementById('btn_regresar').addEventListener('click', function(){
+    window.location.reload();
+})

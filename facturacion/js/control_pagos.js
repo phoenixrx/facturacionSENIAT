@@ -71,10 +71,7 @@ let IGFT  = 0.03
       return;
     }
     
-    var tasa = document.getElementById('tasa_actual').innerText
-        if(document.getElementById('chk_tasa_admision').checked){
-            tasa =document.getElementById('chk_tasa_admision').dataset.tasa
-        }
+    var tasa = document.getElementById('tasa_modal').value;
     var igtf_val = (Number(valor_desglose) * Number(IGFT))*tasa;
     var base_igtf_bs = Number(valor_desglose)*tasa;
     var id_igtf = Math.floor(Math.random() * 100000) + 1;
@@ -196,11 +193,13 @@ let IGFT  = 0.03
       var tasa = document.getElementById('tasa_modal').value;
       document.getElementById('total_usd_modal').value = Number(Number(document.getElementById('total_modal').value)/Number(tasa)).toFixed(2)
       document.getElementById('desglose_valor').value=Number(valor_igtf).toFixed(2);
-      document.getElementById('desglose_nota').value="IGTF aplica sobre $"+Number(valor_neto).toFixed(2);
       
+      document.getElementById('moneda_desglose').value=2 // BS
+      fetchFormaPago()//carga forma de pago de Bs
+      document.getElementById('desglose_nota').value="IGTF aplica sobre $"+Number(valor_neto).toFixed(2);
+            
       document.getElementById('desglose_nota').disabled=true;
-      document.getElementById('moneda_desglose').value="";
-      document.getElementById('forma_de_pago').value="";
+      
       calcular_desglose()
       document.getElementById('desglose_nota').focus()
   }

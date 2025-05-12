@@ -144,7 +144,9 @@ function detalles_fatura(data) {
     });
         
         table.appendChild(tbody);
-
+    const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
+    const admisiones = selectedAdmisiones.map(admision => admision.value);
+    fetchDescuentos(admisiones);
         marcar_max_lines()
 }
 
@@ -239,7 +241,9 @@ function agruparPorTipo(data, formato ="tipo") {
     });
         
     table.appendChild(tbody);
-
+        const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
+    const admisiones = selectedAdmisiones.map(admision => admision.value);
+    fetchDescuentos(admisiones);
     marcar_max_lines()
 }
 
@@ -247,7 +251,7 @@ async function agruparPorcentual(data) {
     const resultado = {};
 
     const admisiones = data.map(item => item.id_detalle);
-console.log(admisiones)
+
     try {                        
         Swal.fire({
             title: "Generando la data",
@@ -297,7 +301,9 @@ console.log(admisiones)
 
             tbody.innerHTML =generarTabla(data.resultados)
             table.appendChild(tbody);
-
+                const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
+    const admisionesid = selectedAdmisiones.map(admision => admision.value);
+    fetchDescuentos(admisionesid);
             marcar_max_lines()
 
         Swal.close();

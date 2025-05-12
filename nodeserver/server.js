@@ -26,7 +26,7 @@ const pool =  mysql.createPool({
     queueLimit: 0
   });
 exports.app = app;
-const PORT = process.env.PORT || 3000;
+const PORT = 3000//process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
