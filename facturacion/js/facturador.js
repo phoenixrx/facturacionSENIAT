@@ -263,7 +263,7 @@ document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
 
 document.getElementById('div_imprimir').addEventListener('click', imprimirFactura)
 
-function pagar_factura (){
+async function pagar_factura (){
     /*const table = document.getElementById("table_detalle");
     const rowCount = table.getElementsByTagName("tr").length;
     if(rowCount ===0){
@@ -275,7 +275,32 @@ function pagar_factura (){
         });
         return;
     }*/
-    const STATUS_FACTURA =1
+    
+        if(document.getElementById('dir_fiscal').value.trim()==""){
+            const { value: direccion } = await Swal.fire({
+                title:"Facturación",
+                text: "Direccion Fiscal no puede estar vacio, ingrese dirección",
+                icon: 'error',
+                confirmButtonColor: "#008b8b",
+                input: "text",
+                inputAttributes: {
+                autocapitalize: "on"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Aceptar",
+                inputValidator: (value) => {
+                if (!value) {
+                return "La dirección fiscal es necesaria!";
+                }}
+            });
+            if (direccion) {
+                document.getElementById('dir_fiscal').value=direccion          
+            }else{
+                return 
+            };
+        }
+    
+        const STATUS_FACTURA =1
     switch (STATUS_FACTURA) {
         case '2' || 2:
             activar_modal('Factura cerrada, no puede modificar los pagos', 'info');

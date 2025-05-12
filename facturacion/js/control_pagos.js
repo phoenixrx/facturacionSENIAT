@@ -562,7 +562,7 @@ async function json_principal(desglose_pago) {
     json_factura.igtf = igtf;
     var iva16 =document.getElementById('iva').value;
     json_factura.iva16 = iva16;
-    var total =document.getElementById('total').value;
+    var total =document.getElementById('total_factura').value;
     json_factura.total = total;
     json_factura.descuento =document.getElementById('descuentos').value;
     json_factura.base_igtf =base_igtf_bs
