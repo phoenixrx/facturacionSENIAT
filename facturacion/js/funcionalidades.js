@@ -216,8 +216,8 @@ function cambiar_tasa_personalizada(nuevaTasa) {
 
 
 function calcularTotales (tasa_final){
-    let totales = clasificarMontosImpuestos(detalles)
 
+    let totales = clasificarMontosImpuestos(detalles)
     let exento = obtenerTotalPrecioBsCantPorImpuesto(totales, "0.00");
     let bi16 = obtenerTotalPrecioBsCantPorImpuesto(totales, "0.16");
     let iva16 = bi16 * 0.16;
@@ -226,8 +226,12 @@ function calcularTotales (tasa_final){
     document.getElementById("base_imponible").value = bi16.toFixed(2);
     document.getElementById("iva").value = iva16.toFixed(2);
     document.getElementById("igtf").value = "0.00";
-    document.getElementById("total_factura").value = Number(exento + bi16 + iva16).toFixed(2);
-    let valor = Number(exento + bi16 + iva16).toFixed(2)
+
+    let descuentos = Number(document.getElementById("descuentos").value).toFixed(2);
+    let valor = Number(Number(exento + bi16 + iva16)-Number(descuentos)).toFixed(2);
+
+    document.getElementById("total_factura").value = valor;
+    
     document.getElementById("total_modal").setAttribute("data-ph-valor", valor);
 
     

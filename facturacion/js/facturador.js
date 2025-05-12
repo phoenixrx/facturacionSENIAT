@@ -167,8 +167,7 @@ document.getElementById('aceptar_lista').addEventListener('click', function () {
         document.getElementById('titular').value=obtenerPrimerValorNoVacio(selectedTitulares);
     }else{
         document.getElementById('titular').value="";        
-    }
-
+    }    
 })
 
 document.querySelector('.card_detalle-close').addEventListener('click', function (){

@@ -342,7 +342,7 @@ async function fetchDetalles(admisiones) {
                 detalles_fatura(detalles)
                 break;
         }
-   
+
     } catch (error) {
         Swal.fire({
         title: "Error",
@@ -415,6 +415,7 @@ async function fetchDescuentos(admisiones) {
     let formas_pago = await response.json();
     
     if(formas_pago.success==false){
+        document.querySelector('.descuento_div').classList.add('d-none')
         return
     }
     let detalles=formas_pago.resultados;
@@ -449,6 +450,8 @@ async function fetchDescuentos(admisiones) {
         Number(document.getElementById('iva').value))-total).toFixed(2)
     document.getElementById('total_modal').value =document.getElementById('total_factura').value 
     document.getElementById('total_usd_modal').value =Number(Number(document.getElementById('total_modal').value)/Number(document.getElementById('tasa_modal').value)).toFixed(2)
+    document.querySelector('.descuento_div').classList.remove('d-none')
+    
 
 }
 

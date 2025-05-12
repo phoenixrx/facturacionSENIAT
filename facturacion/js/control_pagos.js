@@ -170,7 +170,8 @@ let IGFT  = 0.03
           document.getElementById('resto_pago_us').style.fontWeight = 'normal';
           document.getElementById('resto_pago_us').style.color = 'green';
       }
-  
+
+
       document.getElementById('desglose_valor').focus()
   }
   function calcular_igtf() {
@@ -186,22 +187,33 @@ let IGFT  = 0.03
           });
       document.getElementById('factura_igtf').value=Number(valor_igtf).toFixed(2);
       document.getElementById('igtf').value=Number(valor_igtf).toFixed(2);
-      var valor= document.getElementById('total_modal').getAttribute('data-ph-valor');
-      document.getElementById('total_modal').value=Number(Number(valor)+Number(valor_igtf)).toFixed(2)
-      document.getElementById('total_factura').value=Number(Number(valor)+Number(valor_igtf)).toFixed(2)
       
+      let descuentos = Number(document.getElementById('descuentos').value)
+      let valor_total_sindescuento =  Number(Number(document.getElementById('exento').value) + 
+                                      Number(document.getElementById('base_imponible').value) + 
+                                      Number(document.getElementById('iva').value))
+      let total_menos_descuento = valor_total_sindescuento -    descuentos;                               
+
       var tasa = document.getElementById('tasa_modal').value;
-      document.getElementById('total_usd_modal').value = Number(Number(document.getElementById('total_modal').value)/Number(tasa)).toFixed(2)
+      
+      document.getElementById('total_modal').value=Number(Number(total_menos_descuento)+Number(valor_igtf)).toFixed(2)
+      document.getElementById('total_factura').value=Number(Number(total_menos_descuento)+Number(valor_igtf)).toFixed(2)
+
+      document.getElementById('total_usd_modal').value = Number((Number(document.getElementById('total_modal').value))/Number(tasa)).toFixed(2)
       document.getElementById('desglose_valor').value=Number(valor_igtf).toFixed(2);
       
       document.getElementById('moneda_desglose').value=2 // BS
-      fetchFormaPago()//carga forma de pago de Bs
-      document.getElementById('desglose_nota').value="IGTF aplica sobre $"+Number(valor_neto).toFixed(2);
-            
+      fetchFormaPago() //carga forma de pago de Bs
+      document.getElementById('desglose_nota').value="IGTF aplica sobre $"+Number(valor_neto).toFixed(2);            
       document.getElementById('desglose_nota').disabled=true;
       
       calcular_desglose()
       document.getElementById('desglose_nota').focus()
+      if(Number(document.getElementById('descuentos').value).toFixed(2) == 0.00){
+        document.querySelector('.descuento_div').classList.add('d-none')
+      }else{
+          document.querySelector('.descuento_div').classList.remove('d-none')
+      }
   }
   
 function json_formas_pago(tabla, tipo) {
@@ -387,7 +399,7 @@ if(total_cant_igtf_chk>=1 && total_cant_igtf_row==0){
 })
 
 async function json_principal(desglose_pago) {
-  console.log(desglose_pago)
+
 
   let table_detalle = document.getElementById('table_detalle');
   let rows = table_detalle.querySelectorAll('tr');
@@ -407,7 +419,7 @@ async function json_principal(desglose_pago) {
     }
   });
 
-  console.log((json_detalle));
+
 
   let inputs = document.querySelectorAll('.container input[type="text"], .container textarea, .container input[type="date"]');
   let json_factura = {};
@@ -418,7 +430,6 @@ async function json_principal(desglose_pago) {
   json_factura.condicion_pago = (document.getElementById('chk_contado').checked==true)?1:0;
   json_factura.tasa_modal = document.getElementById('tasa_modal').value;
   json_factura.id_formato = document.getElementById('sel_formato').value;
-  console.log(json_factura);
   
     
     if (json_detalle.length == 0) {
@@ -491,7 +502,7 @@ async function json_principal(desglose_pago) {
     if(document.getElementById('chk_contado').checked!=true){
       if(isNaN(document.getElementById('cuotas').value) || Number(document.getElementById('cuotas').value)<1){
         Swal.fire({
-          title:"Facturación",
+          title:"Cuotas",
           text: "Numero de cuotas invalidas",
           icon: 'error',
           confirmButtonColor: "#008b8b",
@@ -503,7 +514,7 @@ async function json_principal(desglose_pago) {
         let fechaHoy = new Date();
         if (fechaVencimiento < fechaHoy) {
           Swal.fire({
-            title: "Facturación",
+            title: "Cuotas",
             text: "La fecha de vencimiento no puede ser menor a la fecha actual",
             icon: 'error',
             confirmButtonColor: "#008b8b",
@@ -512,25 +523,7 @@ async function json_principal(desglose_pago) {
         }
       }
     }
-    //validar en be factura duplicada o control duplicado
-    
-    let elementos = [];
-
-    row_detalle.forEach((element) => {
-        var json_detalle = {};
-        json_detalle.id_factura = '?';
-        json_detalle.descripcion = element.children[0].innerText;
-        json_detalle.cantidad = element.children[1].innerText;            
-        json_detalle.precio = element.children[2].innerText;
-        json_detalle.precio_usd_tasa = element.children[3].innerText;
-        json_detalle.impuesto = element.children[4].innerText;
-        try {
-            json_detalle.clase=element.dataset.clase
-        } catch (error) {
-
-        }
-        elementos.push(json_detalle);
-    });
+   
     var igtf_chk = document.querySelectorAll('.chk-igtf')
     var base_igtf_bs =0
     igtf_chk.forEach(element =>{
@@ -539,22 +532,18 @@ async function json_principal(desglose_pago) {
         }
     })
 
-    var representante = document.getElementById('representante').value;
-    if (representante==' C.I.' || representante == ''){
-        representante = document.getElementById('paciente').value;
-    }
+    var representante = document.getElementById('titular').value;
+
     var razon_social = document.getElementById('razon_social').value.trim();
-    if(razon_social==''){
-        razon_social=representante;
-    }
-    var json_factura1 = {};
-    
-    json_factura.paciente = document.getElementById('paciente').value;
-    representante=(representante=='')?document.getElementById('paciente').value:representante;
+
+    let json_cuotas ={};
+
+    json_factura.paciente = document.getElementById('pacientes').value;
+    representante=(representante=='')?document.getElementById('pacientes').value:representante;
     json_factura.titular = representante;
     json_factura.razon_social = (razon_social=='')?representante:razon_social;
-    json_factura.rif = document.getElementById('RIF').value;
-    json_factura.direccion_f = document.getElementById('dir_fis').value;
+    json_factura.rif = document.getElementById('rif').value;
+    json_factura.direccion_f = document.getElementById('dir_fiscal').value;
     var numero_factura = factura_modal.value
     if (numero_factura.length <8) {
         numero_factura=numero_factura.slice(0, 8).padStart(8, '0');
@@ -562,17 +551,20 @@ async function json_principal(desglose_pago) {
     json_factura.factura = numero_factura;
     json_factura.fecha_atencion = document.getElementById('fecha_atencion').value;
     json_factura.fecha_emision = document.getElementById('fecha_emision').value;
-    json_factura.nota = document.getElementById('nota_factura').value;
+    json_factura.nota = document.getElementById('nota').value;
+    json_factura.formato = document.getElementById('sel_formato').value;
+    json_factura.tipo_agrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
     var exento =document.getElementById('exento').value;
     json_factura.exento = exento;
-    var bi16 =document.getElementById('bi16').value;
+    var bi16 =document.getElementById('base_imponible').value;
     json_factura.bi16 = bi16;
     var igtf= document.getElementById('igtf').value;
     json_factura.igtf = igtf;
-    var iva16 =document.getElementById('iva16').value;
+    var iva16 =document.getElementById('iva').value;
     json_factura.iva16 = iva16;
     var total =document.getElementById('total').value;
     json_factura.total = total;
+    json_factura.descuento =document.getElementById('descuentos').value;
     json_factura.base_igtf =base_igtf_bs
     json_factura.id_usuario = ID_USUARIO;
     json_factura.id_admision = ID_ADMISION;
@@ -585,21 +577,13 @@ async function json_principal(desglose_pago) {
         json_factura.contado='0';
         json_factura.cuotas=document.getElementById('cuotas').value;
         json_factura.fecha_vencimiento=document.getElementById('fecha_vencimiento').value;
-        crear_cuotas()
+        json_cuotas = crear_cuotas()
     }
+    console.log("Pagos", desglose_pago)
+    console.log("Cuotas",json_cuotas)    
+    console.log("Factura",json_factura)    
+    console.log("Detalles", json_detalle); 
 
-    guardar_dato_esperar_id(
-        "../php/insertar_devolverid.php",
-        "tabla=facturas&json=" + encodeURIComponent(JSON.stringify(json_factura)),
-        "../php/guardar_datos_multiples.php",
-        "tabla=factura_detalle&json=" +
-        encodeURIComponent(JSON.stringify(elementos)),
-        "id_factura",
-        "factura_cambio",
-        "application/x-www-form-urlencoded",
-        "application/x-www-form-urlencoded",
-        "id_factura"
-    );
 
     var fecha_hoy = moment(new Date(Date.now()));
     var numero_factura = factura_modal.value
