@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const { validateFactura } = require('./schemas/facturas');
 const retornar_query = async (query, ids) => {
     try {
       const [rows] = await pool.query(query, ids);
@@ -31,6 +32,47 @@ const PORT = 3000//process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+
+function authenticateToken(req, res, next) {
+  const publicRoutes = [
+    '/login',
+    '/images/*', // Allow access to all files in the images directory
+    '/login/',
+    '/login/index.html',
+    '/',
+    '/php'
+  ];
+
+  // Permitir acceso a rutas públicas sin token
+  if (publicRoutes.some(route => req.path === route || req.path.startsWith(route.replace('*', '')))) {
+    return next();
+  }
+
+  if (tokenBlacklist.has(token)) {
+    return res.status(401).json({ error: 'Token invalidado',redirectTo: '/login' });
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Token no proporcionado', redirectTo: '/login' });
+  }
+  const token = authHeader.split(' ')[1]?.trim();
+  if (!token) {
+    return res.status(401).json({ error: 'Formato de token inválido', redirectTo: '/login' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'El token ha expirado', redirectTo: '/login' });
+    } else {
+      return res.status(401).json({ error: 'Token malformado o inválido', redirectTo: '/login' });
+    }
+  }
+}
 
 app.use(express.static(path.join(__dirname, '..')));
 app.get('/facturacion/', (req, res) => {
@@ -548,6 +590,94 @@ WHERE
   }
   })
 
+    app.post('/api/facturar', async (req, res)=>{
+
+    const { desglose_pago, json_cuotas, json_factura, json_detalle } = req.body;
+    
+    // Validate that all admisiones are numeric
+
+  const result_factura = await validateFactura(json_factura);
+  
+  if (result_factura.error ){
+    console.log(result_factura.error)
+    return res.status(422).json({error: JSON.parse(result_factura.error.message)})
+  }
+    
+    let query = `INSERT INTO
+                    facturas
+                      (paciente, 
+                      titular, 
+                      razon_social, 
+                      rif, 
+                      direccion_f, 
+                      factura, 
+                      fecha_atencion, 
+                      fecha_emision, 
+                      nota, 
+                      exento, 
+                      bi16, 
+                      iva16, 
+                      igtf, 
+                      total, 
+                      id_usuario, 
+                      id_admision,      
+                      id_cli, 
+                      base_igtf, 
+                      num_control, 
+                      contado, 
+                      fecha_vencimiento, 
+                      cuotas,
+                      formato_factura,
+                      tipo_agrupamiento,
+                      descuentos) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                `
+let data = result_factura.data
+    const params = [
+                      data.paciente, 
+                      data.titular, 
+                      data.razon_social, 
+                      data.rif, 
+                      data.direccion_f, 
+                      data.factura, 
+                      data.fecha_atencion, 
+                      data.fecha_emision, 
+                      data.nota, 
+                      data.exento, 
+                      data.bi16, 
+                      data.iva16, 
+                      data.igtf, 
+                      data.total, 
+                      data.id_usuario, 
+                      data.id_admision,    
+                      data.id_cli, 
+                      data.base_igtf, 
+                      data.num_control, 
+                      data.contado, 
+                      data.fecha_vencimiento, 
+                      data.cuotas,
+                      data.formato_factura,
+                      data.tipo_agrupamiento,
+                      data.descuentos
+    ];
+
+
+  try{
+    const result = await retornar_query(query, params);
+   
+    res.json({ 
+      success: true,
+      resultados: result
+    });
+
+  } catch (error) {
+    console.log(error.message)
+    res.json({
+      success: false,
+      message: 'Error al procesar la solicitud DP01',
+      error: error.message
+    });
+  }
+  })
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT} `);
