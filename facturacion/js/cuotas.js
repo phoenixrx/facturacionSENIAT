@@ -1,4 +1,4 @@
-function crear_cuotas() {
+function crear_cuotas(ID_ADMISION) {
     
     var cuotas = Number(document.getElementById('cuotas').value);
     var montoTotal = Number(document.getElementById('monto_credito').value);
@@ -50,7 +50,7 @@ function crear_cuotas() {
     const intervalo = diferenciaTiempo / cuotasNum;
 
     // Ensure factura element exists
-    const facturaElement = document.getElementById('factura');
+    const facturaElement = document.getElementById('factura_modal');
     if (!facturaElement) {
         Swal.fire({
             title: "Cuotas",

@@ -418,19 +418,6 @@ async function json_principal(desglose_pago) {
       json_detalle.push(row_data);
     }
   });
-
-
-
-  let inputs = document.querySelectorAll('.container input[type="text"], .container textarea, .container input[type="date"]');
-  let json_factura = {};
-
-  inputs.forEach(input => {
-    json_factura[input.id] = input.value;
-  });
-  json_factura.condicion_pago = (document.getElementById('chk_contado').checked==true)?1:0;
-  json_factura.tasa_modal = document.getElementById('tasa_modal').value;
-  json_factura.id_formato = document.getElementById('sel_formato').value;
-  
     
     if (json_detalle.length == 0) {
         Swal.fire({
@@ -538,37 +525,22 @@ async function json_principal(desglose_pago) {
 
     let json_cuotas ={};
 
-    json_factura.paciente = document.getElementById('pacientes').value;
-    representante=(representante=='')?document.getElementById('pacientes').value:representante;
-    json_factura.titular = representante;
-    json_factura.razon_social = (razon_social=='')?representante:razon_social;
-    json_factura.rif = document.getElementById('rif').value;
-    json_factura.direccion_f = document.getElementById('dir_fiscal').value;
-    var numero_factura = factura_modal.value
-    if (numero_factura.length <8) {
-        numero_factura=numero_factura.slice(0, 8).padStart(8, '0');
-    }
-    json_factura.factura = numero_factura;
-    json_factura.fecha_atencion = document.getElementById('fecha_atencion').value;
-    json_factura.fecha_emision = document.getElementById('fecha_emision').value;
-    json_factura.nota = document.getElementById('nota').value;
-    json_factura.formato = document.getElementById('sel_formato').value;
+  let inputs = document.querySelectorAll('.container input[type="text"], .container textarea, .container input[type="date"]');
+    let json_factura = {};
+
+    inputs.forEach(input => {
+      json_factura[input.id] = input.value;
+    });
+    json_factura.condicion_pago = (document.getElementById('chk_contado').checked==true)?1:0;
     json_factura.tipo_agrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
-    var exento =document.getElementById('exento').value;
-    json_factura.exento = exento;
-    var bi16 =document.getElementById('base_imponible').value;
-    json_factura.bi16 = bi16;
-    var igtf= document.getElementById('igtf').value;
-    json_factura.igtf = igtf;
-    var iva16 =document.getElementById('iva').value;
-    json_factura.iva16 = iva16;
-    var total =document.getElementById('total_factura').value;
-    json_factura.total = total;
-    json_factura.descuento =document.getElementById('descuentos').value;
     json_factura.base_igtf =base_igtf_bs
-    json_factura.id_usuario = ID_USUARIO;
-    json_factura.id_admision = ID_ADMISION;
-    json_factura.id_cli = ID_CLI;
+    json_factura.id_usuario = id_usuario;
+    const ID_ADMISION = new Set();
+      detalles.forEach((element) => {
+        ID_ADMISION.add(element.id_admision);    
+      });
+    json_factura.id_admision = ID_ADMISION.values().next().value;
+    json_factura.id_cli = id_cli;
     json_factura.num_control = document.getElementById('num_control').value;
     if(document.getElementById('chk_contado').checked==true){
         json_factura.contado='1';
@@ -576,43 +548,21 @@ async function json_principal(desglose_pago) {
     }else{
         json_factura.contado='0';
         json_factura.cuotas=document.getElementById('cuotas').value;
-        json_factura.fecha_vencimiento=document.getElementById('fecha_vencimiento').value;
-        json_cuotas = crear_cuotas()
+        json_cuotas = crear_cuotas(ID_ADMISION.values().next().value)
     }
+    var numero_factura = document.getElementById('factura_modal').value
+    if (numero_factura.length <8) {
+        numero_factura=numero_factura.slice(0, 8).padStart(8, '0');
+    }
+    json_factura.num_factura =numero_factura
+    json_factura.tasa = document.getElementById('tasa_modal').value;
     console.log("Pagos", desglose_pago)
     console.log("Cuotas",json_cuotas)    
     console.log("Factura",json_factura)    
     console.log("Detalles", json_detalle); 
 
 
-    var fecha_hoy = moment(new Date(Date.now()));
-    var numero_factura = factura_modal.value
-    if (numero_factura.length <8) {
-        numero_factura=numero_factura.slice(0, 8).padStart(8, '0');
-    }
-    guardar_dato(
-        "../php/actualizar_dato.php",
-        "arg1=admisiones&arg2=solo_ppto=0, id_status_cierre=2,id_usuario_cierre=" +
-        ID_USUARIO +
-        ",fecha_cierre=now(),motivo_cierre='Factura " + numero_factura
-        + "', factura='" + numero_factura
-        + "'&arg3=WHERE id_admision='"
-        + ID_ADMISION
-        + "'", "factura"
-    );
-    guardar_dato(
-  "../admisiones/actualizar_venta_almacn.php",
-  "id_admision="+ID_ADMISION+"&id_reserva="+ALM_RES,
-  "factura",
-  "application/x-www-form-urlencoded"
-);
-  guardar_dato(
-        "../php/guardar_datos_multiples.php",
-        "tabla=control_pagos&campo_id=''&valor_id=''&json=" +
-        encodeURIComponent(JSON.stringify(desglose_pago)),
-        "factura",
-        "application/x-www-form-urlencoded"
-    );
+    
     myModal.hide();
     STATUS_FACTURA = 2;
     activar_modal('Factura creada correctamente', 'ok')

@@ -2,6 +2,8 @@
     //const HOST2 = "https://pruebas.siac.historiaclinica.org";
     const HOST = "http://localhost:3000";
     const HOST2 = "http://localhost:3001";
+
+    
     
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
