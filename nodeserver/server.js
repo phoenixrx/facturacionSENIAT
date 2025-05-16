@@ -602,8 +602,55 @@ WHERE
     console.log(result_factura.error)
     return res.status(422).json({error: JSON.parse(result_factura.error.message)})
   }
+
+  let data = result_factura.data;
+
+  let query_comprobacion = `SELECT id_factura 
+                            FROM facturas
+                            WHERE factura=?
+                                  AND id_cli=?
+                                  AND activo=1
+                            limit 1`
+  let params_compr = [data.factura, data.id_cli]                                 
+
+  try {
+    let json_compr = await retornar_query(query_comprobacion, params_compr);
+  
+    if(json_compr[0].id_factura){
+      console.log("factura")
+      return res.json({ 
+        success: false,
+        resultados: "Ya existe este factura"
+      });
+    }
+  } catch (error) {
     
-    let query = `INSERT INTO
+  }
+  
+try {
+  let query_comprobacion = `SELECT id_factura 
+                            FROM facturas
+                            WHERE num_control=?
+                                  AND id_cli=?
+                            limit 1`
+  let params_compr = [data.num_control, data.id_cli]                                 
+
+  let json_compr = await retornar_query(query_comprobacion, params_compr);
+  
+  if(json_compr[0].id_factura){
+    console.log("control")
+    return res.json({ 
+      success: false,
+      resultados: "Ya existe numero de control"
+    });
+  }
+} catch (error) {
+  
+}
+  
+  
+  
+  let query = `INSERT INTO
                     facturas
                       (paciente, 
                       titular, 
@@ -631,7 +678,7 @@ WHERE
                       tipo_agrupamiento,
                       descuentos) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 `
-let data = result_factura.data
+
     const params = [
                       data.paciente, 
                       data.titular, 
