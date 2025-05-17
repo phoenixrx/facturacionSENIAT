@@ -282,3 +282,30 @@ function obtenerPrimerValorNoVacio(array) {
     
     return "Vacio";
 }
+
+function generarStringPacientes(pacientes) {
+    cantidad_pacientes= opciones_formatos.opciones[0].cantidad_pacientes;
+    mostrar_cedula = (opciones_formatos.opciones[0].mostrar_cedulas==1)?true:false;
+    // Limitamos la cantidad de pacientes al tamaño del array si es necesario
+
+
+    const limite = Math.min(cantidad_pacientes, pacientes.length);
+
+    // Mapeamos los primeros 'n' pacientes según el formato deseado
+    const resultado = pacientes.slice(0, limite).map(paciente => {
+        let texto = paciente.paciente;
+        if (mostrar_cedula) {
+            const soloNumero = paciente.cedula.replace(/[^0-9]/g, '');
+            texto += ` C.I.${paciente.cedula}`;
+        }
+        return texto;
+    });
+
+    let pacientes_join = resultado.join('; ')
+
+    if(resultado.length<pacientes.length){
+        pacientes_join+="; ..."
+    }
+
+    return pacientes_join;
+}

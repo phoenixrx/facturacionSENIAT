@@ -21,8 +21,6 @@ async function tasa(){
         } else {
             document.getElementById('chk_tasa_actual').dataset.tasa = Number(tasas.data.tasas.USD).toFixed(2);
             document.getElementById('tasa_actual').textContent = Number(tasas.data.tasas.USD).toFixed(2);
-            
-            Swal.close()
         }
         
         } catch (error) {
@@ -55,7 +53,7 @@ async function opciones(){
         opciones_formatos = await op.json();
         
         if (opciones_formatos.opciones.error || isNaN(opciones_formatos.opciones.length)) { 
-            Swal.close();
+            
             sel_formatos.innerHTML = "";
             const option = document.createElement("option");
             option.value = "";
@@ -90,7 +88,6 @@ async function opciones(){
             document.getElementById("num_factura").value = num_factura_formateado;
             document.getElementById("factura_modal").value = num_factura_formateado;
             factura_modal
-            Swal.close()
         }
         
         } catch (error) {
@@ -122,7 +119,7 @@ async function consecutivos(){
             document.getElementById("num_control").readOnly = false;
             document.getElementById("num_factura").readOnly = false;            
         } else {
-            Swal.close()
+           Swal.close()
             return consecutivos;
         }
         
@@ -173,20 +170,20 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
             agrupado: agrupado,
         }),
         });
-        
+        Swal.close()
         if (!response.ok) {
         throw new Error("Error al obtener admisiones");
         }
 
         const data = await response.json();
         //console.log(data)
-        Swal.close();
+        
 
         mostrarResultados(data, tipos);
 
     } catch (error) {
         Swal.fire({
-        title: "Error",
+        title: "Error1",
         text: error,
         icon: "error",
         allowOutsideClick: () => false,
@@ -201,7 +198,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
 async function fetchDetalles(admisiones) {    
     if(admisiones.length == 0){
         Swal.fire({
-            title: "Error",
+            title: "Error2",
             text: "No hay admisiones seleccionadas",
             icon: "error",
             allowOutsideClick: () => false,
@@ -225,7 +222,7 @@ async function fetchDetalles(admisiones) {
                 admisiones: admisiones
             }),
         });
-
+Swal.close()
         if (!response.ok) {
         throw new Error("Error al obtener admisiones");
         }
@@ -236,10 +233,11 @@ async function fetchDetalles(admisiones) {
                 title: "La admision no ha sido encontrada",
                 allowOutsideClick: () => false,
             });
-            alert("La admision no ha sido encontrada")
-            return;
+            Swal.hideLoading();
+            //alert("La admision no ha sido encontrada")
+            return error;
         }
-        Swal.close();
+       
 
         detalles = data.resultados.map((detalle) => {
             return {
@@ -287,18 +285,21 @@ async function fetchDetalles(admisiones) {
         document.getElementById("rif").value = detalles[0].rif.trim() || detalles[0].cedula_titular.trim() ||detalles[0].cedula_paciente.trim();
         document.getElementById("razon_social").value = detalles[0].seguro_empresa || titular || detalles[0].nombre_paciente.trim();
         document.getElementById("fecha_atencion").value = new Date(detalles[0].fecha_admision).toISOString().split('T')[0];
-
-
-        const pacientes = detalles.map(detalle => detalle.nombre_paciente);
-        const uniquePacientes = [...new Set(pacientes)];
-
-        const primerosCinco = uniquePacientes.slice(0, 5).join(", ");
-        const resto = uniquePacientes.length > 5 ? "..." : "";
-        document.getElementById("pacientes").value = `${primerosCinco} ${resto}`;
         document.getElementById("pacientes").style.height = "33px";
+
+        if (arreglo_pacientes.length<1){
+            arreglo_pacientes=[{cedula: detalles[0].cedula_paciente, paciente: detalles[0].nombre_paciente}]            
+        }
+        
+        const pacientes = generarStringPacientes(arreglo_pacientes);
+        const uniquePacientes = [...arreglo_pacientes];
+
+        document.getElementById("pacientes").value = `${pacientes}`;
+     
         if(uniquePacientes.length >3){
             document.getElementById("pacientes").style.height = "auto";
         }
+        
         const tasas = detalles.map(detalle => detalle.tasa);
         const uniqueTasa = [...new Set(tasas)];
         if(uniqueTasa.length > 1){
@@ -344,13 +345,8 @@ async function fetchDetalles(admisiones) {
         }
 
     } catch (error) {
-        Swal.fire({
-        title: "Error",
-        text: error,
-        icon: "error",
-        allowOutsideClick: () => false,
-        });
-        Swal.hideLoading();
+        console.log(error)
+        
     }
 }
 
@@ -405,6 +401,7 @@ async function fetchFormaPago() {
 }
 
 async function fetchDescuentos(admisiones) {
+    
     const response = await fetch(
         `${HOST2}/api/promociones_admi/?admisiones=${admisiones}`,
         {
@@ -455,3 +452,26 @@ async function fetchDescuentos(admisiones) {
 
 }
 
+async function verif_admision(admision) {
+    var url = `${HOST}/api/factura_admision/?id_admision=${admision}`;
+    try {
+        let factura_admision = await fetch(url);
+        let datas = await factura_admision.json();
+         console.log(datas)
+        if(datas.success==false ){
+                 Swal.fire({
+                    title: "Facturacion",
+                    text: datas.message,
+                    icon: "error",
+                    confirmButtonColor: "#008b8b",
+                })
+                Swal.hideLoading();    
+                return;
+        }
+       
+        
+        } catch (error) {
+            console.log(error)
+        } 
+        fetchDetalles([admision]);
+}

@@ -6,11 +6,12 @@ let IGFT  = 0.03
   function add_desgl() {
     let moneda_desg = document.getElementById("moneda_desglose");
     let forma_pag = document.getElementById("forma_de_pago");
-    let lista = document.getElementById("tabla_desglose");
-    let listaN = lista.childElementCount;
+
     let valor_desglose = document.getElementById("desglose_valor").value;
     let nota = document.getElementById("desglose_nota").value;
-  
+    let lista = document.getElementById("tabla_desglose");
+    let listaN = lista.childElementCount;
+    
     if (valor_desglose == "" || valor_desglose == "0") {
       document.getElementById("desglose_valor").focus()
       Swal.fire({
@@ -276,6 +277,14 @@ function json_formas_pago(tabla, tipo) {
     json_pagos.id_forma_pago = element.children[2].children[0].innerText;
     json_pagos.id_usuario = id_usuario;
     json_pagos.id_cli = id_cli;
+    let base_igtf_bs = !!element.querySelector('.chk-igtf').dataset.base_igtf_bs;
+    if(base_igtf_bs==true){
+      var base = element.querySelector('.chk-igtf').dataset.base_igtf_bs;      
+      json_pagos.base_igtf=base
+    }else{
+            json_pagos.base_igtf=0
+    }
+
     elementos.push(json_pagos);
   });
   if (has_igtf && igtf_pay == false) {
@@ -290,7 +299,17 @@ function json_formas_pago(tabla, tipo) {
 let aceptar_modal = document.getElementById('aceptar_modal')
 
 aceptar_modal.addEventListener('click', function () {
-  
+  let lista = document.getElementById("tabla_desglose");
+    let listaN = lista.childElementCount;
+    if(listaN==1){
+      Swal.fire({
+            text: "No hay desgloses, añadalos antes de aceptar",
+            icon: "error",
+            allowOutsideClick: () => false,
+        });
+      return
+    }
+
     let restante = document.getElementById('resto_pago_bs')
     let tabla = document.querySelectorAll('.rowdesg.control')
    
@@ -565,46 +584,18 @@ async function json_principal(desglose_pago) {
     json_factura.descuentos = document.getElementById('descuentos').value;
 
     facturar(desglose_pago,json_cuotas,json_factura,json_detalle)
-    console.log("Pagos", desglose_pago)
-    console.log("Cuotas",json_cuotas)    
-    console.log("Factura",json_factura)    
-    console.log("Detalles", json_detalle); 
-
-
     
     myModal.hide();
 
-    STATUS_FACTURA = 2;
-    activar_modal('Factura creada correctamente', 'ok')
-    setTimeout(() => {
-        var url = "<?= $archivo_detalle ?>?id_admision=" + ID_ADMISION + "&fact_num=" + factura_modal.value;
-        var win = window.open(url, "_blank");
-
-    var url = (formatos.value=="")?"<?= $archivo_factura ?>":formatos.value;
-    var data ={ 'id_admision': ID_ADMISION, 'fact_num': factura_modal.value}
-    var form = document.createElement("form");
-    form.target = "_blank";
-    form.method = "POST";
-    form.action = url;
-    form.style.display = "none";
-
-    for (var key in data) {
-        var input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = data[key];
-        form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
-
-    }, 1000);
 }
  
 async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
+  Swal.fire({
+    title: "Facturando",
+    text: "Creando la factura",
+    icon: "info"
+  })
+  Swal.showLoading()
   const datosAEnviar = {
     desglose_pago: desglose_pago,
     json_cuotas: json_cuotas,
@@ -620,4 +611,69 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
         }
     );     
     let factura = await response.json();
+    if(factura.error){
+      console.log(factura)
+      Swal.update({
+        text: factura.error[0].message ,
+        icon: "error",
+        confirmButtonColor: "#008b8b",
+      })
+      Swal.hideLoading()
+      return
+    }
+    if(factura.success==false){
+      console.log(factura)
+      Swal.update({
+        text: factura.resultados ,
+        icon: "error",
+        confirmButtonColor: "#008b8b",
+      })
+      Swal.hideLoading()
+      return
+    }
+    
+    if(factura.success==true){
+      STATUS_FACTURA = 2
+      document.getElementById('agregar_admi').remove()
+      document.getElementById('nueva_factura').classList.remove('d-none')
+          let divFactFactura = document.getElementById('div_fact_factura');
+          if (divFactFactura) {
+            let newDiv = divFactFactura.cloneNode(true);
+            divFactFactura.parentNode.replaceChild(newDiv, divFactFactura);
+            if (newDiv.firstElementChild) {
+              newDiv.firstElementChild.classList.add('mascara-gris');
+            }
+            
+          }
+      Swal.update({
+        icon: "success",      
+      })
+      Swal.hideLoading()
+      
+    Swal.fire({
+      title: "Facturando",
+      text: "Creada correctamente" ,
+      icon: "success",
+        confirmButtonColor: "#008b8b",
+    }).then(() => {
+      generada=true;      
+      
+      Swal.fire({
+        title: "¿Qué desea hacer?",
+        text: "La factura fue creada correctamente.",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "Imprimir factura",
+        cancelButtonText: "Crear otra factura",
+        allowOutsideClick: false
+      }).then((result) => {
+        if (result.isConfirmed) {
+          imprimirFactura()
+        } else {
+          location.reload();
+        }
+      });
+    });
+      
+   }
 }

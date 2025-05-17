@@ -146,7 +146,18 @@ function detalles_fatura(data) {
         table.appendChild(tbody);
     const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
     const admisiones = selectedAdmisiones.map(admision => admision.value);
-    fetchDescuentos(admisiones);
+    // ?admision=18121
+    if(admisiones.length==0){
+        const urlParams = new URLSearchParams(window.location.search);
+        const admision = urlParams.get('admision');
+        if (admision && !isNaN(admision)) {
+            fetchDescuentos([admision]);
+        }
+    }else{
+        fetchDescuentos(admisiones);
+    }
+    
+    
         marcar_max_lines()
 }
 
@@ -268,7 +279,7 @@ async function agruparPorcentual(data) {
                 admisiones: admisiones
             }),
         });
-
+        Swal.close();
         if (!response.ok) {
         throw new Error("Error al obtener admisiones");
         }
@@ -279,6 +290,7 @@ async function agruparPorcentual(data) {
                 title: "La admision no ha sido encontrada",
                 allowOutsideClick: () => false,
             });
+            Swal.hideLoading()
             alert("La admision no ha sido encontrada")
             return;
         }
@@ -306,7 +318,6 @@ async function agruparPorcentual(data) {
     fetchDescuentos(admisionesid);
             marcar_max_lines()
 
-        Swal.close();
     } catch (error) {
         Swal.fire({
         title: "Error",

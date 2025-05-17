@@ -1,9 +1,10 @@
     //const HOST = "https://facturacion.siac.historiaclinica.org";
     //const HOST2 = "https://pruebas.siac.historiaclinica.org";
+    //const BASE_FORMATO = "https://siac.empresas.historiaclinica.org/"
+    let STATUS_FACTURA =1
     const HOST = "http://localhost:3000";
     const HOST2 = "http://localhost:3001";
-
-    
+    const BASE_FORMATO = "http://localhost/historiaclinica/empresas/"
     
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
@@ -13,7 +14,7 @@
       get_config_token()
     }
     let configs_token = [];
-    
+    let arreglo_pacientes = [];
     function get_config_token () {
         const token = localStorage.getItem("token");
 
@@ -40,10 +41,19 @@
 
     const id_cli = configs_token.id_cli || 29;
     const id_usuario = configs_token.id_usuario || 1;
+    const modif_otro =  buscarPermisoFacturar("modificar") || 1;
+    const modif_numero =  buscarPermisoFacturar("insertar") || 1;
     let detalles = [];
     let opciones_formatos = [];
     let generada = false;
+    function buscarPermisoFacturar(valor) {
+        if (!configs_token || !Array.isArray(configs_token.permisos)) {
+            return null;
+        }
+        const permisoFacturar = configs_token.permisos.find(permiso => permiso.modulo === "Facturar");
+        return permisoFacturar.valor || null; 
 
+    }
     var myModal = new bootstrap.Modal(document.getElementById('modal_pagos'), {keyboard: false});
 
 document.addEventListener("DOMContentLoaded", function(){
@@ -56,11 +66,12 @@ document.addEventListener("DOMContentLoaded", function(){
     });
     const urlParams = new URLSearchParams(window.location.search);
     const admision = urlParams.get('admision');
-    if (admision && !isNaN(admision)) {
-        fetchDetalles([admision]);
+    if (admision) {
+       verif_admision(admision);
+     
     }else{
         const myModal = document.getElementById('modal_admisiones')
-              const myInput = document.getElementById('inp_part');  
+        const myInput = document.getElementById('inp_part');  
         const modalInstance = new bootstrap.Modal(myModal);
 
         // Escuchar evento 'shown.bs.modal' para enfocar el input
@@ -73,10 +84,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
         // Mostrar el modal usando la instancia
         modalInstance.show();
-      
+      console.log(   id_cli , id_usuario,  modif_otro,  modif_numero )
     }
 
 });
+
+document.getElementById('nueva_factura').addEventListener("click", function () {
+    location.reload()
+})
 
 document.getElementById("chk_contado").addEventListener("change", function() {        
     if (this.checked) {
@@ -155,18 +170,31 @@ document.getElementById('aceptar_lista').addEventListener('click', function () {
     const selectedCedTitulars = selectedAdmisiones.map(admision => admision.getAttribute('data-cedtitular'));
     const selectedMontos = selectedAdmisiones.map(admision => admision.getAttribute('data-monto'));
     const selectedTasa = selectedAdmisiones.map(admision => admision.getAttribute('data-tasa'));
+
     document.querySelectorAll('.rowdesg').forEach(element => {
         element.remove();
     });
     calcular_desglose()
     document.querySelectorAll('.totalizables_modal').forEach(input => {
         input.value = "0.00";
-    });
+    })
     
+
+    const pacientesMap = [];
+    selectedAdmisiones.forEach((admision, idx) => {
+        const cedula = selectedCedulas[idx];
+        const paciente = selectedPacientes[idx];
+        pacientesMap.push({ cedula, paciente });
+    });
+    arreglo_pacientes = pacientesMap;
+    
+
     fetchDetalles(selectedIds);
 
     if(obtenerPrimerValorNoVacio(selectedTitulares)!='Vacio'){
-        document.getElementById('titular').value=obtenerPrimerValorNoVacio(selectedTitulares);
+        var titular = obtenerPrimerValorNoVacio(selectedTitulares);
+        var cedula_tit =obtenerPrimerValorNoVacio(selectedCedTitulars);
+        document.getElementById('titular').value=`${titular} C.I. ${cedula_tit}`;
     }else{
         document.getElementById('titular').value="";        
     }    
@@ -198,16 +226,38 @@ document.querySelectorAll('input[name="rad_tipo_agrupamiento"]').forEach((radio)
     });
 });
 
-document.getElementById("dir_fiscal").addEventListener("dblclick", function () {
-    this.readOnly = !this.readOnly;
-});
+//modificar datos
+if(modif_otro==1){
+    document.getElementById("dir_fiscal").addEventListener("dblclick", function () {
+        this.readOnly = !this.readOnly;
+    });
 
-document.getElementById("pacientes").addEventListener("dblclick", function () {
-    this.readOnly = !this.readOnly;
-});
-document.getElementById("titular").addEventListener("dblclick", function () {
-    this.readOnly = !this.readOnly;
-});
+    document.getElementById("rif").addEventListener("dblclick", function () {
+        this.readOnly = !this.readOnly;
+    });
+
+    document.getElementById("pacientes").addEventListener("dblclick", function () {
+        this.readOnly = !this.readOnly;
+    });
+    document.getElementById("titular").addEventListener("dblclick", function () {
+        this.readOnly = !this.readOnly;
+    });
+}
+
+if(modif_numero==1){
+    document.getElementById("num_control").addEventListener("dblclick", function () {
+        this.readOnly = !this.readOnly;
+    });
+
+    document.getElementById("num_factura").addEventListener("dblclick", function () {
+        this.readOnly = !this.readOnly;
+    });
+    document.getElementById("num_factura").addEventListener("change", function () {
+        document.getElementById('factura_modal').value = this.value
+    });
+
+
+}
 
 document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
     
@@ -266,19 +316,18 @@ document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
 document.getElementById('div_imprimir').addEventListener('click', imprimirFactura)
 
 async function pagar_factura (){
-    /*const table = document.getElementById("table_detalle");
-    const rowCount = table.getElementsByTagName("tr").length;
-    if(rowCount ===0){
+     const tableDetalle = document.querySelector('#table_detalle tbody');
+    if (!tableDetalle || tableDetalle.querySelectorAll('tr').length === 0) {
         Swal.fire({
             title: "Error",
-            text: "Seleccione al menos una admision",
+            text: "No hay detalles para facturar",
             icon: "error",
             allowOutsideClick: () => false,
         });
         return;
-    }*/
+    }
     
-        if(document.getElementById('dir_fiscal').value.trim()==""){
+     if(document.getElementById('dir_fiscal').value.trim()==""){
             const { value: direccion } = await Swal.fire({
                 title:"Facturación",
                 text: "Direccion Fiscal no puede estar vacio, ingrese dirección",
@@ -291,9 +340,14 @@ async function pagar_factura (){
                 showCancelButton: true,
                 confirmButtonText: "Aceptar",
                 inputValidator: (value) => {
-                if (!value) {
-                return "La dirección fiscal es necesaria!";
-                }}
+                    if (!value) {
+                        return "La dirección fiscal es necesaria!";
+                    }
+                    if (value.length < 6 ) {
+                        return "La dirección fiscal esta muy corta!";
+                    }
+                }
+                
             });
             if (direccion) {
                 document.getElementById('dir_fiscal').value=direccion          
@@ -302,21 +356,17 @@ async function pagar_factura (){
             };
         }
     
-        const STATUS_FACTURA =1
-    switch (STATUS_FACTURA) {
-        case '2' || 2:
-            activar_modal('Factura cerrada, no puede modificar los pagos', 'info');
-
-            return;
-        case 2:
-            activar_modal('Factura cerrada, no puede modificar los pagos', 'info');
-            return;
-        default:
-            break;
-    }
-    if (STATUS_FACTURA == 2) {
+    if(STATUS_FACTURA!=1){
+        Swal.fire({
+            title: "Factura",
+            text: "La factura ya esta cerrada",
+            icon: "info",
+            confirmButtonColor: "#008b8b",
+        })
         return
     }
+   
+
 
     if(document.getElementById('chk_tasa_admision').checked==true && document.getElementById('tasa_admi').textContent.trim()== "Tasas varias"){
         let tasa_prom = document.getElementById('chk_tasa_admision').dataset.tasa;
@@ -399,9 +449,37 @@ function imprimirFactura (){
         });
         return;
     }
-    let factura_path = document.getElementById("sel_formato").selectedOptions[0].dataset.path_formato;
-    let detalles_path = opciones_formatos.opciones[0].detalle_factura;
-    console.log("detalles: " + detalles_path, "factura: "+ factura_path );
+    
+    let admisiones = detalles.map(item => item.id_admision).join(',');
+      var data = { 'id_admision': admisiones, 'fact_num': document.getElementById('factura_modal').value };
+    let formatos = document.getElementById('sel_formato');
+          let selectedOption = formatos.options[formatos.selectedIndex];
+          let url = selectedOption.getAttribute('data-path_formato') ;
+          if (url.startsWith("../")) {
+            url = url.replace(/^(\.\.\/)+/, "");
+          }
+          let form = document.createElement("form");
+          form.target = "_blank";
+          form.method = "POST";
+          form.action = BASE_FORMATO + url;
+          form.style.display = "none";
+          for (let key in data) {
+            let input = document.createElement("input");
+            input.type = "hidden";
+            input.name = key;
+            input.value = data[key];
+            form.appendChild(input);
+          }
+          document.body.appendChild(form);
+          form.submit();
+          document.body.removeChild(form);
+
+
+          url = opciones_formatos.opciones[0].detalle_factura+ "?id_admision=" + admisiones + "&fact_num=" + document.getElementById('factura_modal').value;
+          if (url.startsWith("../")) {
+            url = url.replace(/^(\.\.\/)+/, "");
+          }
+          window.open(BASE_FORMATO + url, "_blank");
 }
 
 document.getElementById('moneda_desglose').addEventListener('change', fetchFormaPago)
@@ -432,5 +510,7 @@ document.querySelectorAll('.desgloses').forEach((element) => {
     });
 });
 document.getElementById('btn_regresar').addEventListener('click', function(){
-    window.location.reload();
+    window.close();
 })
+
+

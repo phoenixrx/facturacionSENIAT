@@ -355,6 +355,7 @@ app.post('/admisiones_admidet', async (req, res) => {
             empresas.rif AS empresa_rif,
             tipos_interno.descripcion AS interno,
             estudios.descripcion as estudio,
+            estudios.insumo as inventario,
             impuestos.valor as impuesto,
             concat(medicos.nombre, ' ',medicos.apellido) as medico,
             zonas.zona,
@@ -476,6 +477,44 @@ app.post('/admisiones_admidet', async (req, res) => {
         formatos: formatos
       });
   });
+    app.get('/api/factura_admision', async (req, res) => {
+    
+      const { id_admision } = req.query;
+      
+      if (!id_admision){
+        return res.status(400).json({
+            success:false,
+            message: 'Error FA02'
+        })
+      }
+      if (isNaN(id_admision)){
+        return res.status(400).json({
+            success:false,
+            message: `Admision mal formateada ${id_admision}`
+        })
+      }
+      let datos_factura = "";
+        let sql =`SELECT factura, activo, motivo_cierre, consec_recibo, fecha_cierre
+        FROM 
+            admisiones
+        WHERE 
+            id_admision=?`;
+  
+        const params = [id_admision]
+        try {
+            datos_factura = await retornar_query(sql, params);
+        } catch (error) {
+            return res.json({
+                success: false,
+                message: `Admision invalida ${id_admision}`,
+                error: error.message
+            });
+        }
+      res.json({ 
+        success: true,
+        results: datos_factura
+      });
+  });
 
   app.get('/api/consecutivos', async (req, res) => {
     
@@ -590,16 +629,22 @@ WHERE
   }
   })
 
-    app.post('/api/facturar', async (req, res)=>{
+  app.post('/api/facturar', async (req, res)=>{
 
     const { desglose_pago, json_cuotas, json_factura, json_detalle } = req.body;
     
-    // Validate that all admisiones are numeric
-
+    let admisiones = desglose_pago[0].id_externa
+    admisiones = admisiones.replace(/\s+/g, '');
+    if (typeof admisiones !== 'string' || !/^\d+(,\d+)*$/.test(admisiones)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El campo admisiones esta mal formateado'
+      });
+    }
+    
   const result_factura = await validateFactura(json_factura);
   
   if (result_factura.error ){
-    console.log(result_factura.error)
     return res.status(422).json({error: JSON.parse(result_factura.error.message)})
   }
 
@@ -617,10 +662,9 @@ WHERE
     let json_compr = await retornar_query(query_comprobacion, params_compr);
   
     if(json_compr[0].id_factura){
-      console.log("factura")
       return res.json({ 
         success: false,
-        resultados: "Ya existe este factura"
+        resultados: "Ya existe esta factura"
       });
     }
   } catch (error) {
@@ -638,19 +682,16 @@ try {
   let json_compr = await retornar_query(query_comprobacion, params_compr);
   
   if(json_compr[0].id_factura){
-    console.log("control")
     return res.json({ 
       success: false,
-      resultados: "Ya existe numero de control"
+      resultados: "Ya existe este numero de control"
     });
   }
 } catch (error) {
   
 }
-  
-  
-  
-  let query = `INSERT INTO
+
+    let query = `INSERT INTO
                     facturas
                       (paciente, 
                       titular, 
@@ -707,25 +748,162 @@ try {
                       data.descuentos
     ];
 
-
+let result=""
   try{
-    const result = await retornar_query(query, params);
+    result = await retornar_query(query, params);
    
-    res.json({ 
-      success: true,
-      resultados: result
-    });
-
   } catch (error) {
     console.log(error.message)
-    res.json({
+    return res.json({
       success: false,
-      message: 'Error al procesar la solicitud DP01',
+      message: 'Error al procesar la solicitud FA01',
       error: error.message
     });
   }
+  const id_factura = result.insertId;
+
+let result_detalles =[];
+  try {
+
+    query =`
+    INSERT INTO
+      factura_detalle 
+      (id_factura, 
+      descripcion, 
+      precio, 
+      precio_usd_tasa, 
+      impuesto, 
+      clase, 
+      cantidad) VALUES (${id_factura}, ?,?,?,?,'none',?)
+    ;`
+    
+
+  for (const detalle of json_detalle) {
+    
+    const impuestoValue = detalle.impuesto === "E" ? "Exento" : detalle.impuesto;
+    const detalleParams = [
+      detalle.descripcion,
+      detalle.precio,
+      detalle.precio_usd_tasa,
+      impuestoValue,
+      detalle.cantidad
+    ];
+    result_detalles.push(await retornar_query(query, detalleParams))    
+  }
+  } catch (error) {
+    eliminar_factura(id_factura)
+    return res.json({
+      success: false,
+      message: 'Error al procesar la solicitud FA03',
+      error: error.message
+    });
+  }
+
+
+
+  const factura= data.factura;
+  let admisiones_res ='';
+
+  try {
+    query =`
+    UPDATE 
+      admisiones
+    SET
+      factura=?, id_status_cierre=2, id_usuario_cierre=${data.id_usuario}, fecha_cierre=NOW(), motivo_cierre='Factura', consec_recibo=NULL, solo_ppto=0
+    WHERE
+      id_admision in (${admisiones});
+    `
+  admisiones_res = await retornar_query(query, [factura])
+  } catch (error) {
+    eliminar_factura(id_factura)
+     return res.json({
+      success: false,
+      message: 'Error al procesar la solicitud FA02',
+      error: error.message
+    });
+  }
+  let id_admision = data.id_admision;
+  let result_pagos =[];
+  try {
+
+    query =`
+    INSERT INTO
+      control_pagos 
+      (id_externa, 
+      tipo, 
+      id_forma_pago, 
+      monto, 
+      monto_bs, 
+      id_moneda, 
+      nota, 
+      activo, 
+      id_cli, 
+      id_usuario, 
+      base_igtf) VALUES (${id_admision}, "Factura ${factura}",?,?,0,?,?,1,?,?,?)
+    ;`
+    
+
+  for (const pago of desglose_pago) {
+    const pagoParams = [
+      pago.id_forma_pago,
+      pago.monto,
+      pago.id_moneda,
+      pago.nota,
+      pago.id_cli,
+      pago.id_usuario,
+      pago.base_igtf_bs || 0
+    ];
+    result_pagos.push(await retornar_query(query, pagoParams))    
+  }
+  } catch (error) {
+    eliminar_factura(id_factura)
+    eliminar_factura_admision(factura)
+     return res.json({
+      success: false,
+      message: 'Error al procesar la solicitud FA02',
+      error: error.message
+    });
+  }
+
+    res.json({ 
+      success: true
+    });
+
   })
 
+  async function eliminar_factura_admision(factura) {
+     try { 
+      let query =`
+      UPDATE 
+        admisiones
+      SET
+        factura='', id_status_cierre=1, id_usuario_cierre=NULL, fecha_cierre=NULL, motivo_cierre=NULL, consec_recibo=NULL, solo_ppto=0
+      WHERE
+        factura =?;
+    `
+    let factura_elim = await retornar_query(query, [factura])
+    console.log(factura_elim)
+    return factura_elim;
+  } catch (error) {
+    return error;
+  }
+  }
+  async function eliminar_factura(id_factura) {
+  try { 
+    let query =`
+    DELETE FROM
+      facturas
+    WHERE
+      id_factura =?;
+    `
+    let factura_elim = await retornar_query(query, [id_factura])
+    console.log(factura_elim)
+    return factura_elim;
+  } catch (error) {
+    console.log(factura_elim)
+    return error;
+  }
+  }
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT} `);
 });

@@ -9,9 +9,9 @@ async function cargar_tipo(tipo, select = document.getElementById("empre-seg"), 
     try {
         let parroquias = await fetch(url);
         const data = await parroquias.json();
-        
+        Swal.close();
         if (data.error || isNaN(data.length)) { 
-            Swal.close();
+           
             select.innerHTML = "";
             select.classList.add('d-none');
             
@@ -28,10 +28,25 @@ async function cargar_tipo(tipo, select = document.getElementById("empre-seg"), 
                 option.textContent = decodeHtml(parroquia[Object.keys(parroquia)[1]]);                                
                 select.appendChild(option);
             });
-            Swal.close()
+           
         }
         
         } catch (error) {
             console.log(error)
         } 
 }
+
+document.querySelectorAll('[name="tipo_admision"]').forEach(element => {
+    element.addEventListener('change', () => {
+        document.querySelectorAll('.limpiar_tipo input').forEach(input => {
+            input.value = '';
+        });
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.textContent = '';
+        });
+         document.getElementById('pacientes').value = '';
+         document.getElementById('nota').value = '';
+        document.getElementById('table_detalle').innerHTML =''
+        document.getElementById('table_detalle_descuento').innerHTML =''
+    });
+});

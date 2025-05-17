@@ -21,6 +21,10 @@
     h2{
         color:#204b5e;
     }
+    .mascara-gris {
+        background: rgba(128, 128, 128, 0.6);
+        pointer-events: none;
+    }
     #tasa_pers{
         width: 7ch;    
         border-radius: 4px; 
@@ -127,7 +131,7 @@
     <div class="container">        
         <h2>Facturación SIAC</h2>
         <div class="row">
-            <div class="col-8 rounded-1 border border-1 border-info-subtle">
+            <div class="col-8 rounded-1 border border-1 border-info-subtle limpiar_tipo">
                 <div class="row mb-1 mt-1">
                     <div class="col-2"><span class="text-nowrap">Razon Social</span></div>
                     <div class="col-10"><input type="text" class="encabezados" id="razon_social" readonly/> </div>
@@ -176,12 +180,12 @@
             <div class="mt-1 mb-1">   
                 <div class="btn-group w-100 " role="group" aria-label="Tipo de factura" data-bs-toggle="tooltip"
                     data-bs-placement="top" title="Formato de agrupacion">
+                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_detallado" value="detallada" checked>
+                    <label class="btn btn-outline-primary" for="btn_detalle_detallado">Detallada</label>
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_agrupado"  value="agrupada">
                     <label class="btn btn-outline-primary" for="btn_detalle_agrupado">Por grupo</label>
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_tipo"  value="tipo">
                     <label class="btn btn-outline-primary" for="btn_detalle_tipo">Por tipo</label>
-                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_detallado" value="detallada" checked>
-                    <label class="btn btn-outline-primary" for="btn_detalle_detallado">Detallada</label>
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_porcentual" value="porcentual">
                     <label class="btn btn-outline-primary" for="btn_detalle_porcentual">Porcentual</label>
                 </div>
@@ -254,7 +258,7 @@
                     
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-6 limpiar_tipo">
                 <div class="row">
                     <div class="col-4 text-end"><span>Exento: </span></div>
                     <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="exento"readonly/></div>
@@ -285,6 +289,13 @@
                         <lord-icon src="../images/wired-lineal-48-plus-to-square-rotation.json"
                             trigger="hover" style="width:70px;height:70px" class="svg disk_save  botonera" data-bs-toggle="tooltip"
                             data-bs-placement="top" title="Agregar admisiones" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        </lord-icon>
+            
+                    </div>
+                    <div id="nueva_factura" class="d-none">
+                        <lord-icon src="../images/wired-lineal-48-plus-to-square-rotation.json"
+                            trigger="hover" style="width:70px;height:70px" class="svg disk_save  botonera" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Nueva Factura">
                         </lord-icon>
             
                     </div>
