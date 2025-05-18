@@ -859,7 +859,7 @@ let result_detalles =[];
   }
   } catch (error) {
     eliminar_factura(id_factura)
-    eliminar_factura_admision(factura)
+    eliminar_factura_admision(factura, data.id_cli)
      return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA02',
@@ -934,7 +934,7 @@ let result_detalles =[];
 
 })
 
-  async function eliminar_factura_admision(factura) {
+  async function eliminar_factura_admision(factura, id_cli) {
      try { 
       let query =`
       UPDATE 
@@ -942,10 +942,10 @@ let result_detalles =[];
       SET
         factura='', id_status_cierre=1, id_usuario_cierre=NULL, fecha_cierre=NULL, motivo_cierre=NULL, consec_recibo=NULL, solo_ppto=0
       WHERE
-        factura =?;
+        factura =? AND id_cli=?;
     `
-    let factura_elim = await retornar_query(query, [factura])
-    console.log(factura_elim)
+    let factura_elim = await retornar_query(query, [factura, id_cli])
+    
     return factura_elim;
   } catch (error) {
     return error;
@@ -967,6 +967,48 @@ let result_detalles =[];
     return error;
   }
   }
+
+  app.post('/api/anular_factura', async (req, res)=>{
+
+    const { factura, usuario, id_cli } = req.query;
+    
+    if (isNaN(factura)) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Error AnF01' 
+        });
+    }
+    
+    let anular_admision_fact = await eliminar_factura_admision(factura, id_cli);
+
+    console.log(anular_admision_fact)
+
+    let query = `UPDATE
+      facturas
+    SET
+      activo='0', nota = CONCAT(nota, ' ANULADA por ${usuario}'), fecha_anulada=NOW()
+    WHERE
+      factura =? AND activo=1 AND id_cli=?;`;
+
+    const params = [ factura, id_cli];
+
+  try{
+    const result = await retornar_query(query, params);
+
+    return res.json({ 
+      success: true,
+      resultados: result
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Error al procesar la solicitud AnF02',
+      error: error.message
+    });
+  }
+  })
+  
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT} `);
 });
