@@ -889,7 +889,7 @@ let result_detalles =[];
                       almacen_movimientos 
               WHERE id_almacen =? and id_admidet in (?)`;
 
-          let mover_inventario =  await retornar_query(query, [data.id_ususario, almacen_reserva, items_inventario] );
+          let mover_inventario =  await retornar_query(query, [data.id_usuario, almacen_reserva, items_inventario] );
           
         } catch (error) {
           console.log(error)
@@ -970,19 +970,15 @@ let result_detalles =[];
 
   app.post('/api/anular_factura', async (req, res)=>{
 
-    const { factura, usuario, id_cli } = req.query;
+    const { factura, usuario, id_cli, id_usuario, id_admision } = req.query;
     
     if (isNaN(factura)) {
-        return res.status(400).json({ 
+        return res.json({ 
             success: false, 
             message: 'Error AnF01' 
         });
     }
     
-    let anular_admision_fact = await eliminar_factura_admision(factura, id_cli);
-
-    console.log(anular_admision_fact)
-
     let query = `UPDATE
       facturas
     SET
@@ -992,21 +988,98 @@ let result_detalles =[];
 
     const params = [ factura, id_cli];
 
-  try{
-    const result = await retornar_query(query, params);
+    let result ="";
+    try{
+      result = await retornar_query(query, params);
+    } catch (error) {
+      res.json({
+        success: false,
+        message: 'Error al procesar la solicitud AnF02',
+        error: error.message
+      });
+    }
+
+    if (result.affectedRows === 0) {
+        return res.json({ 
+            success: false, 
+            message: 'La factura no existe o ya ha sido anulada' 
+        });
+    }
+
+    eliminar_factura_admision(factura, id_cli);
+
+    query = `
+    UPDATE 
+      control_pagos
+    SET
+      nota='PAGO ANULADO por ${usuario}', activo='0', tipo='Factura Anulado', id_usuario_elimina=? 
+    WHERE 
+      id_externa=? AND tipo=? AND id_cli=?`
+
+    let params_control = [ id_usuario, id_admision, `Factura ${factura}`, id_cli]
+
+    result = await retornar_query(query, params_control);
+
+    query = `
+    SELECT 
+      id_admision
+    FROM
+      admisiones
+    WHERE 
+      factura=?`;
+
+    let params_admidet =[factura];
+    let id_admisiones = "";
+    try {
+
+      let admisiones = await retornar_query(query, params_admidet);
+
+      id_admisiones = admisiones.map(admision => admision.id_admision).join(',');
+    
+    } catch (error) {
+      console.log(admisiones)
+    }
+    
+    query = `
+    SELECT 
+      id_admidet
+    FROM
+      admisiones_det
+    WHERE 
+      id_admision in (?)`;
+
+    params_admidet =[id_admisiones];
+
+    let admidets = await retornar_query(query, params_admidet);
+
+    let id_admidet = admidets.map(admidet => admidet.id_admidet).join(',');
+
+    query = `
+    UPDATE 
+      cuotas_pagar
+    SET  
+      activo='0'
+    WHERE id_admision=?`;
+
+    let params_cuotas =[id_admision];
+
+    result = await retornar_query(query, params_cuotas);
+ 
+    query =`
+    UPDATE
+      almacen_movimientos
+    SET
+      cantidad=0,  descripcion='Venta anulada'
+    WHERE id_admidet=? and descripcion='Venta'`;    
+    
+    let params_almacen = [id_admision];
+
+    result = await retornar_query(query, params_almacen);
 
     return res.json({ 
       success: true,
       resultados: result
     });
-
-  } catch (error) {
-    res.json({
-      success: false,
-      message: 'Error al procesar la solicitud AnF02',
-      error: error.message
-    });
-  }
   })
   
 app.listen(PORT, () => {

@@ -275,8 +275,8 @@ function json_formas_pago(tabla, tipo) {
     }
     json_pagos.id_moneda = id_moneda;
     json_pagos.id_forma_pago = element.children[2].children[0].innerText;
-    json_pagos.id_usuario = id_usuario;
-    json_pagos.id_cli = id_cli;
+    json_pagos.id_usuario = configs_token.id_usuario;
+    json_pagos.id_cli = configs_token.id_cli;
     let base_igtf_bs = !!element.querySelector('.chk-igtf').dataset.base_igtf_bs;
     if(base_igtf_bs==true){
       var base = element.querySelector('.chk-igtf').dataset.base_igtf_bs;      
@@ -546,7 +546,7 @@ async function json_principal(desglose_pago) {
     json_factura.formato_factura =document.getElementById('sel_formato').value;
     json_factura.tipo_agrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
     json_factura.base_igtf =base_igtf_bs
-    json_factura.id_usuario = id_usuario;
+    json_factura.id_usuario = configs_token.id_usuario;
     const ID_ADMISION = new Set();
       detalles.forEach((element) => {
         ID_ADMISION.add(element.id_admision);    
@@ -561,7 +561,7 @@ async function json_principal(desglose_pago) {
     json_factura.fecha_emision  = document.getElementById('fecha_emision').value;
     json_factura.fecha_vencimiento  = document.getElementById('fecha_vencimiento').value;
     json_factura.id_admision = ID_ADMISION.values().next().value;
-    json_factura.id_cli = id_cli;
+    json_factura.id_cli = configs_token.id_cli;
     json_factura.num_control = document.getElementById('num_control').value;
     if(document.getElementById('chk_contado').checked==true){
         json_factura.contado='1';
@@ -678,8 +678,17 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
       }).then((result) => {
         if (result.isConfirmed) {
           imprimirFactura()
-        } else {
-          location.reload();
+        } 
+        if (result.isDismissed) {
+          switch (result.dismiss) {
+             case 'cancel':
+              location.reload();
+              break;
+            default:
+              break;
+          }
+
+          
         }
       });
     });

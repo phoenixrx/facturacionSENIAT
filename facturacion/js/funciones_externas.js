@@ -47,7 +47,7 @@ async function opciones(){
         allowOutsideClick: () => false,
     }); 
     Swal.showLoading()
-    var url = `${HOST}/api/opciones_factura/?id_cli=${id_cli}`;
+    var url = `${HOST}/api/opciones_factura/?id_cli=${configs_token.id_cli}`;
     try {
         let op = await fetch(url);
         opciones_formatos = await op.json();
@@ -102,7 +102,7 @@ async function consecutivos(){
         allowOutsideClick: () => false,
     }); 
     Swal.showLoading()
-    var url = `${HOST}/api/consecutivos/?id_cli=${id_cli}`;
+    var url = `${HOST}/api/consecutivos/?id_cli=${configs_token.id_cli}`;
     try {
         let consecutivos = await fetch(url);
         consecutivos = await consecutivos.json();
@@ -159,7 +159,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            id_cli: id_cli,
+            id_cli: configs_token.id_cli,
             status_cierre: "abiertas",
             fecha_inicio: fechaInicio,
             fecha_fin: fechaFin,
@@ -360,7 +360,7 @@ async function fetchMoneda() {
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filtros: [id_cli], id_query: 14 }),
+            body: JSON.stringify({ filtros: [configs_token.id_cli], id_query: 14 }),
         }
     );     
     const monedas = await response.json();
@@ -384,7 +384,7 @@ async function fetchFormaPago() {
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filtros: [id_cli, id_moneda], id_query: 15 }),
+            body: JSON.stringify({ filtros: [configs_token.id_cli, id_moneda], id_query: 15 }),
         }
     );     
     let formas_pago = await response.json();

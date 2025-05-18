@@ -5,7 +5,7 @@ async function cargar_tipo(tipo, select = document.getElementById("empre-seg"), 
         allowOutsideClick: () => false,
     }); 
     Swal.showLoading()
-    var url = `${HOST}/api/tipo_admision/?tipo=${tipo}&clinic_id=${id_cli}&subemp=${subemp}`;
+    var url = `${HOST}/api/tipo_admision/?tipo=${tipo}&clinic_id=${configs_token.id_cli}&subemp=${subemp}`;
     try {
         let parroquias = await fetch(url);
         const data = await parroquias.json();

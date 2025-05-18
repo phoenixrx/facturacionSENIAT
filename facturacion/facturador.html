@@ -100,10 +100,11 @@
         grid-column-gap: 0px;
         grid-row-gap: 0px;
     }
+ 
     input[readonly] {
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        color: #333;
+        background-color: #f0f0f0!important;
+        border: 1px solid #ccc!important;
+        color: #333!important;
     }
     textarea[readonly] {
         background-color: #f0f0f0;
@@ -144,27 +145,27 @@
                     <div class="col-2"><span>RIF</span></div>
                     <div class="col-4"><input id="rif" type="text" class="encabezados" readonly/> </div>
                     <div class="col-2 text-end"><span class="">Titular</span></div>
-                    <div class="col-4"><input id="titular" type="text" class="encabezados" readonly/> </div>
+                    <div class="col-4"><input id="titular" type="text" class="encabezados encabezado_modif" readonly/> </div>
                 </div>
                 <div class="row ">
                     <div class="col-2"><span>Dirección Fiscal</span></div>
-                    <div class="col-10"><textarea id="dir_fiscal" readonly></textarea> </div>
+                    <div class="col-10"><textarea id="dir_fiscal" class=encabezado_modif readonly></textarea> </div>
                 </div>
                 
                 <div class="row">
                     <div class="col-2"><span>Paciente(s)</span></div>
-                    <div class="col-10"><textarea type="text" id="pacientes"  readonly></textarea></div>
+                    <div class="col-10"><textarea type="text" id="pacientes" class="encabezado_modif" readonly></textarea></div>
                 </div>
                 
             </div>
             <div class="col-4 rounded-1 border border-1 border-info-subtle">
                 <div class="row mb-1 mt-1">
                     <div class="col-5 text-end"><span>Control</span></div>
-                    <div class="col-7"><input class="text-end fw-bold encabezados" type="text" id="num_control" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text" id="num_control" readonly/> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end"><span>Factura</span></div>
-                    <div class="col-7"><input class="text-end fw-bold encabezados" type="text" id="num_factura" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text" id="num_factura" readonly/> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end text-nowrap"><span>F. Atención</span></div>
@@ -423,7 +424,7 @@
                 <div class="modal-body">
                     <div class='col-12 d-flex mb-1' style="align-items: center;">
                         <div class="form-floating fac_num col-auto me-auto d-flex datos">
-                            <input type="text" id="factura_modal" class='form-control' maxlength="8" value="" placeholder="00000000">
+                            <input type="text" id="factura_modal" class='form-control numeros_p' maxlength="8" value="" placeholder="00000000" readonly>
                             <label for="factura_modal" class="" style="text-align: end;">No. Factura</label>
                             <script>
                                 $("#num_factura").on("input", function () {
