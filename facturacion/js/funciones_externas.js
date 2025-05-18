@@ -186,6 +186,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
         title: "Error1",
         text: error,
         icon: "error",
+               confirmButtonColor: "#008b8b",
         allowOutsideClick: () => false,
         });
         Swal.hideLoading();
@@ -201,6 +202,7 @@ async function fetchDetalles(admisiones) {
             title: "Error2",
             text: "No hay admisiones seleccionadas",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         return;
@@ -262,7 +264,8 @@ Swal.close()
                 tasa: detalle.tasa,
                 tasa_admision: detalle.tasa,
                 estudio: detalle.estudio,
-                impuesto: detalle.impuesto
+                impuesto: detalle.impuesto,
+                inventario: detalle.inventario
             };
         });
 

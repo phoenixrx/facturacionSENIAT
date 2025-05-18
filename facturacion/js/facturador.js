@@ -282,6 +282,7 @@ document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
                             title: "Tasa invalida",
                             text: "La tasa personalizada no es valida",
                             icon: "info",
+                                   confirmButtonColor: "#008b8b",
                             allowOutsideClick: () => false,
                         });
                         document.getElementById('tasa_pers').focus();
@@ -296,6 +297,7 @@ document.querySelectorAll('input[name="tasa_chk"]').forEach((switchElement) => {
                             title: "Tasa invalida",
                             text: `La tasa personalizada no es valida (${this.dataset.tasa})`,
                             icon: "info",
+                                   confirmButtonColor: "#008b8b",
                             allowOutsideClick: () => false,
                         });
                         document.getElementById('tasa_pers').focus();
@@ -322,6 +324,7 @@ async function pagar_factura (){
             title: "Error",
             text: "No hay detalles para facturar",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         return;
@@ -400,6 +403,7 @@ async function pagar_factura (){
             title: "Error",
             text: "Debe seleccionar una tasa válida",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         return;
@@ -445,6 +449,7 @@ function imprimirFactura (){
             title: "Error",
             text: "No se ha generado la factura",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         return;
@@ -490,6 +495,7 @@ function anular_factura (){
             title: "Error",
             text: "No se ha generado la factura",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         return;

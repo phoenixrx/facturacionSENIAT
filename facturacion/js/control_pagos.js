@@ -401,6 +401,7 @@ if(total_cant_igtf_chk>=1 && total_cant_igtf_row==0){
             title: "El monto a pagar supera la factura, desea registrar el vuelto?",
             showDenyButton: true,
             showCancelButton: false,
+                   confirmButtonColor: "#008b8b",
             confirmButtonText: "Dar vuelto",
             denyButtonText: `Continuar`
         }).then((result) => {
@@ -590,6 +591,12 @@ async function json_principal(desglose_pago) {
 }
  
 async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
+  
+    const items_inventario = detalles
+        .filter(item => item.inventario == 1)         // Filtramos por inventario > 0
+        .map(item => item.id_detalle)                // Obtenemos solo id_detalle
+        .join(', ');  
+
   Swal.fire({
     title: "Facturando",
     text: "Creando la factura",
@@ -600,7 +607,8 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
     desglose_pago: desglose_pago,
     json_cuotas: json_cuotas,
     json_factura: json_factura,
-    json_detalle: json_detalle
+    json_detalle: json_detalle,
+    items_inventario:items_inventario
 };
    const response = await fetch(
         `${HOST}/api/facturar`,
@@ -663,9 +671,10 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
         text: "La factura fue creada correctamente.",
         icon: "success",
         showCancelButton: true,
+        confirmButtonColor: "#008b8b",
         confirmButtonText: "Imprimir factura",
         cancelButtonText: "Crear otra factura",
-        allowOutsideClick: false
+        allowOutsideClick: true
       }).then((result) => {
         if (result.isConfirmed) {
           imprimirFactura()

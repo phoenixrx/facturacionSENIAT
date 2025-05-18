@@ -29,6 +29,7 @@ function cambiar_tasa_actual(nuevaTasa) {
             title: "Error",
             text: "No hay detalles para cambiar la tasa",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         document.getElementById("chk_tasa_actual").checked = false;
@@ -105,6 +106,7 @@ function cambiar_tasa_admision(nuevaTasa) {
             title: "Error",
             text: "No hay detalles para cambiar la tasa",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         document.getElementById("chk_tasa_actual").checked = false;
@@ -163,6 +165,7 @@ function cambiar_tasa_personalizada(nuevaTasa) {
             title: "Error",
             text: "No hay detalles para cambiar la tasa",
             icon: "error",
+                   confirmButtonColor: "#008b8b",
             allowOutsideClick: () => false,
         });
         document.getElementById("chk_tasa_actual").checked = false;

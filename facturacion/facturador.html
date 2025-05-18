@@ -21,6 +21,10 @@
     h2{
         color:#204b5e;
     }
+    .form-check-input:checked {
+            background-color: #008b8b;
+            border-color: #008b8b;
+        }
     .mascara-gris {
         background: rgba(128, 128, 128, 0.6);
         pointer-events: none;
@@ -181,13 +185,13 @@
                 <div class="btn-group w-100 " role="group" aria-label="Tipo de factura" data-bs-toggle="tooltip"
                     data-bs-placement="top" title="Formato de agrupacion">
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_detallado" value="detallada" checked>
-                    <label class="btn btn-outline-primary" for="btn_detalle_detallado">Detallada</label>
+                    <label class="btn btn-outline-success" for="btn_detalle_detallado">Detallada</label>
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_agrupado"  value="agrupada">
-                    <label class="btn btn-outline-primary" for="btn_detalle_agrupado">Por grupo</label>
+                    <label class="btn btn-outline-success" for="btn_detalle_agrupado">Por grupo</label>
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_tipo"  value="tipo">
-                    <label class="btn btn-outline-primary" for="btn_detalle_tipo">Por tipo</label>
+                    <label class="btn btn-outline-success" for="btn_detalle_tipo">Por tipo</label>
                     <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_porcentual" value="porcentual">
-                    <label class="btn btn-outline-primary" for="btn_detalle_porcentual">Porcentual</label>
+                    <label class="btn btn-outline-success" for="btn_detalle_porcentual">Porcentual</label>
                 </div>
             </div>
             <table class="table table-striped" id="table_detalle"></table>
@@ -390,7 +394,7 @@
                         </div>
                         <div class="col text-end">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cerrar_lista">Cerrar</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="aceptar_lista">Aceptar</button>
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="aceptar_lista">Aceptar</button>
                         </div>
                     </div>
                     
@@ -542,7 +546,7 @@
                     </div>
 
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="aceptar_modal">Aceptar</button>
+                    <button type="button" class="btn btn-success" id="aceptar_modal">Aceptar</button>
                 </div>
             </div>
         </div>

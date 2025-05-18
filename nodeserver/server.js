@@ -630,8 +630,9 @@ WHERE
   })
 
   app.post('/api/facturar', async (req, res)=>{
+              
 
-    const { desglose_pago, json_cuotas, json_factura, json_detalle } = req.body;
+    const { desglose_pago, json_cuotas, json_factura, json_detalle, items_inventario } = req.body;
     
     let admisiones = desglose_pago[0].id_externa
     admisiones = admisiones.replace(/\s+/g, '');
@@ -671,25 +672,25 @@ WHERE
     
   }
   
-try {
-  let query_comprobacion = `SELECT id_factura 
-                            FROM facturas
-                            WHERE num_control=?
-                                  AND id_cli=?
-                            limit 1`
-  let params_compr = [data.num_control, data.id_cli]                                 
+  try {
+    let query_comprobacion = `SELECT id_factura 
+                              FROM facturas
+                              WHERE num_control=?
+                                    AND id_cli=?
+                              limit 1`
+    let params_compr = [data.num_control, data.id_cli]                                 
 
-  let json_compr = await retornar_query(query_comprobacion, params_compr);
-  
-  if(json_compr[0].id_factura){
-    return res.json({ 
-      success: false,
-      resultados: "Ya existe este numero de control"
-    });
+    let json_compr = await retornar_query(query_comprobacion, params_compr);
+    
+    if(json_compr[0].id_factura){
+      return res.json({ 
+        success: false,
+        resultados: "Ya existe este numero de control"
+      });
+    }
+  } catch (error) {
+    
   }
-} catch (error) {
-  
-}
 
     let query = `INSERT INTO
                     facturas
@@ -790,6 +791,7 @@ let result_detalles =[];
     ];
     result_detalles.push(await retornar_query(query, detalleParams))    
   }
+
   } catch (error) {
     eliminar_factura(id_factura)
     return res.json({
@@ -865,11 +867,72 @@ let result_detalles =[];
     });
   }
 
-    res.json({ 
-      success: true
-    });
+  //trabajar los inventarios
+    const query_almacenes =`SELECT 
+                          consultorios.id_consultorio
+                          FROM consultorios
+                          WHERE consultorios.descripcion = 'RESERVA'
+                              and consultorios.id_cli=?`
+    
+      if(items_inventario.trim()!=""){
+        try {
+          let almacen_reserva ='';     
+          let almacen_reserva_query = await retornar_query(query_almacenes, data.id_cli);
+          almacen_reserva=almacen_reserva_query[0].id_consultorio;
+          
+          query = `INSERT INTO 
+                      almacen_movimientos 
+                      (id_almacen,id_insumo,id_entrega,id_responsable,cantidad,descripcion,id_admidet)
+              SELECT 
+                      id_almacen,id_insumo,id_entrega,?,cantidad*-1,'Venta',id_admidet 
+              FROM 
+                      almacen_movimientos 
+              WHERE id_almacen =? and id_admidet in (?)`;
 
-  })
+          let mover_inventario =  await retornar_query(query, [data.id_ususario, almacen_reserva, items_inventario] );
+          
+        } catch (error) {
+          console.log(error)
+        }
+      }                
+  
+//manejo de las cuotas
+
+  if(data.contado==0){
+      let result_cuotas = [];
+    query =`
+      INSERT INTO
+        cuotas_pagar 
+        (id_admision, 
+        numero_cuota, 
+        id_moneda, 
+        monto_pago, 
+        estado, 
+        factura, 
+        fecha_vencimiento, id_cli) VALUES (?,?,?,?,?,?,?,${data.id_cli})
+      ;`
+      
+
+    for (const cuotas of json_cuotas) {
+      const pagoParams = [
+      cuotas.id_admision, 
+      cuotas.numero_cuota, 
+      cuotas.id_moneda, 
+      cuotas.monto_pago, 
+      cuotas.estado, 
+      cuotas.factura, 
+      cuotas.fecha_vencimiento
+      ];
+      
+      result_cuotas.push(await retornar_query(query, pagoParams))    
+    }
+  }
+
+  res.json({ 
+    success: true
+  });
+
+})
 
   async function eliminar_factura_admision(factura) {
      try { 

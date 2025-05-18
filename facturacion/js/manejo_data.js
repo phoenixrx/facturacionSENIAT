@@ -163,7 +163,6 @@ function detalles_fatura(data) {
 
 function agruparPorTipo(data, formato ="tipo") {
     const resultado = {};
-
     data.forEach(item => {
         
         const tipo = (formato=="tipo") ? item.tipo: item.grupo;
@@ -323,6 +322,7 @@ async function agruparPorcentual(data) {
         title: "Error",
         text: error,
         icon: "error",
+               confirmButtonColor: "#008b8b",
         allowOutsideClick: () => false,
         });
         Swal.hideLoading();
