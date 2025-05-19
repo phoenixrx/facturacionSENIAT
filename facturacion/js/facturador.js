@@ -44,7 +44,7 @@
                 window.location.href = 'https://siac.empresas.historiaclinica.org/login.php'
                 return;
               }
-              console.log(buscarPermisoFacturar("abrir"))
+              
               if(buscarPermisoFacturar("abrir")!="1"){
                 const botonera = document.querySelector('.botonera');
                 if (botonera) {
@@ -122,7 +122,7 @@ function primera_carga(){
 
         // Mostrar el modal usando la instancia
         modalInstance.show();
-      console.log(   configs_token.id_cli , configs_token.id_usuario,  modif_otro,  modif_numero )
+      
     }
 
 };
