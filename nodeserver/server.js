@@ -1019,8 +1019,6 @@ let result_detalles =[];
         });
     }
 
-    eliminar_factura_admision(factura, id_cli);
-
     query = `
     UPDATE 
       control_pagos
@@ -1050,7 +1048,7 @@ let result_detalles =[];
       id_admisiones = admisiones.map(admision => admision.id_admision).join(',');
     
     } catch (error) {
-      console.log(admisiones)
+      
     }
     
     query = `
@@ -1088,6 +1086,7 @@ let result_detalles =[];
     let params_almacen = [id_admision];
 
     result = await retornar_query(query, params_almacen);
+    eliminar_factura_admision(factura, id_cli);
 
     return res.json({ 
       success: true,
