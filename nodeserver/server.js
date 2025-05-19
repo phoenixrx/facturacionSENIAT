@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const tokenBlacklist = new Set();
 const jwt = require('jsonwebtoken');
 const { validateFactura } = require('./schemas/facturas');
 const retornar_query = async (query, ids) => {
@@ -36,7 +37,7 @@ app.use(express.urlencoded({extended:false}));
 function authenticateToken(req, res, next) {
   const publicRoutes = [
     '/login',
-    '/images/*', // Allow access to all files in the images directory
+    '/images/', // Cambiado a directorio base
     '/login/',
     '/login/index.html',
     '/',
@@ -44,21 +45,33 @@ function authenticateToken(req, res, next) {
   ];
 
   // Permitir acceso a rutas públicas sin token
-  if (publicRoutes.some(route => req.path === route || req.path.startsWith(route.replace('*', '')))) {
-    return next();
-  }
+  const isPublic = publicRoutes.some(route => {
+    if (route.endsWith('/')) route = route.slice(0, -1); // remove trailing slash for consistency
 
-  if (tokenBlacklist.has(token)) {
-    return res.status(401).json({ error: 'Token invalidado',redirectTo: '/login' });
+    if (route === req.path) return true;
+
+    // Para rutas tipo /images/ (wildcard implícito)
+    if (route.endsWith('/') && req.path.startsWith(route)) return true;
+
+    return false;
+  });
+
+  if (isPublic) {
+    return next();
   }
 
   const authHeader = req.headers['authorization'];
   if (!authHeader) {
     return res.status(401).json({ error: 'Token no proporcionado', redirectTo: '/login' });
   }
+
   const token = authHeader.split(' ')[1]?.trim();
   if (!token) {
     return res.status(401).json({ error: 'Formato de token inválido', redirectTo: '/login' });
+  }
+
+  if (tokenBlacklist.has(token)) {
+    return res.status(401).json({ error: 'Token invalidado', redirectTo: '/login' });
   }
 
   try {
@@ -132,7 +145,7 @@ app.get('/api/tipo_admision', async (req, res) => {
     }
 });
 
-app.post('/admisiones_admidet', async (req, res) => {
+app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
     try {
       const { id_cli, fecha_inicio, fecha_fin, tipos_consulta = [], status_cierre=null , activos = [], page = 1, perPage = 50, agrupado='s' } = req.body;
       const offset = (page - 1) * perPage;
@@ -326,7 +339,7 @@ app.post('/admisiones_admidet', async (req, res) => {
     }
   });
 
-  app.post('/detalles_admision', async (req, res) => {
+  app.post('/detalles_admision', authenticateToken, async (req, res) => {
     try {
         const {admisiones} = req.body;
         if (!admisiones || admisiones.length === 0) {
@@ -629,7 +642,7 @@ WHERE
   }
   })
 
-  app.post('/api/facturar', async (req, res)=>{
+  app.post('/api/facturar', authenticateToken, async (req, res)=>{
               
 
     const { desglose_pago, json_cuotas, json_factura, json_detalle, items_inventario } = req.body;
@@ -968,7 +981,7 @@ let result_detalles =[];
   }
   }
 
-  app.post('/api/anular_factura', async (req, res)=>{
+  app.post('/api/anular_factura', authenticateToken, async (req, res)=>{
 
     const { factura, usuario, id_cli, id_usuario, id_admision } = req.query;
     

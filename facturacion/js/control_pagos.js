@@ -614,10 +614,24 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
         `${HOST}/api/facturar`,
         {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
             body: JSON.stringify(datosAEnviar),
+           
         }
-    );     
+    );    
+    if (response.status===401) {
+            Swal.fire({
+                title: "Error",
+                text: "El token ha expirado o no es válido, vuelva a iniciar sessión",
+                icon: "error",
+                confirmButtonColor: "#008b8b",
+                allowOutsideClick: false,
+            });
+            return;
+        }
     let factura = await response.json();
     if(factura.error){
       console.log(factura)

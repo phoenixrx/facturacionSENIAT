@@ -157,7 +157,8 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-        },
+            Authorization: `Bearer ${token}`
+        }, 
         body: JSON.stringify({
             id_cli: configs_token.id_cli,
             status_cierre: "abiertas",
@@ -171,6 +172,17 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
         }),
         });
         Swal.close()
+         
+        if (response.status===401) {
+            Swal.fire({
+                title: "Error",
+                text: "El token ha expirado o no es válido, vuelva a iniciar sessión",
+                icon: "error",
+                confirmButtonColor: "#008b8b",
+                allowOutsideClick: false,
+            });
+            return;
+        }
         if (!response.ok) {
         throw new Error("Error al obtener admisiones");
         }
@@ -186,7 +198,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
         title: "Error1",
         text: error,
         icon: "error",
-               confirmButtonColor: "#008b8b",
+        confirmButtonColor: "#008b8b",
         allowOutsideClick: () => false,
         });
         Swal.hideLoading();
@@ -219,17 +231,31 @@ async function fetchDetalles(admisiones) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({
                 admisiones: admisiones
             }),
         });
-Swal.close()
+        Swal.close()
+        if (response.status===401) {
+            Swal.fire({
+                title: "Error",
+                text: "El token ha expirado o no es válido, vuelva a iniciar sessión",
+                icon: "error",
+                confirmButtonColor: "#008b8b",
+                allowOutsideClick: false,
+            });
+            return;
+        }
         if (!response.ok) {
         throw new Error("Error al obtener admisiones");
         }
 
         const data = await response.json();
+
+        
+
         if (data.success == false){
             Swal.fire({
                 title: "La admision no ha sido encontrada",
@@ -418,6 +444,7 @@ async function fetchDescuentos(admisiones) {
         document.querySelector('.descuento_div').classList.add('d-none')
         return
     }
+    
     let detalles=formas_pago.resultados;
 
     const filtrados = detalles.filter(item => item.activo === 1);
