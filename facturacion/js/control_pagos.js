@@ -531,6 +531,19 @@ async function json_principal(desglose_pago) {
       }
     }
    
+    let formatos = document.getElementById('sel_formato');
+    if(formatos.value ==""){
+      Swal.fire({
+          title: "Error",
+          text: "Seleccione un formato de impresión",
+          icon: "error",
+          confirmButtonColor: "#008b8b",
+          allowOutsideClick: false,
+      });
+      formatos.focus();
+      return;
+    }
+
     var igtf_chk = document.querySelectorAll('.chk-igtf')
     var base_igtf_bs =0
     igtf_chk.forEach(element =>{
@@ -591,7 +604,7 @@ async function json_principal(desglose_pago) {
 }
  
 async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
-  
+    
     const items_inventario = detalles
         .filter(item => item.inventario == 1)         // Filtramos por inventario > 0
         .map(item => item.id_detalle)                // Obtenemos solo id_detalle
