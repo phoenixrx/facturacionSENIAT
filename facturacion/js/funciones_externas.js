@@ -184,11 +184,11 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
             return;
         }
         if (!response.ok) {
-        throw new Error("Error al obtener admisiones");
+            throw new Error("Error al obtener admisiones");
         }
 
         const data = await response.json();
-        //console.log(data)
+        console.log(data)
         
 
         mostrarResultados(data, tipos);

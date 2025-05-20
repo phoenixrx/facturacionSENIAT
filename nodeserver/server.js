@@ -278,10 +278,10 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
         if(agrupado=='n'){
           sql=sql+wheres+ " ORDER BY admisiones.id_admision DESC LIMIT ? OFFSET ?"
         }else{
-          sql=sql_agrupado+ wheres + " GROUP BY     admisiones.id_admision  ORDER BY admisiones.id_admision DESC  LIMIT ? OFFSET ?"
+          sql=sql_agrupado+ wheres + " GROUP BY admisiones.id_admision  ORDER BY admisiones.id_admision DESC  LIMIT ? OFFSET ?"
         }
-        
-        const result = await retornar_query(sql, params);
+
+        const result = await retornar_query(sql, params);        
         if(status_cierre){
           if(status_cierre=='cerrado'){
             status_cierre_simbol='AND adm.id_status_cierre != 1 '
@@ -330,7 +330,7 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
         });
        
     } catch (error) {
-      console.error('Error en endpoint /admisiones:', error);
+      
       res.json({
         success: false,
         message: 'Error al procesar la solicitud',
@@ -1093,7 +1093,144 @@ let result_detalles =[];
       resultados: result
     });
   })
-  
+
+app.get('/api/examinar-facturas', async (req, res) => {
+  const { id_cli, razon_social, rif, factura, pagina = 1, limite = 5 } = req.query;
+
+  if (!id_cli) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error EF01'
+    });
+  }
+
+  if (isNaN(id_cli)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error EF03'
+    });
+  }
+
+  // Validar que los valores de paginación sean números válidos
+  const pageNum = parseInt(pagina);
+  const limitNum = parseInt(limite);
+  if (isNaN(pageNum) || isNaN(limitNum) || pageNum < 1 || limitNum < 1) {
+    return res.status(400).json({
+      success: false,
+      message: 'Parámetros de paginación inválidos'
+    });
+  }
+
+  let query = `
+    SELECT 
+      id_factura, factura, fecha_emision, fecha_atencion, rif, razon_social, total
+    FROM 
+      facturas
+    WHERE 
+      activo = 1 AND id_cli = ?
+  `;
+
+  const params = [id_cli];
+
+  if (factura) {
+    query += ' AND factura = ?';
+    params.push(factura);
+  }
+  if (rif) {
+    query += ' AND rif LIKE ?';
+    params.push(rif);
+  }
+  if (razon_social) {
+    query += ' AND razon_social LIKE ?';
+    params.push(razon_social);
+  }
+
+  const countQuery = `
+    SELECT COUNT(*) AS total 
+    FROM facturas 
+    WHERE activo = 1 AND id_cli = ?
+    ${factura ? 'AND factura = ?' : ''}
+    ${rif ? 'AND rif LIKE ?' : ''}
+    ${razon_social ? 'AND razon_social LIKE ?' : ''}
+  `;
+
+  try {
+    // Obtener total de resultados
+    const [{ total }] = await retornar_query(countQuery, params);
+
+    // Agregar paginación a la consulta original
+    const offset = (pageNum - 1) * limitNum;
+    query += ' LIMIT ? OFFSET ?';
+    params.push(limitNum, offset);
+
+    const facturas = await retornar_query(query, params);
+
+    res.json({
+      success: true,
+      result: facturas,
+      pagination: {
+        total,
+        pagina: pageNum,
+        limite: limitNum,
+        totalPages: Math.ceil(total / limitNum)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error CON01',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/devolver-factura', async (req, res) => {
+  const { id_factura } = req.query;
+
+  if (!id_factura) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error DF01'
+    });
+  }
+
+  if (isNaN(id_factura)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error DF03'
+    });
+  }
+
+  let query = `
+    SELECT 
+      f.*,
+      fd.*
+    FROM 
+      facturas f
+    INNER JOIN
+      factura_detalle fd ON f.id_factura = fd.id_factura
+    WHERE 
+      f.id_factura = ?`;
+
+  const params = [id_factura];
+
+  try {
+    const facturas = await retornar_query(query, params);
+
+    res.json({
+      success: true,
+      result: facturas
+    });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      success: false,
+      message: 'Error DF02',
+      error: error.message
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT} `);
 });
