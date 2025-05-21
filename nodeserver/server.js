@@ -1094,7 +1094,7 @@ let result_detalles =[];
     });
   })
 
-app.get('/api/examinar-facturas', async (req, res) => {
+app.post('/api/examinar-facturas', authenticateToken, async (req, res) => {
   const { id_cli, razon_social, rif, factura, pagina = 1, limite = 5 } = req.query;
 
   if (!id_cli) {
@@ -1184,7 +1184,7 @@ app.get('/api/examinar-facturas', async (req, res) => {
   }
 });
 
-app.get('/api/devolver-factura', async (req, res) => {
+app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
   const { id_factura } = req.query;
 
   if (!id_factura) {

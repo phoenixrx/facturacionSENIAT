@@ -1,6 +1,6 @@
 let debounceTimer;
 
-function buscarFacturas() {
+async function buscarFacturas() {
     
     const factura = document.getElementById('factura_buscar').value.trim();
     const razon_social = document.getElementById('razon_buscar').value.trim() + "%";
@@ -34,16 +34,21 @@ function buscarFacturas() {
         });
       Swal.showLoading();
     // Hacer la petición fetch
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            mostrarResultadosBusqueda(data);
-            Swal.close()
-        })
-        .catch(error => {
-          Swal.close()
-            console.error('Error al obtener facturas:', error);
+   try{
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }        
         });
+        const data = await response.json();
+        Swal.close();
+      mostrarResultadosBusqueda(data);
+    }
+    catch(error) {
+      console.error('Error al obtener facturas:', error);
+    };
 }
 
 
@@ -211,7 +216,7 @@ function generarPaginacionBusqueda(pagination) {
 }
 
 // Función para recargar una página específica
-function cargarPagina(numeroPagina) {
+async function cargarPagina(numeroPagina) {
   
   const factura = document.getElementById('factura_buscar').value.trim();
   const razon_social = document.getElementById('razon_buscar').value.trim() +"%";
@@ -221,15 +226,27 @@ function cargarPagina(numeroPagina) {
   if (factura) url += `&factura=${encodeURIComponent(factura)}`;
   if (razon_social) url += `&razon_social=${encodeURIComponent(razon_social)}`;
   if (rif) url += `&rif=${encodeURIComponent(rif)}`;
-
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
+    try{
+      Swal.fire({
+          
+          title: 'Buscando...',
+          text: 'Espere mientras buscamos.',
+        });
+      Swal.showLoading();
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }        
+        });
+        const data = await response.json();
+      Swal.close();
       mostrarResultadosBusqueda(data);
-    })
-    .catch(error => {
+    }
+    catch(error) {
       console.error('Error al obtener facturas:', error);
-    });
+    };
 }
 
 document.getElementById('buscar_modal').addEventListener('click', async () => {
@@ -255,7 +272,13 @@ document.getElementById('buscar_modal').addEventListener('click', async () => {
       Swal.showLoading();
   try {
     // Llamar al endpoint con el id_factura seleccionado
-    const response = await fetch(`/api/devolver-factura?id_factura=${encodeURIComponent(id_factura)}`);
+    const response = await fetch(`/api/devolver-factura?id_factura=${encodeURIComponent(id_factura)}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }        
+        });
     Swal.close();
     if (!response.ok) {
       throw new Error('Error en la solicitud');
