@@ -24,16 +24,16 @@ const LoginScreen = ({ navigation }) => {
         ip_internet,
         ip_local
       });
-      console.log(response.data)
+      console.log(response)
 
-      if (response.data.success) {
+      if (response.data.token) {
         // Aquí puedes guardar el estado de sesión como tú quieras
         Alert.alert('Login exitoso');
-        await AsyncStorage.setItem('usuario', JSON.stringify({
+        await AsyncStorage.setItem('session', JSON.stringify({
             usuario,
             token: response.data.token || null, }));
         console.log(response.data)
-        // navigation.navigate('Home'); // si tienes otra pantalla
+        navigation.replace('Home'); // si tienes otra pantalla
       } else {
         Alert.alert('Error', 'Credenciales inválidas');
       }
