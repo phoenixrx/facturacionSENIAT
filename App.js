@@ -10,6 +10,7 @@ import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import SplashScreen from './screens/SplashScreen';
 import CustomDrawer from './components/CustomDrawer';
+import AppointmentsScreen from './screens/AppointmentsScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -21,6 +22,8 @@ function DrawerRoutes() {
       screenOptions={{ headerShown: false }}
     >
       <Drawer.Screen name="Inicio" component={HomeScreen} />
+      <Drawer.Screen name="Citas" component={AppointmentsScreen} />
+
     </Drawer.Navigator>
   );
 }

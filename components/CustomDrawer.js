@@ -1,6 +1,5 @@
 // components/CustomDrawer.js
 import React, { useEffect, useState } from 'react';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
   Text,
@@ -8,10 +7,10 @@ import {
   Image,
   Pressable,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import {
   DrawerContentScrollView,
-  DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -19,7 +18,7 @@ import { getLocalIp, getPublicIp } from '../utils/network';
 import * as ImagePicker from 'expo-image-picker';
 import { useSession } from '../context/SessionContext';
 
-const CustomDrawer = (props) => {
+const CustomDrawer = ({ navigation }) => {
   const { session, logout, fotoUri, setFotoUri } = useSession();
   const [ipLocal, setIpLocal] = useState('');
   const [ipPublica, setIpPublica] = useState('');
@@ -72,11 +71,9 @@ const CustomDrawer = (props) => {
       );
 
       const json = await res.json();
-      console.log(res)
       if (res.ok) {
         Alert.alert('Éxito', 'Foto actualizada con éxito');
         setFotoUri(image.uri);
-        // Actualizar en AsyncStorage también si lo deseas
       } else {
         Alert.alert('Error', json?.message || 'No se pudo subir la foto');
       }
@@ -87,49 +84,62 @@ const CustomDrawer = (props) => {
   };
 
   return (
-    
-        <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-            <Image
-            source={fotoUri ? { uri: fotoUri } : require('../assets/profile-default.png')}
-            style={styles.avatar}
-            />
-            <Pressable onPress={cambiarFotoPerfil}>
-            <Text style={{ color: '#aef', marginTop: 8, fontSize: 14 }}>Cambiar foto</Text>
-            </Pressable>
-            <Text style={styles.usuario}>Hola, {session?.usuario}</Text>
-            <Text style={styles.ipText}>🌐 {ipPublica || 'Cargando...'}</Text>
-            <Text style={styles.ipText}>🖧 {ipLocal || 'Cargando...'}</Text>
-        </View>
+    <DrawerContentScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Image
+          source={fotoUri ? { uri: fotoUri } : require('../assets/profile-default.png')}
+          style={styles.avatar}
+        />
+        <Pressable onPress={cambiarFotoPerfil}>
+          <Text style={{ color: '#aef', marginTop: 8, fontSize: 14 }}>Cambiar foto</Text>
+        </Pressable>
+        <Text style={styles.usuario}>Hola, {session?.usuario}</Text>
+        <Text style={styles.ipText}>🌐 {ipPublica || 'Cargando...'}</Text>
+        <Text style={styles.ipText}>🖧 {ipLocal || 'Cargando...'}</Text>
+      </View>
 
-        <View style={styles.body}>
-            <DrawerItemList {...props} />
-            <DrawerItem
-            label="Perfil"
-            labelStyle={styles.itemLabel}
-            onPress={() => alert('Ir a Perfil')}
-            icon={({ color, size }) => (
-                <Ionicons name="person-circle-outline" size={size} color={color} />
-            )}
-            />
-            <DrawerItem
-            label="Configuración"
-            labelStyle={styles.itemLabel}
-            onPress={() => alert('Ir a Configuración')}
-            icon={({ color, size }) => (
-                <Ionicons name="settings-outline" size={size} color={color} />
-            )}
-            />
-        </View>
+      <View style={styles.body}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('Inicio')}
+        >
+          <Ionicons name="home-outline" size={22} color="#333" />
+          <Text style={styles.menuText}>Inicio</Text>
+        </TouchableOpacity>
 
-        <View style={styles.footer}>
-            <Pressable style={styles.logoutButton} onPress={logout}>
-            <MaterialIcons name="logout" size={20} color="#fff" />
-            <Text style={styles.logoutText}>Cerrar sesión</Text>
-            </Pressable>
-        </View>
-        </DrawerContentScrollView>
-    
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('Citas')}
+        >
+          <Ionicons name="calendar-outline" size={22} color="#333" />
+          <Text style={styles.menuText}>Citas</Text>
+        </TouchableOpacity>
+
+        <DrawerItem
+          label="Perfil"
+          labelStyle={styles.itemLabel}
+          onPress={() => alert('Ir a Perfil')}
+          icon={({ color, size }) => (
+            <Ionicons name="person-circle-outline" size={size} color={color} />
+          )}
+        />
+        <DrawerItem
+          label="Configuración"
+          labelStyle={styles.itemLabel}
+          onPress={() => alert('Ir a Configuración')}
+          icon={({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          )}
+        />
+      </View>
+
+      <View style={styles.footer}>
+        <Pressable style={styles.logoutButton} onPress={logout}>
+          <MaterialIcons name="logout" size={20} color="#fff" />
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </Pressable>
+      </View>
+    </DrawerContentScrollView>
   );
 };
 
@@ -161,6 +171,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 10,
+    paddingHorizontal: 20,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
+  menuText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#374151',
   },
   itemLabel: {
     fontSize: 15,

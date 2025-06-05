@@ -5,12 +5,13 @@ import {
   StyleSheet,
   Image,
   Pressable,
-  
+  TouchableOpacity
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocalIp, getPublicIp } from '../utils/network';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
   const [usuario, setUsuario] = useState('');
@@ -54,6 +55,15 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.title}>Bienvenido, {usuario}</Text>
         <Text style={styles.text}>IP Local: {ipLocal}</Text>
         <Text style={styles.text}>IP Pública: {ipPublica}</Text>
+        <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.appointmentsButton}
+            onPress={() => navigation.navigate('Citas')}
+            >
+            <Ionicons name="calendar-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+            <Text style={styles.appointmentsText}>Ver Citas</Text>
+        </TouchableOpacity>
+
 
         <Pressable style={styles.logoutButton} onPress={cerrarSesion}>
           <Text style={styles.logoutText}>Cerrar sesión</Text>
@@ -111,7 +121,21 @@ const styles = StyleSheet.create({
   logoutText: {
     color: '#fff',
     fontWeight: 'bold'
-  }
+  },
+  appointmentsButton: {
+    backgroundColor: '#2563eb',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+    },
+appointmentsText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    },
+
 });
 
 export default HomeScreen;
