@@ -1,30 +1,34 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from "react-native"
+import { View, Text, StyleSheet, FlatList, TouchableOpacity,  Image, Pressable } from "react-native"
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 
 const AppointmentCard = ({ appointment }) => (
-  <View style={styles.appointmentCard}>
-    <View style={styles.timeContainer}>
-      <Text style={styles.appointmentTime}>{appointment.time}</Text>
-      <Text style={styles.appointmentDuration}>{appointment.duration}</Text>
+  
+    <View style={styles.appointmentCard}>
+        <View style={styles.timeContainer}>
+        <Text style={styles.appointmentTime}>{appointment.time}</Text>
+        <Text style={styles.appointmentDuration}>{appointment.duration}</Text>
+        </View>
+        <View style={styles.appointmentDetails}>
+        <Text style={styles.patientName}>{appointment.patientName}</Text>
+        <Text style={styles.appointmentType}>{appointment.type}</Text>
+        <View style={styles.appointmentMeta}>
+            <Ionicons name="location-outline" size={14} color="#6b7280" />
+            <Text style={styles.appointmentLocation}>{appointment.location}</Text>
+        </View>
+        </View>
+        <View style={styles.appointmentActions}>
+        <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(appointment.status) }]} />
+        <TouchableOpacity style={styles.actionButton}>
+            <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
+        </TouchableOpacity>
+        </View>
     </View>
-    <View style={styles.appointmentDetails}>
-      <Text style={styles.patientName}>{appointment.patientName}</Text>
-      <Text style={styles.appointmentType}>{appointment.type}</Text>
-      <View style={styles.appointmentMeta}>
-        <Ionicons name="location-outline" size={14} color="#6b7280" />
-        <Text style={styles.appointmentLocation}>{appointment.location}</Text>
-      </View>
-    </View>
-    <View style={styles.appointmentActions}>
-      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(appointment.status) }]} />
-      <TouchableOpacity style={styles.actionButton}>
-        <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
-      </TouchableOpacity>
-    </View>
-  </View>
+   
 )
 
 const getStatusColor = (status) => {
@@ -48,6 +52,7 @@ const TabButton = ({ title, isActive, onPress }) => (
 
 export default function AppointmentsScreen() {
   const [activeTab, setActiveTab] = useState("today")
+  const navigation = useNavigation()
 
   const appointments = {
     today: [
@@ -119,14 +124,20 @@ export default function AppointmentsScreen() {
   ]
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
+      {/* Nuevo HEADER con logo y botón drawer */}
       <View style={styles.header}>
+        <Image source={require("../assets/logograma.png")} style={styles.logo} />
+        <Pressable onPress={() => navigation.openDrawer()}>
+          <Ionicons name="menu" size={28} color="#fff" />
+        </Pressable>
+      </View>
+      <View style={styles.titulos}>
         <Text style={styles.title}>Appointments</Text>
         <TouchableOpacity style={styles.addButton}>
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
-
       {/* Stats Cards */}
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
@@ -179,35 +190,25 @@ export default function AppointmentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  header: {
+  
+  customHeader: {
+    backgroundColor: "#204b5e",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingTop: 50,
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingBottom: 16,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#111827",
-  },
-  addButton: {
-    backgroundColor: "#2563eb",
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+ 
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     paddingHorizontal: 20,
     marginBottom: 20,
+    marginTop: 16,
   },
   statCard: {
     backgroundColor: "white",
@@ -345,5 +346,59 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#9ca3af",
     textAlign: "center",
+  },
+  contentHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  paddingHorizontal: 20,
+  marginTop: 20,
+  marginBottom: 10,
+},
+headerTitle: {
+  fontSize: 22,
+  fontWeight: "700",
+  color: "#1f2937",
+},
+addButton: {
+  backgroundColor: "#2563eb",
+  borderRadius: 8,
+  padding: 8,
+},
+titulos: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#111827",
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
+  header: {
+    backgroundColor: '#204b5e',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 2,
+    borderBottomColor: 'rgb(21, 170, 191)',
+    elevation: 4,
+    shadowColor: 'rgb(21, 170, 191)',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4
+  },
+  logo: {
+    width: 80,
+    height: 40,
+    resizeMode: 'contain'
   },
 })
