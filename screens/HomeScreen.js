@@ -5,8 +5,9 @@ import {
   StyleSheet,
   Image,
   Pressable,
-  SafeAreaView
+  
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocalIp, getPublicIp } from '../utils/network';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,10 +38,11 @@ const HomeScreen = ({ navigation }) => {
     await AsyncStorage.removeItem('session');
     navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
   };
-
+    const { top } = useSafeAreaInsets();
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
+    
+    <SafeAreaView style={{ flex: 1 }} >
+      <View style={[styles.header]}>
         <Image source={require('../assets/logograma.png')} style={styles.logo} />
         <Pressable onPress={() => navigation.openDrawer()}>
             <Ionicons name="menu" size={28} color="#fff" />
