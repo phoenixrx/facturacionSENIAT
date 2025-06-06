@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -38,21 +38,23 @@ const getStatusColor = (status) => {
   }
 };
 
-const AppointmentCard = ({ appointment }) => {
+const AppointmentCard = ({ appointment, fetchAppointments }) => {
   const [actionVisible, setActionVisible] = useState(false);
   const actionRef = useRef();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [actionPosition, setActionPosition] = useState(null);
 
   const handlePress = () => {
-    const handle = findNodeHandle(actionRef.current);
-    if (handle) {
-      UIManager.measure(handle, (x, y, width, height, pageX, pageY) => {
-        setSelectedAppointment(appointment);
-        setActionPosition({ x: pageX, y: pageY + height });
-        setActionVisible(true);
-      });
-    }
+    setTimeout(() => {
+      const handle = findNodeHandle(actionRef.current);
+      if (handle) {
+        UIManager.measure(handle, (x, y, width, height, pageX, pageY) => {
+          setSelectedAppointment(appointment);
+          setActionPosition({ x: pageX, y: pageY + height });
+          setActionVisible(true);
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -73,31 +75,27 @@ const AppointmentCard = ({ appointment }) => {
       </View>
 
       <View style={styles.appointmentActions}>
-        <View
-          style={[styles.statusIndicator, { backgroundColor: getStatusColor(appointment.status) }]}
-        />
-
-        <View style={{ position: 'relative' }} ref={actionRef}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={handlePress}
-          >
+        <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(appointment.status) }]} />
+        <View ref={actionRef}>
+          <TouchableOpacity style={styles.actionButton} onPress={handlePress}>
             <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
           </TouchableOpacity>
-
-          {actionVisible && (
-            <AppointmentActions
-              appointment={selectedAppointment}
-              visible={actionVisible}
-              onClose={() => setActionVisible(false)}
-              position={actionPosition}
-            />
-          )}
         </View>
+
+        {actionVisible && (
+          <AppointmentActions
+            appointment={selectedAppointment}
+            visible={actionVisible}
+            onClose={() => setActionVisible(false)}
+            position={actionPosition}
+            fetchAppointments={fetchAppointments}
+          />
+        )}
       </View>
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   appointmentCard: {

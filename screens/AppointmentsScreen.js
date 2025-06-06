@@ -266,10 +266,13 @@ useEffect(() => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => <AppointmentCard
             appointment={item}
+            fetchAppointments={fetchAppointments}
             formatDate={formatDate}
             formatTime={formatTime}
             getStatusColor={getStatusColor}
           />}
+          
+          
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
           refreshing={refreshing}

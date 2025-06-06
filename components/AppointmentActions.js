@@ -1,4 +1,7 @@
-import React from "react";
+import { ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Toast from 'react-native-toast-message';
+import { useSession } from '../context/SessionContext';
 import {
   View,
   Text,
@@ -15,25 +18,103 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppointments  }) => {
   if (!appointment || !position) return null;
-
+  const [loading, setLoading] = useState(false);
+  const { session } = useSession();
   const handleCancel = () => {
-    Alert.alert("Cancelar cita", `Cancelar cita con ID: ${appointment.id}`);
-    onClose();
+    
+    Alert.alert(
+      "Cancelar cita",
+      `¿Deseas cancelar la cita de ${appointment.patientName}?`,
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Sí",
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const { token } = session;
+              const response = await fetch(
+                `https://pruebas.siac.historiaclinica.org/api/mobile/cita?id=${appointment.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                  },
+              });
+
+              const result = await response.json();
+              
+              Toast.show({
+                type: response.ok ? 'success' : 'error',
+                text1: response.ok ? 'Cita cancelada' : 'Error al cancelar',
+                text2: result?.message || 'Se ha procesado la solicitud.',
+                position: 'center',
+                visibilityTime: 3000
+            });
+
+            if (response.ok && typeof fetchAppointments === 'function') {
+              await fetchAppointments();
+            }
+            } catch (error) {
+               
+               Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Ocurrió un error al cancelar la cita.',
+                position: 'center',
+                text1Style: { fontSize: 20, fontWeight: 'bold' },
+              });
+            } finally {
+              setLoading(false);
+              onClose();
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleCall = () => {
-    const cleanPhone = appointment.phone.replace(/[^\d]/g, "");
+      const cleanPhone = (appointment.phone || "").replace(/[^\d]/g, "");
+      if (!cleanPhone) {
+        Toast.show({
+          type: 'error',
+          text1: 'Teléfono no disponible',
+          text2: 'Este paciente no tiene un número de teléfono registrado.',
+          position: 'center',
+        });
+        return;
+      }
+
     Linking.openURL(`tel:${cleanPhone}`);
     onClose();
   };
 
   const handleWhatsApp = () => {
-    const cleanPhone = appointment.phone.replace(/[^\d]/g, "");
+    const cleanPhone = (appointment.phone || "").replace(/[^\d]/g, "");
+    if (!cleanPhone) {
+      Toast.show({
+        type: 'error',
+        text1: 'Teléfono no disponible',
+        text2: 'Este paciente no tiene un número de teléfono registrado.',
+        position: 'center',
+      });
+      return;
+    }
+
     Linking.openURL(`https://wa.me/${cleanPhone}`);
     onClose();
   };
 
-  return (
+
+
+  return (  
+  <>
+  {loading && (
+    <View style={styles.spinnerOverlay}>
+      <ActivityIndicator size="large" color="#204b5e" />
+    </View>
+  )}
+
     <Modal
       isVisible={visible}
       backdropOpacity={0}
@@ -47,7 +128,8 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
           styles.menu,
           {
             top: position.y + 8,
-            left: Math.min(position.x - 160, SCREEN_WIDTH - 200),
+            left: Math.max(8, Math.min(position.x - 160, SCREEN_WIDTH - 208)),
+
           },
         ]}
       >
@@ -67,10 +149,22 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
         </TouchableOpacity>
       </View>
     </Modal>
+    </>
   );
+  
 };
 
+
+
 const styles = StyleSheet.create({
+  spinnerOverlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10
+  },
   modal: {
     margin: 0,
     position: "absolute",

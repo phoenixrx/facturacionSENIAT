@@ -1,9 +1,11 @@
 // App.js
 import React, { useState } from 'react';
+import Toast from 'react-native-toast-message';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SessionProvider, useSession } from './context/SessionContext';
 
 import LoginScreen from './screens/LoginScreen';
@@ -23,7 +25,6 @@ function DrawerRoutes() {
     >
       <Drawer.Screen name="Inicio" component={HomeScreen} />
       <Drawer.Screen name="Citas" component={AppointmentsScreen} />
-
     </Drawer.Navigator>
   );
 }
@@ -56,6 +57,7 @@ export default function App() {
     <SafeAreaProvider>
       <SessionProvider>
         <AppNavigator />
+        <Toast />
       </SessionProvider>
     </SafeAreaProvider>
   );
