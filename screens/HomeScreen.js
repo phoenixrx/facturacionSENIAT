@@ -64,10 +64,6 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.appointmentsText}>Ver Citas</Text>
         </TouchableOpacity>
 
-
-        <Pressable style={styles.logoutButton} onPress={cerrarSesion}>
-          <Text style={styles.logoutText}>Cerrar sesión</Text>
-        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -123,7 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   appointmentsButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#204b5e',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,

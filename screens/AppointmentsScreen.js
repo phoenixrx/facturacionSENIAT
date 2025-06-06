@@ -1,192 +1,297 @@
-"use client"
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Pressable,
+  ActivityIndicator,
+  Animated,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { useSession } from "../context/SessionContext";
+import AppointmentCard from "../components/AppointmentCard";
 
-import { useState } from "react"
-import { View, Text, StyleSheet, FlatList, TouchableOpacity,  Image, Pressable } from "react-native"
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Ionicons } from "@expo/vector-icons"
-import { useNavigation } from "@react-navigation/native"
+const LAST_TAB_KEY = "lastActiveTab";
 
-const AppointmentCard = ({ appointment }) => (
-  
-    <View style={styles.appointmentCard}>
-        <View style={styles.timeContainer}>
-        <Text style={styles.appointmentTime}>{appointment.time}</Text>
-        <Text style={styles.appointmentDuration}>{appointment.duration}</Text>
-        </View>
-        <View style={styles.appointmentDetails}>
-        <Text style={styles.patientName}>{appointment.patientName}</Text>
-        <Text style={styles.appointmentType}>{appointment.type}</Text>
-        <View style={styles.appointmentMeta}>
-            <Ionicons name="location-outline" size={14} color="#6b7280" />
-            <Text style={styles.appointmentLocation}>{appointment.location}</Text>
-        </View>
-        </View>
-        <View style={styles.appointmentActions}>
-        <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(appointment.status) }]} />
-        <TouchableOpacity style={styles.actionButton}>
-            <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
-        </TouchableOpacity>
-        </View>
-    </View>
-   
-)
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}-${month}-${year}`;
+};
+
+const formatTime = (isoString) => {
+  const date = new Date(isoString);
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
 
 const getStatusColor = (status) => {
-  switch (status) {
-    case "confirmed":
-      return "#10b981"
-    case "pending":
-      return "#f59e0b"
-    case "cancelled":
-      return "#ef4444"
+  switch (status.trim()) {
+    case "Agendado":
+      return "#10b981";
+    case "Atendido":
+      return "#f59e0b";
+    case "Confirmado":
+      return "#15aabf";
     default:
-      return "#6b7280"
+      return "#6b7280";
   }
-}
+};
+
+
+
+
 
 const TabButton = ({ title, isActive, onPress }) => (
   <TouchableOpacity style={[styles.tabButton, isActive && styles.activeTab]} onPress={onPress}>
     <Text style={[styles.tabText, isActive && styles.activeTabText]}>{title}</Text>
   </TouchableOpacity>
-)
+);
 
 export default function AppointmentsScreen() {
-  const [activeTab, setActiveTab] = useState("today")
-  const navigation = useNavigation()
+  const { tokenData, session } = useSession();
+  const [activeTab, setActiveTab] = useState("today");
+  const [appointments, setAppointments] = useState({ today: [], upcoming: [], past: [] });
+  const [counts, setCounts] = useState({ today: 0, upcoming: 0, past: 0 });
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [timeSinceUpdate, setTimeSinceUpdate] = useState("");
+  const tabRef = useRef("today");
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation();
+  
+  const handleTabPress = (key) => {
+    tabRef.current = key;
+    setActiveTab(key);
+  };
 
-  const appointments = {
-    today: [
-      {
-        id: 1,
-        time: "09:00 AM",
-        duration: "30 min",
-        patientName: "John Doe",
-        type: "Regular Checkup",
-        location: "Room 101",
-        status: "confirmed",
-      },
-      {
-        id: 2,
-        time: "10:30 AM",
-        duration: "45 min",
-        patientName: "Sarah Wilson",
-        type: "Consultation",
-        location: "Room 102",
-        status: "confirmed",
-      },
-      {
-        id: 3,
-        time: "02:00 PM",
-        duration: "30 min",
-        patientName: "Mike Johnson",
-        type: "Follow-up",
-        location: "Room 101",
-        status: "pending",
-      },
-    ],
-    upcoming: [
-      {
-        id: 4,
-        time: "09:00 AM",
-        duration: "30 min",
-        patientName: "Emma Davis",
-        type: "Regular Checkup",
-        location: "Room 103",
-        status: "confirmed",
-      },
-      {
-        id: 5,
-        time: "11:00 AM",
-        duration: "60 min",
-        patientName: "Robert Brown",
-        type: "Surgery Consultation",
-        location: "Room 201",
-        status: "pending",
-      },
-    ],
-    past: [
-      {
-        id: 6,
-        time: "03:00 PM",
-        duration: "30 min",
-        patientName: "Lisa Anderson",
-        type: "Follow-up",
-        location: "Room 102",
-        status: "completed",
-      },
-    ],
-  }
+  const fetchAppointments = async () => {
+    if (!tokenData?.id_especialista || !session?.token) return;
+    try {
+      if (!refreshing) setLoading(true);
+      const response = await fetch(
+        `https://pruebas.siac.historiaclinica.org/api/mobile/citas-medico?id_medico=${tokenData.id_especialista}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setAppointments({
+          today: data.today || [],
+          upcoming: data.upcoming || [],
+          past: data.past || [],
+        });
+        setCounts({
+          today: data.actualCount === 50 ? "+50" : data.actualCount || 0,
+          upcoming: data.futureCount === 50 ? "+50" : data.futureCount || 0,
+          past: data.pastCount === 50 ? "+50" : data.pastCount || 0,
+        });
+        
+        setLastUpdated(new Date());
+        setRefreshing(false);
+        
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+useEffect(() => {
+    const interval = setInterval(() => {
+      setLastUpdated((prev) => (prev ? new Date(prev) : null));
+    }, 60000); // 1 minuto
+    return () => clearInterval(interval);
+  }, []);
+
+  // Carga inicial
+  useFocusEffect(
+    useCallback(() => {
+      fetchAppointments();
+    }, [])
+  );
+
+  const getRelativeTime = (timestamp) => {
+    if (!timestamp) return "";
+    const now = new Date();
+    const diff = Math.floor((now - timestamp) / 60000);
+    if (diff === 0) return "Última actualización hace unos segundos";
+    if (diff === 1) return "Última actualización hace 1 minuto";
+    return `Última actualización hace ${diff} minutos`;
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTab(tabRef.current); // mantiene el tab activo
+      fetchAppointments();          // carga datos al entrar
+    }, [tokenData?.id_especialista, session?.token])
+  );
+
 
   const tabs = [
-    { key: "today", title: "Today" },
-    { key: "upcoming", title: "Upcoming" },
-    { key: "past", title: "Past" },
-  ]
+    { key: "past", title: "Anteriores" },
+    { key: "today", title: "Hoy" },
+    { key: "upcoming", title: "Futuras" },
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {/* Nuevo HEADER con logo y botón drawer */}
       <View style={styles.header}>
         <Image source={require("../assets/logograma.png")} style={styles.logo} />
         <Pressable onPress={() => navigation.openDrawer()}>
           <Ionicons name="menu" size={28} color="#fff" />
         </Pressable>
       </View>
+       {lastUpdated && (
+        <Text style={styles.updatedText}>{getRelativeTime(lastUpdated)}</Text>
+      )}
       <View style={styles.titulos}>
-        <Text style={styles.title}>Appointments</Text>
+        <Text style={styles.title}>Citas</Text>
         <TouchableOpacity style={styles.addButton}>
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
-      {/* Stats Cards */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>12</Text>
-          <Text style={styles.statLabel}>Today</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>8</Text>
-          <Text style={styles.statLabel}>This Week</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>2</Text>
-          <Text style={styles.statLabel}>Pending</Text>
-        </View>
-      </View>
 
-      {/* Tabs */}
+      <View style={styles.statsContainer}>
+  <TouchableOpacity
+    style={[
+      styles.statCard,
+      activeTab === "past" && { backgroundColor: "#204b5e" },
+    ]}
+    onPress={() => handleTabPress("past")}
+  >
+    <Text
+      style={[
+        styles.statNumber,
+        activeTab === "past" && { color: "#fff" },
+      ]}
+    >
+      {counts.past}
+    </Text>
+    <Text
+      style={[
+        styles.statLabel,
+        activeTab === "past" && { color: "#fff" },
+      ]}
+    >
+      Anteriores
+    </Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={[
+      styles.statCard,
+      activeTab === "today" && { backgroundColor: "#204b5e" },
+    ]}
+    onPress={() => handleTabPress("today")}
+  >
+    <Text
+      style={[
+        styles.statNumber,
+        activeTab === "today" && { color: "#fff" },
+      ]}
+    >
+      {counts.today}
+    </Text>
+    <Text
+      style={[
+        styles.statLabel,
+        activeTab === "today" && { color: "#fff" },
+      ]}
+    >
+      Hoy
+    </Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={[
+      styles.statCard,
+      activeTab === "upcoming" && { backgroundColor: "#204b5e" },
+    ]}
+    onPress={() => handleTabPress("upcoming")}
+  >
+    <Text
+      style={[
+        styles.statNumber,
+        activeTab === "upcoming" && { color: "#fff" },
+      ]}
+    >
+      {counts.upcoming}
+    </Text>
+    <Text
+      style={[
+        styles.statLabel,
+        activeTab === "upcoming" && { color: "#fff" },
+      ]}
+    >
+      Futuras
+    </Text>
+  </TouchableOpacity>
+</View>
+
+
       <View style={styles.tabContainer}>
         {tabs.map((tab) => (
           <TabButton
             key={tab.key}
             title={tab.title}
             isActive={activeTab === tab.key}
-            onPress={() => setActiveTab(tab.key)}
+            onPress={() => handleTabPress(tab.key)}
           />
         ))}
       </View>
 
-      {/* Appointments List */}
-      <FlatList
-        data={appointments[activeTab]}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <AppointmentCard appointment={item} />}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="calendar-outline" size={64} color="#d1d5db" />
-            <Text style={styles.emptyText}>No appointments found</Text>
-            <Text style={styles.emptySubtext}>
-              {activeTab === "today" && "You don't have any appointments today"}
-              {activeTab === "upcoming" && "No upcoming appointments scheduled"}
-              {activeTab === "past" && "No past appointments to show"}
-            </Text>
-          </View>
-        }
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#2563eb" style={{ marginTop: 40 }} />
+      ) : (
+        <FlatList
+          data={appointments[activeTab]}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => <AppointmentCard
+            appointment={item}
+            formatDate={formatDate}
+            formatTime={formatTime}
+            getStatusColor={getStatusColor}
+          />}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            fetchAppointments();
+          }}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="calendar-outline" size={64} color="#d1d5db" />
+              <Text style={styles.emptyText}>No se encontraron citas</Text>
+              <Text style={styles.emptySubtext}>
+                {activeTab === "today" && "No tienes citas agendadas hoy"}
+                {activeTab === "upcoming" && "No tienes citas agendadas próximamente"}
+                {activeTab === "past" && "No tienes citas anteriores a hoy"}
+              </Text>
+            </View>
+          }
+        />
+      )}
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -226,7 +331,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#2563eb",
+    color: "#204b5e",
   },
   statLabel: {
     fontSize: 14,
@@ -253,7 +358,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeTab: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#204b5e",
   },
   tabText: {
     fontSize: 14,
@@ -274,7 +379,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: "##204b5e",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -288,7 +393,7 @@ const styles = StyleSheet.create({
   appointmentTime: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#2563eb",
+    color: "#204b5e",
   },
   appointmentDuration: {
     fontSize: 12,
@@ -361,7 +466,7 @@ headerTitle: {
   color: "#1f2937",
 },
 addButton: {
-  backgroundColor: "#2563eb",
+  backgroundColor: "#204b5e",
   borderRadius: 8,
   padding: 8,
 },
@@ -370,7 +475,7 @@ titulos: {
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   title: {
     fontSize: 28,
@@ -401,4 +506,29 @@ titulos: {
     height: 40,
     resizeMode: 'contain'
   },
+  
+  updateLabel: {
+    alignItems: "center",
+    marginTop: 0,
+    marginBottom: 0,
+  },
+  updatedText: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+  },
+  popover: {
+  position: 'absolute',
+  top: 25,
+  right: 0,
+  backgroundColor: 'white',
+  borderRadius: 8,
+  padding: 8,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+  elevation: 5,
+  zIndex: 1000,
+}
 })
