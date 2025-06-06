@@ -13,7 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const AppointmentActions = ({ appointment, visible, onClose, position }) => {
+const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppointments  }) => {
   if (!appointment || !position) return null;
 
   const handleCancel = () => {

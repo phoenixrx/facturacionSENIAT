@@ -93,7 +93,11 @@ const CustomDrawer = ({ navigation }) => {
         <Pressable onPress={cambiarFotoPerfil}>
           <Text style={{ color: '#aef', marginTop: 8, fontSize: 14 }}>Cambiar foto</Text>
         </Pressable>
-        <Text style={styles.usuario}>Hola, {session?.usuario}</Text>
+        <Text style={styles.usuario}>
+          Hola, {session?.usuario
+            ? session.usuario.charAt(0).toUpperCase() + session.usuario.slice(1)
+            : ''}
+        </Text>
         <Text style={styles.ipText}>🌐 {ipPublica || 'Cargando...'}</Text>
         <Text style={styles.ipText}>🖧 {ipLocal || 'Cargando...'}</Text>
       </View>

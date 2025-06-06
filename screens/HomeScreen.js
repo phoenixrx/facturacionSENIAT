@@ -9,71 +9,58 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getLocalIp, getPublicIp } from '../utils/network';
+import { getPublicIp } from '../utils/network'; // local IP ya no es necesaria
 import { Ionicons } from '@expo/vector-icons';
+import { useSession } from '../context/SessionContext';
 import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
-  const [usuario, setUsuario] = useState('');
-  const [ipLocal, setIpLocal] = useState('');
+const HomeScreen = ({ navigation }) => {  
   const [ipPublica, setIpPublica] = useState('');
 
   useEffect(() => {
     const cargarDatos = async () => {
-      const sessionData = await AsyncStorage.getItem('session');
-      if (sessionData) {
-        const { usuario } = JSON.parse(sessionData);
-        setUsuario(usuario);
-      }
-
-      const ipL = await getLocalIp();
       const ipP = await getPublicIp();
-      setIpLocal(ipL);
       setIpPublica(ipP);
     };
 
     cargarDatos();
   }, []);
 
-  const cerrarSesion = async () => {
-    await AsyncStorage.removeItem('session');
-    navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-  };
-    const { top } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
+    const { tokenData } = useSession();      
+    const nombreCompleto = `${tokenData?.nombre || ''} ${tokenData?.apellidos || ''}`.trim();
+
   return (
-    
-    <SafeAreaView style={{ flex: 1 }} >
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={[styles.header]}>
         <Image source={require('../assets/logograma.png')} style={styles.logo} />
-        <Pressable onPress={() => navigation.openDrawer()}>
-            <Ionicons name="menu" size={28} color="#fff" />
-        </Pressable>
-
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <Ionicons name="menu" size={28} color="#fff" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Bienvenido, {usuario}</Text>
-        <Text style={styles.text}>IP Local: {ipLocal}</Text>
-        <Text style={styles.text}>IP Pública: {ipPublica}</Text>
-        <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.appointmentsButton}
-            onPress={() => navigation.navigate('Citas')}
-            >
-            <Ionicons name="calendar-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-            <Text style={styles.appointmentsText}>Ver Citas</Text>
-        </TouchableOpacity>
+        <Text style={styles.title}>SIAC</Text>
+        <Text style={styles.subtitle}>medica</Text>
 
+        {/* Mostramos el nombre completo del usuario */}
+        <Text style={styles.text}>{nombreCompleto}</Text>
+        <Text style={styles.text}>IP Pública: {ipPublica}</Text>
+
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.appointmentsButton}
+          onPress={() => navigation.navigate('Citas')}
+        >
+          <Ionicons name="calendar-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.appointmentsText}>Ver Citas</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff'
-  },
   header: {
     backgroundColor: '#204b5e',
     paddingHorizontal: 16,
@@ -100,23 +87,18 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
+    fontWeight: '800',
+    marginBottom: 0
+  },
+  subtitle: {
+    fontSize: 18,
     fontWeight: '600',
-    marginBottom: 20
+    marginBottom: 10,
+    fontStyle: 'italic',
   },
   text: {
     fontSize: 16,
     marginBottom: 10
-  },
-  logoutButton: {
-    marginTop: 40,
-    backgroundColor: '#cc0000',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  logoutText: {
-    color: '#fff',
-    fontWeight: 'bold'
   },
   appointmentsButton: {
     backgroundColor: '#204b5e',
@@ -125,13 +107,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
-    },
-appointmentsText: {
+    flexDirection: 'row'
+  },
+  appointmentsText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
-    },
-
+    fontWeight: 'bold'
+  }
 });
 
 export default HomeScreen;

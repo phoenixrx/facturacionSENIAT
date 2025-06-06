@@ -155,9 +155,9 @@ useEffect(() => {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
         <Image source={require("../assets/logograma.png")} style={styles.logo} />
-        <Pressable onPress={() => navigation.openDrawer()}>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <Ionicons name="menu" size={28} color="#fff" />
-        </Pressable>
+        </TouchableOpacity>
       </View>
        {lastUpdated && (
         <Text style={styles.updatedText}>{getRelativeTime(lastUpdated)}</Text>

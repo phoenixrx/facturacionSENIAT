@@ -58,17 +58,21 @@ const LoginScreen = () => {
     }
   };
 
-  return (
-   
-        <View style={styles.container}>
+const [isUsuarioFocused, setIsUsuarioFocused] = useState(false);
+const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
+return (
+    <View style={styles.container}>
         <Image source={require('../assets/logograma.png')} style={styles.logo} />
         <TextInput
             placeholder="Usuario"
             value={usuario}
             onChangeText={setUsuario}
-            style={styles.input}
+            style={isUsuarioFocused ? styles.inputFocused : styles.input}
             autoCorrect={false}
             autoCapitalize="none"
+            onFocus={() => setIsUsuarioFocused(true)}
+            onBlur={() => setIsUsuarioFocused(false)}
         />
         <TextInput
             placeholder="Contraseña"
@@ -76,16 +80,18 @@ const LoginScreen = () => {
             onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
-            style={styles.input}
+            style={isPasswordFocused ? styles.inputFocused : styles.input}
+            onFocus={() => setIsPasswordFocused(true)}
+            onBlur={() => setIsPasswordFocused(false)}
         />
         <Button
             title={loading ? 'Cargando...' : 'Ingresar'}
             onPress={handleLogin}
             disabled={loading || !usuario || !password}
+            color="#204b5e"
         />
-        </View>
-   
-  );
+    </View>
+);
 };
 
 const styles = StyleSheet.create({
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         padding: 20,
-        backgroundColor: '#5cd1e62e'
+        backgroundColor: '#113545'
     },
     container_safearea: {
         flex: 1,
@@ -102,6 +108,18 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
+        color: 'black',
+        fontWeight: 'bold',
+        backgroundColor: '#9AA4AF',
+        marginBottom: 15,
+        padding: 12,
+        borderRadius: 8
+    },
+    inputFocused: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        color: 'white',
+        backgroundColor: 'black',
         marginBottom: 15,
         padding: 12,
         borderRadius: 8
