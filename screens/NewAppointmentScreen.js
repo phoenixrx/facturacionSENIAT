@@ -10,20 +10,26 @@ import {
   ActivityIndicator,
   Image,
   Platform,
+  LayoutAnimation,
+  UIManager,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import Collapsible from "react-native-collapsible";
+
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const NewAppointmentScreen = ({ navigation }) => {
-  // Estados de acordeón
   const [isPacienteOpen, setIsPacienteOpen] = useState(true);
   const [isDatosOpen, setIsDatosOpen] = useState(false);
   const [isEstudiosOpen, setIsEstudiosOpen] = useState(false);
 
-  // Estados de formulario
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [fechaNacimientoDate, setFechaNacimientoDate] = useState(new Date());
+
   const [tipoCedula, setTipoCedula] = useState("");
   const [cedula, setCedula] = useState("");
   const [paciente, setPaciente] = useState(null);
@@ -35,9 +41,7 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [telefono, setTelefono] = useState("");
   const [correo, setCorreo] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
-  const [fechaNacimientoDate, setFechaNacimientoDate] = useState(new Date());
   const [sexo, setSexo] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
@@ -59,6 +63,7 @@ const NewAppointmentScreen = ({ navigation }) => {
         `https://pruebas.siac.historiaclinica.org/api/pacientes/?tipo_cedula=${tipoCedula}&cedula=${cedula}`
       );
       const data = await response.json();
+
       if (data.error || isNaN(data.length)) {
         setNuevoPaciente(true);
         setPaciente(null);
@@ -73,6 +78,11 @@ const NewAppointmentScreen = ({ navigation }) => {
     }
   };
 
+  const toggleSection = (setter, value) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setter(!value);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
@@ -83,32 +93,55 @@ const NewAppointmentScreen = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
-        {/* PACIENTE */}
+        {/* Paciente */}
         <TouchableOpacity
-          onPress={() => setIsPacienteOpen(!isPacienteOpen)}
+          onPress={() => toggleSection(setIsPacienteOpen, isPacienteOpen)}
           style={styles.accordionHeader}
         >
           <Text style={styles.accordionTitle}>Paciente</Text>
           <Ionicons name={isPacienteOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
-        <Collapsible collapsed={!isPacienteOpen}>
+
+        {isPacienteOpen && (
           <View style={styles.section}>
             <Text>Tipo de Cédula y Cédula</Text>
             <View style={styles.cedulaRow}>
               <TextInput
                 style={[styles.input, { width: 80 }]}
                 value={tipoCedula}
-                onChangeText={setTipoCedula}
+                onChangeText={(text) => {
+                    const upper = text.toUpperCase();
+
+                    // Permitir si está vacío o si es una de las letras válidas
+                    if (upper === "" || /^[VEPGJM]$/.test(upper)) {
+                    setTipoCedula(upper);
+                    }
+                }}
                 placeholder="Tipo"
-              />
+
+                    maxLength={1}
+                    />
               <TextInput
-                style={styles.cedulaInput}
-                value={cedula}
-                onChangeText={setCedula}
-                keyboardType="numeric"
-                placeholder="Cédula"
-              />
+  style={styles.cedulaInput}
+  value={cedula}
+  onChangeText={(text) => {
+    // Eliminar caracteres que no sean dígitos ni guion
+    let cleaned = text.replace(/[^0-9-]/g, '');
+
+    // Permitir solo un guion
+    const parts = cleaned.split("-");
+    if (parts.length > 2) {
+      cleaned = parts[0] + "-" + parts[1]; // Solo el primer guion válido
+    }
+
+    setCedula(cleaned);
+  }}
+  keyboardType="default"
+  placeholder="Cédula"
+/>
+
             </View>
+
             <TouchableOpacity style={styles.searchButton} onPress={handleBuscarPaciente}>
               {loading ? (
                 <ActivityIndicator color="#fff" />
@@ -141,7 +174,11 @@ const NewAppointmentScreen = ({ navigation }) => {
                 )}
                 <Text>Sexo</Text>
                 <View style={styles.pickerContainer}>
-                  <Picker selectedValue={sexo} onValueChange={setSexo} style={styles.picker}>
+                  <Picker
+                    selectedValue={sexo}
+                    onValueChange={(itemValue) => setSexo(itemValue)}
+                    style={styles.picker}
+                  >
                     <Picker.Item label="Seleccionar..." value="" />
                     <Picker.Item label="Masculino" value="M" />
                     <Picker.Item label="Femenino" value="F" />
@@ -157,45 +194,51 @@ const NewAppointmentScreen = ({ navigation }) => {
                 <Text>
                   Fecha Nac:{" "}
                   {paciente.fecha_nacimiento
-                    ? new Date(paciente.fecha_nacimiento).toLocaleDateString("es-ES")
+                    ? (() => {
+                        const d = new Date(paciente.fecha_nacimiento);
+                        return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
+                          .toString()
+                          .padStart(2, "0")}/${d.getFullYear()}`;
+                      })()
                     : ""}
                 </Text>
                 <Text>Sexo: {paciente.sexo === "M" ? "Masculino" : "Femenino"}</Text>
               </View>
             ) : null}
           </View>
-        </Collapsible>
+        )}
 
-        {/* DATOS DE LA CITA */}
+        {/* Datos de la cita */}
         <TouchableOpacity
-          onPress={() => setIsDatosOpen(!isDatosOpen)}
+          onPress={() => toggleSection(setIsDatosOpen, isDatosOpen)}
           style={styles.accordionHeader}
         >
           <Text style={styles.accordionTitle}>Datos de la Cita</Text>
           <Ionicons name={isDatosOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
-        <Collapsible collapsed={!isDatosOpen}>
+
+        {isDatosOpen && (
           <View style={styles.section}>
             <TextInput style={styles.input} placeholder="Motivo de la cita" />
-            {/* Agrega más campos aquí si necesitas */}
           </View>
-        </Collapsible>
+        )}
 
-        {/* ESTUDIOS */}
+        {/* Estudios */}
         <TouchableOpacity
-          onPress={() => setIsEstudiosOpen(!isEstudiosOpen)}
+          onPress={() => toggleSection(setIsEstudiosOpen, isEstudiosOpen)}
           style={styles.accordionHeader}
         >
           <Text style={styles.accordionTitle}>Estudios</Text>
           <Ionicons name={isEstudiosOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
-        <Collapsible collapsed={!isEstudiosOpen}>
+
+        {isEstudiosOpen && (
           <View style={styles.section}>
             <TextInput style={styles.input} placeholder="Estudios requeridos (opcional)" />
           </View>
-        </Collapsible>
+        )}
 
-        {/* BOTÓN AGENDA */}
+        {/* Botón Agendar */}
         <TouchableOpacity style={styles.agendarButton} onPress={() => Alert.alert("Cita agendada")}>
           <Text style={styles.agendarText}>Agendar Cita</Text>
         </TouchableOpacity>
@@ -205,7 +248,9 @@ const NewAppointmentScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: {
+    padding: 16,
+  },
   accordionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -214,7 +259,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 10,
   },
-  accordionTitle: { fontSize: 16, fontWeight: "bold" },
+  accordionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   section: {
     backgroundColor: "#f9fafb",
     padding: 10,
@@ -235,7 +283,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  searchText: { color: "#fff", fontWeight: "bold" },
+  searchText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
   patientInfo: {
     marginTop: 10,
     padding: 10,
