@@ -58,7 +58,7 @@ const TabButton = ({ title, isActive, onPress }) => (
 );
 
 export default function AppointmentsScreen() {
-  const { tokenData, session } = useSession();
+  const { tokenData, session,logout } = useSession();
   const [activeTab, setActiveTab] = useState("today");
   const [appointments, setAppointments] = useState({ today: [], upcoming: [], past: [] });
   const [counts, setCounts] = useState({ today: 0, upcoming: 0, past: 0 });
@@ -90,6 +90,7 @@ export default function AppointmentsScreen() {
         }
       );
       const data = await response.json();
+      
       if (data.success) {
         setAppointments({
           today: data.today || [],
@@ -105,9 +106,18 @@ export default function AppointmentsScreen() {
         setLastUpdated(new Date());
         setRefreshing(false);
         
+      }else{
+        if(data.error){
+          logout();
+        }
       }
     } catch (error) {
       console.error("Error fetching appointments:", error);
+      console.log(error)
+      if (error.error === "El token ha expirado") {
+        console.log('aqui')
+        logout();
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);

@@ -67,7 +67,7 @@ const AppointmentCard = ({ appointment, fetchAppointments }) => {
 
       <View style={styles.appointmentDetails}>
         <Text style={styles.patientName}>{appointment.patientName}</Text>
-        <Text style={styles.appointmentType}>{appointment.type || "Consulta"}</Text>
+        <Text style={styles.appointmentType}>{appointment.estudio || appointment.type}</Text>
         <View style={styles.appointmentMeta}>
           <Ionicons name="location-outline" size={14} color="#6b7280" />
           <Text style={styles.appointmentLocation}>{appointment.location || "N/A"}</Text>
