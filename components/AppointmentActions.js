@@ -22,6 +22,23 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
   const { session } = useSession();
   const handleCancel = () => {
     
+    if (appointment.time) {
+      const appointmentDate = new Date(appointment.time);
+      const today = new Date();
+      // Limpiar horas para comparar solo fechas
+      appointmentDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      if (appointmentDate < today) {
+      Toast.show({
+        type: 'error',
+        text1: 'No se puede cancelar',
+        text2: 'No puedes cancelar una cita pasada.',
+        position: 'center',
+      });
+      onClose();
+      return;
+      }
+    }
     Alert.alert(
       "Cancelar cita",
       `¿Deseas cancelar la cita de ${appointment.patientName}?`,
