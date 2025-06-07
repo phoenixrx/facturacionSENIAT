@@ -113,7 +113,8 @@ const styles = StyleSheet.create({
   },
   appointmentTime: {
     fontSize: 14,
-    color: "#374151",
+    color: "#204b5e",
+    fontWeight:800
   },
   appointmentDuration: {
     fontSize: 12,

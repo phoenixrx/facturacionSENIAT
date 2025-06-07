@@ -45,7 +45,7 @@ export const SessionProvider = ({ children }) => {
       if (sessionData.fotoUri) {
         setFotoUri(sessionData.fotoUri);
       }
-      console.log(sessionData)
+
       const [headerPart, payloadPart, signaturePart] = JSON.stringify(sessionData).split('.');
         let token_decoded = decodeJWT_local(payloadPart)
         setTokenData(JSON.parse(token_decoded));          

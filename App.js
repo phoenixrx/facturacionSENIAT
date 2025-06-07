@@ -13,6 +13,7 @@ import HomeScreen from './screens/HomeScreen';
 import SplashScreen from './screens/SplashScreen';
 import CustomDrawer from './components/CustomDrawer';
 import AppointmentsScreen from './screens/AppointmentsScreen';
+import NewAppointmentScreen from './screens/NewAppointmentScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -43,7 +44,10 @@ function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {session ? (
-          <Stack.Screen name="Drawer" component={DrawerRoutes} />
+          <>
+            <Stack.Screen name="Drawer" component={DrawerRoutes} />
+            <Stack.Screen name="NewAppointment" component={NewAppointmentScreen} />
+          </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />
         )}

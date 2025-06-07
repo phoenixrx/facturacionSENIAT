@@ -17,7 +17,10 @@ import { useNavigation } from "@react-navigation/native";
 import { useSession } from "../context/SessionContext";
 import AppointmentCard from "../components/AppointmentCard";
 
+
 const LAST_TAB_KEY = "lastActiveTab";
+
+
 
 const formatDate = (isoString) => {
   const date = new Date(isoString);
@@ -69,6 +72,10 @@ export default function AppointmentsScreen() {
   const tabRef = useRef("today");
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+  
+  const handleAddAppointment = () => {
+    navigation.navigate('NewAppointment');
+  };
   
   const handleTabPress = (key) => {
     tabRef.current = key;
@@ -174,7 +181,7 @@ useEffect(() => {
       )}
       <View style={styles.titulos}>
         <Text style={styles.title}>Citas</Text>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddAppointment}>
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
