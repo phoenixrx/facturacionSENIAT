@@ -53,7 +53,7 @@ const HomeScreen = ({ navigation }) => {
           onPress={() => navigation.navigate('Citas')}
         >
           <Ionicons name="calendar-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.appointmentsText}>Ver Citas</Text>
+          <Text style={styles.appointmentsText}>Ver Agenda</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

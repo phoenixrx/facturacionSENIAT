@@ -17,6 +17,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -40,6 +41,7 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [apellidos, setApellidos] = useState("");
   const [telefono, setTelefono] = useState("");
   const [correo, setCorreo] = useState("");
+  const [direccion, setDireccion] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [sexo, setSexo] = useState("");
 
@@ -122,23 +124,19 @@ const NewAppointmentScreen = ({ navigation }) => {
                     maxLength={1}
                     />
               <TextInput
-  style={styles.cedulaInput}
-  value={cedula}
-  onChangeText={(text) => {
-    // Eliminar caracteres que no sean dígitos ni guion
-    let cleaned = text.replace(/[^0-9-]/g, '');
-
-    // Permitir solo un guion
-    const parts = cleaned.split("-");
-    if (parts.length > 2) {
-      cleaned = parts[0] + "-" + parts[1]; // Solo el primer guion válido
-    }
-
-    setCedula(cleaned);
-  }}
-  keyboardType="default"
-  placeholder="Cédula"
-/>
+                style={styles.cedulaInput}
+                value={cedula}
+                onChangeText={(text) => {
+                  let cleaned = text.replace(/[^0-9-]/g, '');
+                  const parts = cleaned.split("-");
+                  if (parts.length > 2) {
+                    cleaned = parts[0] + "-" + parts[1]; 
+                  }
+                  setCedula(cleaned);
+                }}
+                keyboardType="default"
+                placeholder="Cédula"
+              />
 
             </View>
 
@@ -160,6 +158,8 @@ const NewAppointmentScreen = ({ navigation }) => {
                 <TextInput style={styles.input} value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" />
                 <Text>Correo</Text>
                 <TextInput style={styles.input} value={correo} onChangeText={setCorreo} keyboardType="email-address" />
+                <Text>Direccion</Text> 
+                <TextInput style={styles.input} value={direccion} onChangeText={setDireccion}  /> 
                 <Text>Fecha de Nacimiento</Text>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
                   <Text>{fechaNacimiento || "Selecciona una fecha"}</Text>
@@ -184,6 +184,54 @@ const NewAppointmentScreen = ({ navigation }) => {
                     <Picker.Item label="Femenino" value="F" />
                   </Picker>
                 </View>
+                <TouchableOpacity
+                  style={styles.agregarPacienteBtn}
+                  onPress={async () => {
+                    // Validación de campos obligatorios
+                    if (!tipoCedula || !cedula || !nombre || !apellidos || !telefono || !sexo || !fechaNacimiento || !direccion) {
+                      Alert.alert("Error", "Por favor llena todos los campos obligatorios.");
+                      return;
+                    }
+
+                    try {
+                      const response = await fetch("https://pruebas.siac.historiaclinica.org/crear-paciente", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          tipo_cedula: tipoCedula,
+                          cedula,
+                          nombres: nombre,
+                          apellidos,
+                          telef1: telefono,
+                          sexo,
+                          correo,
+                          fecha_nacimiento: fechaNacimiento,
+                          direccion,
+                        }),
+                      });
+                      const result = await response.json();
+                      console.log(result)
+                      if (!response.ok) {
+                        throw new Error("No se pudo crear el paciente.");
+                      }                      
+                      console.log(result)
+                      if(!isNaN(result.id_paciente)){
+                        Alert.alert("Éxito", "Paciente creado correctamente.");
+                        handleBuscarPaciente();
+                      }else{
+                         Alert.alert("Error", result.error);
+                      }
+                      // Puedes limpiar los campos si deseas
+                    } catch (error) {
+                      Alert.alert("Error", error.message);
+                    }
+                  }}
+                >
+                  <Icon name="person-add" size={20} color="#fff" />
+                  <Text style={styles.btnText}>Agregar Paciente</Text>
+                </TouchableOpacity>
               </>
             ) : paciente ? (
               <View style={styles.patientInfo}>
@@ -352,6 +400,20 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 8,
   },
+  agregarPacienteBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "#007bff",
+  padding: 10,
+  borderRadius: 8,
+  marginTop: 10,
+},
+btnText: {
+  color: "#fff",
+  marginLeft: 8,
+  fontWeight: "bold",
+}
 });
 
 export default NewAppointmentScreen;
