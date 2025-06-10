@@ -16,20 +16,19 @@ import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {  
   const [ipPublica, setIpPublica] = useState('');
-
   useEffect(() => {
+    
     const cargarDatos = async () => {
       const ipP = await getPublicIp();
       setIpPublica(ipP);
     };
-
     cargarDatos();
   }, []);
 
-  const { top } = useSafeAreaInsets();
+    const { top } = useSafeAreaInsets();
     const { tokenData } = useSession();      
     const nombreCompleto = `${tokenData?.nombre || ''} ${tokenData?.apellidos || ''}`.trim();
-
+    
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={[styles.header]}>
@@ -41,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
 
       <View style={styles.content}>
         <Text style={styles.title}>SIAC</Text>
-        <Text style={styles.subtitle}>medica</Text>
+        <Text style={styles.subtitle}>medic</Text>
 
         {/* Mostramos el nombre completo del usuario */}
         <Text style={styles.text}>{nombreCompleto}</Text>

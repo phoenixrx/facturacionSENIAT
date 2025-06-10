@@ -24,9 +24,10 @@ const CustomDrawer = ({ navigation }) => {
   const [ipPublica, setIpPublica] = useState('');
 
   useEffect(() => {
-    const cargarDatos = async () => {
+      const cargarDatos = async () => {
       setIpLocal(await getLocalIp());
       setIpPublica(await getPublicIp());
+      
     };
     cargarDatos();
   }, []);

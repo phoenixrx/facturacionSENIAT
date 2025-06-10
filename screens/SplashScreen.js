@@ -8,10 +8,13 @@ import Animated, {
   Easing,
   runOnJS
 } from 'react-native-reanimated';
+import { useSession } from "../context/SessionContext"; // ajusta a tu estructura
+
 
 const SplashScreen = ({ onFinish }) => {
   const screenOpacity = useSharedValue(1);
   const textOpacity = useSharedValue(1);
+  const { tokenData } = useSession(); 
 
   useEffect(() => {
     // Inicia animación pulsante del texto
@@ -24,10 +27,14 @@ const SplashScreen = ({ onFinish }) => {
       true // reversa
     );
 
-    // Después de 1.5 segundos, empieza fade-out total
+    const now = Math.floor(Date.now() / 1000);
+       const isExpired = !tokenData?.exp || now >= tokenData.exp;
+    
     setTimeout(() => {
       screenOpacity.value = withTiming(0, { duration: 500 }, (finished) => {
-        if (finished) runOnJS(onFinish)();
+        if (finished) {
+          runOnJS(onFinish)(isExpired ? "LoginScreen" : "HomeScreen");
+        }
       });
     }, 1500);
   }, []);
