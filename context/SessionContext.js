@@ -9,8 +9,7 @@ export const SessionProvider = ({ children }) => {
   const [fotoUri, setFotoUri] = useState(null);
   const [tokenData, setTokenData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-
+  
   // Cargar sesión al iniciar la app
   useEffect(() => {
     const loadSession = async () => {

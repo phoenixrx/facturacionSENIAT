@@ -31,7 +31,7 @@ function DrawerRoutes() {
 }
 
 function AppNavigator() {
-  const { session, loading } = useSession();
+  const { session, loading, tokenData } = useSession();
   const [showSplash, setShowSplash] = useState(true);
 
   const handleSplashFinish = () => setShowSplash(false);
@@ -39,7 +39,17 @@ function AppNavigator() {
   if (loading || showSplash) {
     return <SplashScreen onFinish={handleSplashFinish} />;
   }
-
+   const now = Math.floor(Date.now() / 1000);
+   const isExpired = !tokenData?.exp || now >= tokenData?.exp;
+  if (isExpired) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
