@@ -25,6 +25,7 @@ const NewAppointmentScreen = ({ navigation }) => {
   const id_medico = tokenData?.id_especialista || '';
   const toggleSection = (setter, value) => setter(!value);
 
+
   // Estados para sección Paciente
   const [tipoCedula, setTipoCedula] = useState("");
   const [cedula, setCedula] = useState("");
@@ -45,6 +46,7 @@ const NewAppointmentScreen = ({ navigation }) => {
   // Estados para secciones cita y estudios
   const [motivoCita, setMotivoCita] = useState("");
   const [estudios, setEstudios] = useState("");
+  const [idCli, setIdCli] = useState(null);
 
   const handleBuscarPaciente = async () => {
     setLoading(true);
@@ -93,8 +95,6 @@ const NewAppointmentScreen = ({ navigation }) => {
     Alert.alert("Cita Agendada", `Motivo: ${motivoCita}\nEstudios: ${estudios}`);
   };
 
-  const [clinicaSeleccionada, setClinicaSeleccionada] = useState(null);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* Header */}
@@ -108,8 +108,9 @@ const NewAppointmentScreen = ({ navigation }) => {
       {/* Contenido Scrollable cambiar id_medico */}
       <ClinicaSelector
                 id_medico={id_medico}
-                onClinicaSelect={(idCli) => setClinicaSeleccionada(idCli)}
-                
+                onSelectClinica={(clinica) => {
+                  setIdCli(clinica.id_cli); // esto define idCli correctamente
+                }}              
               />
       <ScrollView contentContainerStyle={styles.container}>
         
@@ -172,11 +173,13 @@ const NewAppointmentScreen = ({ navigation }) => {
           <Ionicons name={isEstudiosOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
 
-        {isEstudiosOpen && (
+        {isEstudiosOpen && idCli && (
           <SeccionEstudios
             styles={styles}
             estudios={estudios}
             setEstudios={setEstudios}
+            idMedico={id_medico}
+            idCli={idCli}
           />
         )}
 

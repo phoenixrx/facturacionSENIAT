@@ -59,6 +59,7 @@ const ClinicaSelector = ({ id_medico, onSelectClinica }) => {
     setSelectedClinica(clinica);
     setIsDropdownVisible(false);
     onSelectClinica?.(clinica);
+    onClinicaSelect?.(clinica.id_cli);
   };
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;
