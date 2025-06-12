@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  SafeAreaView,
+  
   View,
   Text,
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {
   Image,
   StyleSheet
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 import SeccionPaciente from "../components/SeccionPaciente";
@@ -90,6 +91,8 @@ const NewAppointmentScreen = ({ navigation }) => {
     // Aquí podrías enviar todo a tu API
     Alert.alert("Cita Agendada", `Motivo: ${motivoCita}\nEstudios: ${estudios}`);
   };
+
+  
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
