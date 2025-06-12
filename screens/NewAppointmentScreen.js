@@ -1,64 +1,50 @@
 import React, { useState } from "react";
 import {
+  SafeAreaView,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Alert,
-  ActivityIndicator,
   Image,
-  Platform,
-  LayoutAnimation,
-  UIManager,
+  StyleSheet
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import SeccionPaciente from "../components/SeccionPaciente";
+import SeccionDatosCita from "../components/SeccionDatosCita";
+import SeccionEstudios from "../components/SeccionEstudios";
 
 const NewAppointmentScreen = ({ navigation }) => {
+  // Estados para los acordeones
   const [isPacienteOpen, setIsPacienteOpen] = useState(true);
   const [isDatosOpen, setIsDatosOpen] = useState(false);
   const [isEstudiosOpen, setIsEstudiosOpen] = useState(false);
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [fechaNacimientoDate, setFechaNacimientoDate] = useState(new Date());
+  const toggleSection = (setter, value) => setter(!value);
 
+  // Estados para sección Paciente
   const [tipoCedula, setTipoCedula] = useState("");
   const [cedula, setCedula] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingAgregar, setLoadingAgregar] = useState(false);
   const [paciente, setPaciente] = useState(null);
   const [nuevoPaciente, setNuevoPaciente] = useState(false);
-  const [loading, setLoading] = useState(false);
-
   const [nombre, setNombre] = useState("");
   const [apellidos, setApellidos] = useState("");
   const [telefono, setTelefono] = useState("");
   const [correo, setCorreo] = useState("");
   const [direccion, setDireccion] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [fechaNacimientoDate, setFechaNacimientoDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [sexo, setSexo] = useState("");
 
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setFechaNacimientoDate(selectedDate);
-      const formatted = selectedDate.toISOString().split("T")[0];
-      setFechaNacimiento(formatted);
-    }
-  };
+  // Estados para secciones cita y estudios
+  const [motivoCita, setMotivoCita] = useState("");
+  const [estudios, setEstudios] = useState("");
 
   const handleBuscarPaciente = async () => {
-    if (!tipoCedula || !cedula) {
-      Alert.alert("Error", "Debe ingresar tipo de cédula y cédula.");
-      return;
-    }
     setLoading(true);
     try {
       const response = await fetch(
@@ -80,13 +66,34 @@ const NewAppointmentScreen = ({ navigation }) => {
     }
   };
 
-  const toggleSection = (setter, value) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setter(!value);
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || fechaNacimientoDate;
+    setShowDatePicker(false);
+    setFechaNacimientoDate(currentDate);
+    const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${currentDate.getDate().toString().padStart(2, "0")}`;
+    setFechaNacimiento(formattedDate);
+  };
+
+  const handleAgendarCita = () => {
+    if (!paciente?.id_paciente) {
+      Alert.alert("Error", "Debes buscar o crear un paciente antes de agendar la cita.");
+      return;
+    }
+
+    if (!motivoCita) {
+      Alert.alert("Error", "Por favor ingresa el motivo de la cita.");
+      return;
+    }
+
+    // Aquí podrías enviar todo a tu API
+    Alert.alert("Cita Agendada", `Motivo: ${motivoCita}\nEstudios: ${estudios}`);
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* Header */}
       <View style={styles.header}>
         <Image source={require("../assets/logograma.png")} style={styles.logo} />
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -94,207 +101,83 @@ const NewAppointmentScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Contenido Scrollable */}
       <ScrollView contentContainerStyle={styles.container}>
         {/* Paciente */}
-        <TouchableOpacity
-          onPress={() => toggleSection(setIsPacienteOpen, isPacienteOpen)}
-          style={styles.accordionHeader}
-        >
+        <TouchableOpacity onPress={() => toggleSection(setIsPacienteOpen, isPacienteOpen)} style={styles.accordionHeader}>
           <Text style={styles.accordionTitle}>Paciente</Text>
           <Ionicons name={isPacienteOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
 
         {isPacienteOpen && (
-          <View style={styles.section}>
-            <Text>Tipo de Cédula y Cédula</Text>
-            <View style={styles.cedulaRow}>
-              <TextInput
-                style={[styles.input, { width: 80 }]}
-                value={tipoCedula}
-                onChangeText={(text) => {
-                    const upper = text.toUpperCase();
-
-                    // Permitir si está vacío o si es una de las letras válidas
-                    if (upper === "" || /^[VEPGJM]$/.test(upper)) {
-                    setTipoCedula(upper);
-                    }
-                }}
-                placeholder="Tipo"
-
-                    maxLength={1}
-                    />
-              <TextInput
-                style={styles.cedulaInput}
-                value={cedula}
-                onChangeText={(text) => {
-                  let cleaned = text.replace(/[^0-9-]/g, '');
-                  const parts = cleaned.split("-");
-                  if (parts.length > 2) {
-                    cleaned = parts[0] + "-" + parts[1]; 
-                  }
-                  setCedula(cleaned);
-                }}
-                keyboardType="default"
-                placeholder="Cédula"
-              />
-
-            </View>
-
-            <TouchableOpacity style={styles.searchButton} onPress={handleBuscarPaciente}>
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.searchText}>Buscar Paciente</Text>
-              )}
-            </TouchableOpacity>
-
-            {nuevoPaciente ? (
-              <>
-                <Text>Nombre</Text>
-                <TextInput style={styles.input} value={nombre} onChangeText={setNombre} />
-                <Text>Apellidos</Text>
-                <TextInput style={styles.input} value={apellidos} onChangeText={setApellidos} />
-                <Text>Teléfono</Text>
-                <TextInput style={styles.input} value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" />
-                <Text>Correo</Text>
-                <TextInput style={styles.input} value={correo} onChangeText={setCorreo} keyboardType="email-address" />
-                <Text>Direccion</Text> 
-                <TextInput style={styles.input} value={direccion} onChangeText={setDireccion}  /> 
-                <Text>Fecha de Nacimiento</Text>
-                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
-                  <Text>{fechaNacimiento || "Selecciona una fecha"}</Text>
-                </TouchableOpacity>
-                {showDatePicker && (
-                  <DateTimePicker
-                    value={fechaNacimientoDate}
-                    mode="date"
-                    display={Platform.OS === "ios" ? "spinner" : "default"}
-                    onChange={handleDateChange}
-                  />
-                )}
-                <Text>Sexo</Text>
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={sexo}
-                    onValueChange={(itemValue) => setSexo(itemValue)}
-                    style={styles.picker}
-                  >
-                    <Picker.Item label="Seleccionar..." value="" />
-                    <Picker.Item label="Masculino" value="M" />
-                    <Picker.Item label="Femenino" value="F" />
-                  </Picker>
-                </View>
-                <TouchableOpacity
-                  style={styles.agregarPacienteBtn}
-                  onPress={async () => {
-                    // Validación de campos obligatorios
-                    if (!tipoCedula || !cedula || !nombre || !apellidos || !telefono || !sexo || !fechaNacimiento || !direccion) {
-                      Alert.alert("Error", "Por favor llena todos los campos obligatorios.");
-                      return;
-                    }
-
-                    try {
-                      const response = await fetch("https://pruebas.siac.historiaclinica.org/crear-paciente", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          tipo_cedula: tipoCedula,
-                          cedula,
-                          nombres: nombre,
-                          apellidos,
-                          telef1: telefono,
-                          sexo,
-                          correo,
-                          fecha_nacimiento: fechaNacimiento,
-                          direccion,
-                        }),
-                      });
-                      const result = await response.json();
-                      console.log(result)
-                      if (!response.ok) {
-                        throw new Error("No se pudo crear el paciente.");
-                      }                      
-                      console.log(result)
-                      if(!isNaN(result.id_paciente)){
-                        Alert.alert("Éxito", "Paciente creado correctamente.");
-                        handleBuscarPaciente();
-                      }else{
-                         Alert.alert("Error", result.error);
-                      }
-                      // Puedes limpiar los campos si deseas
-                    } catch (error) {
-                      Alert.alert("Error", error.message);
-                    }
-                  }}
-                >
-                  <Icon name="person-add" size={20} color="#fff" />
-                  <Text style={styles.btnText}>Agregar Paciente</Text>
-                </TouchableOpacity>
-              </>
-            ) : paciente ? (
-              <View style={styles.patientInfo}>
-                <Text>Nombre: {paciente.nombres}</Text>
-                <Text>Apellidos: {paciente.apellidos}</Text>
-                <Text>Teléfono: {paciente.telef1}</Text>
-                <Text>Correo: {paciente.correo}</Text>
-                <Text>
-                  Fecha Nac:{" "}
-                  {paciente.fecha_nacimiento
-                    ? (() => {
-                        const d = new Date(paciente.fecha_nacimiento);
-                        return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
-                          .toString()
-                          .padStart(2, "0")}/${d.getFullYear()}`;
-                      })()
-                    : ""}
-                </Text>
-                <Text>Sexo: {paciente.sexo === "M" ? "Masculino" : "Femenino"}</Text>
-              </View>
-            ) : null}
-          </View>
+          <SeccionPaciente
+            styles={styles}
+            tipoCedula={tipoCedula}
+            setTipoCedula={setTipoCedula}
+            cedula={cedula}
+            setCedula={setCedula}
+            handleBuscarPaciente={handleBuscarPaciente}
+            loading={loading}
+            nuevoPaciente={nuevoPaciente}
+            paciente={paciente}
+            nombre={nombre}
+            setNombre={setNombre}
+            apellidos={apellidos}
+            setApellidos={setApellidos}
+            telefono={telefono}
+            setTelefono={setTelefono}
+            correo={correo}
+            setCorreo={setCorreo}
+            direccion={direccion}
+            setDireccion={setDireccion}
+            fechaNacimiento={fechaNacimiento}
+            setShowDatePicker={setShowDatePicker}
+            showDatePicker={showDatePicker}
+            fechaNacimientoDate={fechaNacimientoDate}
+            handleDateChange={handleDateChange}
+            sexo={sexo}
+            setSexo={setSexo}
+            loadingAgregar={loadingAgregar}
+            setLoadingAgregar={setLoadingAgregar}
+          />
         )}
 
         {/* Datos de la cita */}
-        <TouchableOpacity
-          onPress={() => toggleSection(setIsDatosOpen, isDatosOpen)}
-          style={styles.accordionHeader}
-        >
+        <TouchableOpacity onPress={() => toggleSection(setIsDatosOpen, isDatosOpen)} style={styles.accordionHeader}>
           <Text style={styles.accordionTitle}>Datos de la Cita</Text>
           <Ionicons name={isDatosOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
 
         {isDatosOpen && (
-          <View style={styles.section}>
-            <TextInput style={styles.input} placeholder="Motivo de la cita" />
-          </View>
+          <SeccionDatosCita
+            styles={styles}
+            motivoCita={motivoCita}
+            setMotivoCita={setMotivoCita}
+          />
         )}
 
         {/* Estudios */}
-        <TouchableOpacity
-          onPress={() => toggleSection(setIsEstudiosOpen, isEstudiosOpen)}
-          style={styles.accordionHeader}
-        >
+        <TouchableOpacity onPress={() => toggleSection(setIsEstudiosOpen, isEstudiosOpen)} style={styles.accordionHeader}>
           <Text style={styles.accordionTitle}>Estudios</Text>
           <Ionicons name={isEstudiosOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
 
         {isEstudiosOpen && (
-          <View style={styles.section}>
-            <TextInput style={styles.input} placeholder="Estudios requeridos (opcional)" />
-          </View>
+          <SeccionEstudios
+            styles={styles}
+            estudios={estudios}
+            setEstudios={setEstudios}
+          />
         )}
 
         {/* Botón Agendar */}
-        <TouchableOpacity style={styles.agendarButton} onPress={() => Alert.alert("Cita agendada")}>
+        <TouchableOpacity style={styles.agendarButton} onPress={handleAgendarCita}>
           <Text style={styles.agendarText}>Agendar Cita</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     padding: 16,
@@ -415,5 +298,4 @@ btnText: {
   fontWeight: "bold",
 }
 });
-
 export default NewAppointmentScreen;
