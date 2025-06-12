@@ -47,6 +47,7 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [motivoCita, setMotivoCita] = useState("");
   const [estudios, setEstudios] = useState("");
   const [idCli, setIdCli] = useState(null);
+  const [nota, setNota] = useState('');
 
   const handleBuscarPaciente = async () => {
     setLoading(true);
@@ -180,6 +181,8 @@ const NewAppointmentScreen = ({ navigation }) => {
             setEstudios={setEstudios}
             idMedico={id_medico}
             idCli={idCli}
+            nota={nota}
+            setNota={setNota}
           />
         )}
 

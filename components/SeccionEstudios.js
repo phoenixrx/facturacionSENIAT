@@ -1,8 +1,8 @@
 import React, { useState, useEffect }  from "react";
-import { View, Text, StyleSheet, ActivityIndicator  } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, TextInput  } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
-const SeccionEstudios = ({ styles, estudios, setEstudios, idMedico, idCli }) => {
+const SeccionEstudios = ({ styles, estudios, setEstudios, idMedico, idCli,  nota,  setNota }) => {
  const [estudiosDisponibles, setEstudiosDisponibles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,6 +58,19 @@ const SeccionEstudios = ({ styles, estudios, setEstudios, idMedico, idCli }) => 
           </Picker>
         </View>
       )}
+      <View style={{ marginTop: 16 }}>
+        <Text style={styles.label}>Nota (opcional)</Text>
+        <View style={{ borderWidth: 1, borderColor: "#ccc", borderRadius: 5, marginTop: 8 }}>
+          <TextInput
+            multiline
+            numberOfLines={4}
+            style={{ height: 80, padding: 8, textAlignVertical: "top" }}
+            placeholder="Agrega una nota..."
+            value={nota}
+            onChangeText={setNota}
+          />
+        </View>
+      </View>
     </View>
   );
 };
