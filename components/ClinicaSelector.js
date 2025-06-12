@@ -1,31 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { View, Text,  Image, ActivityIndicator, Alert, StyleSheet,FlatList, TouchableOpacity } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { useSession } from "../context/SessionContext";
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+} from 'react-native';
+import { useSession } from '../context/SessionContext';
 
-const ClinicaPicker = ({ idMedico }) => {
+const ClinicaSelector = ({ id_medico, onSelectClinica }) => {
   const [clinicas, setClinicas] = useState([]);
   const [selectedClinica, setSelectedClinica] = useState(null);
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const { session } = useSession();
 
+  const baseImageUrl = 'https://siac.empresas.historiaclinica.org/';
+
   useEffect(() => {
     const fetchClinicas = async () => {
+      if (!session?.token) return;
+
       try {
         const response = await fetch(
-          `https://pruebas.siac.historiaclinica.org/api/mobile/clinicas_med?id_medico=${idMedico}`,
+          `https://pruebas.siac.historiaclinica.org/api/mobile/clinicas_med?id_medico=${id_medico}`,
           {
             headers: {
-              Authorization: `Bearer ${session.token}`
-            }
+              Authorization: `Bearer ${session.token}`,
+            },
           }
         );
-        const data = await response.json();
-        if (data.success && Array.isArray(data.clinicas)) {
-          setClinicas(data.clinicas);
+
+        const json = await response.json();
+        
+        if (json.success && json.clinicas?.length > 0) {
+          setClinicas(json.clinicas);
+
+          if (json.clinicas.length === 1) {
+            setSelectedClinica(json.clinicas[0]);
+            onSelectClinica?.(json.clinicas[0]);
+          }
         } else {
-          throw new Error("Respuesta inválida del servidor");
+          console.warn('No se encontraron clínicas válidas');
         }
       } catch (error) {
         console.error('Error al obtener clínicas:', error);
@@ -35,89 +53,92 @@ const ClinicaPicker = ({ idMedico }) => {
     };
 
     fetchClinicas();
-  }, [idMedico, session.token]);
+  }, [id_medico, session?.token]);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#007AFF" />;
-  }
+  const handleSelect = (clinica) => {
+    setSelectedClinica(clinica);
+    setIsDropdownVisible(false);
+    onSelectClinica?.(clinica);
+  };
 
-  if (selectedClinica) {
-    return (
-      <TouchableOpacity onPress={() => setDropdownVisible(true)}>
-        <Image
-          source={{ uri: `https://siac.empresas.historiaclinica.org/${selectedClinica.logo_empresa.replace("../", "")}` }}
-          style={styles.logoGrande}
-        />
-      </TouchableOpacity>
-    );
-  }
+  if (loading) return <ActivityIndicator size="large" color="#000" />;
 
   return (
-    <View>
-      <TouchableOpacity
-        style={styles.selector}
-        onPress={() => setDropdownVisible(!dropdownVisible)}
-      >
-        <Text style={styles.selectorText}>Selecciona una clínica</Text>
-      </TouchableOpacity>
+    <View style={styles.container}>
+      {selectedClinica ? (
+        <TouchableOpacity onPress={() => setIsDropdownVisible(true)} style={styles.logoContainer}>
+          <Image
+            source={{ uri: `${baseImageUrl}${selectedClinica.logo_empresa.replace('../', '')}` }}
+            style={styles.logoGrande}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      ) : (
+        <Text style={styles.label}>Selecciona una clínica</Text>
+      )}
 
-        {dropdownVisible && (
-        <View style={styles.dropdown}>
-            {clinicas.map((item) => (
-            <TouchableOpacity
-                key={item.id_cli.toString()}
-                style={styles.option}
-                onPress={() => {
-                setSelectedClinica(item);
-                setDropdownVisible(false);
-                }}
-            >
-                <Image
-                source={{ uri: `https://pruebas.siac.historiaclinica.org/${item.logo_empresa.replace("../", "")}` }}
+      {isDropdownVisible && (
+        <FlatList
+          data={clinicas}
+          keyExtractor={(item) => item.id_cli.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.item} onPress={() => handleSelect(item)}>
+              <Image
+                source={{ uri: `${baseImageUrl}${item.logo_empresa.replace('../', '')}` }}
                 style={styles.logoMini}
-                />
-                <Text style={styles.optionText}>{item.apellidos}</Text>
+              />
+              <Text style={styles.itemText}>{item.apellidos}</Text>
             </TouchableOpacity>
-            ))}
-        </View>
-        )}
-
+          )}
+          style={styles.dropdown}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  selector: {
-    backgroundColor: '#f0f0f0',
-    padding: 12,
-    borderRadius: 6,
-    marginVertical: 10
-  },
-  selectorText: {
-    fontSize: 16,
-    color: '#333'
-  },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10
-  },
-  optionText: {
-    marginLeft: 10,
-    fontSize: 16
-  },
-  logoMini: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain'
-  },
-  logoGrande: {
-    width: 120,
-    height: 60,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-    marginVertical: 10
-  }
+    container: {
+        margin: 5,
+        alignItems: 'flex-end',
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    dropdown: {
+        width: '90%',
+        maxHeight: 250,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 8,
+        padding: 10,
+    },
+    item: {
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        paddingVertical: 2,
+    },
+    logoMini: {
+        width: 30,
+        height: 30,
+        marginRight: 10,
+    },
+    logoGrande: {
+        width: 100,
+        height: 50,
+        resizeMode: 'contain',
+    },
+    logoContainer: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 2,
+        borderRadius: 2,
+        alignItems: 'flex-end',
+        alignSelf: 'flex-end',
+    },
+    itemText: {
+        fontSize: 16,
+    },
 });
 
-export default ClinicaPicker;
+export default ClinicaSelector;

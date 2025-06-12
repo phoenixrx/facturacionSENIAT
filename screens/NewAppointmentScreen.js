@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  
   View,
   Text,
   TouchableOpacity,
@@ -11,17 +10,19 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import ClinicaSelector from "../components/ClinicaSelector";
 import SeccionPaciente from "../components/SeccionPaciente";
 import SeccionDatosCita from "../components/SeccionDatosCita";
 import SeccionEstudios from "../components/SeccionEstudios";
+import { useSession } from "../context/SessionContext";
 
 const NewAppointmentScreen = ({ navigation }) => {
   // Estados para los acordeones
   const [isPacienteOpen, setIsPacienteOpen] = useState(true);
   const [isDatosOpen, setIsDatosOpen] = useState(false);
   const [isEstudiosOpen, setIsEstudiosOpen] = useState(false);
-
+  const { tokenData } = useSession();
+  const id_medico = tokenData?.id_especialista || '';
   const toggleSection = (setter, value) => setter(!value);
 
   // Estados para sección Paciente
@@ -92,7 +93,7 @@ const NewAppointmentScreen = ({ navigation }) => {
     Alert.alert("Cita Agendada", `Motivo: ${motivoCita}\nEstudios: ${estudios}`);
   };
 
-  
+  const [clinicaSeleccionada, setClinicaSeleccionada] = useState(null);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -104,8 +105,14 @@ const NewAppointmentScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Contenido Scrollable */}
+      {/* Contenido Scrollable cambiar id_medico */}
+      <ClinicaSelector
+                id_medico={id_medico}
+                onClinicaSelect={(idCli) => setClinicaSeleccionada(idCli)}
+                
+              />
       <ScrollView contentContainerStyle={styles.container}>
+        
         {/* Paciente */}
         <TouchableOpacity onPress={() => toggleSection(setIsPacienteOpen, isPacienteOpen)} style={styles.accordionHeader}>
           <Text style={styles.accordionTitle}>Paciente</Text>
@@ -183,7 +190,10 @@ const NewAppointmentScreen = ({ navigation }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingTop: 0,
+    paddingRight: 16,
+    paddingBottom: 16,
+    paddingLeft: 16,
   },
   accordionHeader: {
     flexDirection: "row",
@@ -287,18 +297,18 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   agregarPacienteBtn: {
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor: "#007bff",
-  padding: 10,
-  borderRadius: 8,
-  marginTop: 10,
-},
-btnText: {
-  color: "#fff",
-  marginLeft: 8,
-  fontWeight: "bold",
-}
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  btnText: {
+    color: "#fff",
+    marginLeft: 8,
+    fontWeight: "bold",
+  }
 });
 export default NewAppointmentScreen;
