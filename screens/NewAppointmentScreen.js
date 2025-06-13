@@ -44,10 +44,13 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [sexo, setSexo] = useState("");
 
   // Estados para secciones cita y estudios
-  const [motivoCita, setMotivoCita] = useState("");
   const [estudios, setEstudios] = useState("");
   const [idCli, setIdCli] = useState(null);
   const [nota, setNota] = useState('');
+   const [tipoAtencion, setTipoAtencion] = useState("");
+   const [fechaInicio, setFechaInicio] = useState("");
+   const [fechaFin, setFechaFin] = useState("");
+   const [seguroSeleccionado, setSeguroSeleccionado] = useState("");
 
   const handleBuscarPaciente = async () => {
     setLoading(true);
@@ -163,8 +166,14 @@ const NewAppointmentScreen = ({ navigation }) => {
         {isDatosOpen && (
           <SeccionDatosCita
             styles={styles}
-            motivoCita={motivoCita}
-            setMotivoCita={setMotivoCita}
+            tipoAtencion={tipoAtencion}
+            setTipoAtencion={setTipoAtencion}
+            fechaInicio={fechaInicio}
+            setFechaInicio={setFechaInicio}
+            fechaFin={fechaFin}
+            setFechaFin={setFechaFin}
+            seguroSeleccionado={seguroSeleccionado}
+            setSeguroSeleccionado={setSeguroSeleccionado}
           />
         )}
 
@@ -315,6 +324,36 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginLeft: 8,
     fontWeight: "bold",
+  }, 
+  radioOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginRight: 8,
+    flex: 1
+  },
+  radioSelected: {
+    borderColor: '#007AFF'
+  },
+  radioCircle: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  radioDot: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#007AFF'
   }
 });
+
+
 export default NewAppointmentScreen;

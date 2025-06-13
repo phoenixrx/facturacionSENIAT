@@ -7,8 +7,7 @@ const SeccionEstudios = ({ styles, estudios, setEstudios, idMedico, idCli,  nota
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    var numeroDia = new Date().getDay();
-    console.log(`https://pruebas.siac.historiaclinica.org/api/estudios-filtrados?id_medico=${idMedico}&id_cli=${idCli}&dia=${numeroDia}`)
+    
     const fetchEstudios = async () => {
     var numeroDia = new Date().getDay();
       try {
