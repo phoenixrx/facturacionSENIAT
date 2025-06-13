@@ -1,5 +1,8 @@
 // context/SessionContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import {
+  Alert,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SessionContext = createContext();
@@ -26,7 +29,7 @@ export const SessionProvider = ({ children }) => {
         let token_decoded = decodeJWT_local(payloadPart)
         let token_d = JSON.parse(token_decoded);
           if(token_d.id_especialista==0 || token_d.id_especialista ===null || token_d.id_especialista ==undefined ){
-            alert('Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
+                        Alert.alert('No autorizado','Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
             await logout();
           }
         setTokenData(JSON.parse(token_decoded)); 
@@ -54,7 +57,7 @@ export const SessionProvider = ({ children }) => {
         let token_decoded = decodeJWT_local(payloadPart);
         let token_d = JSON.parse(token_decoded);
           if(token_d.id_especialista==0 || token_d.id_especialista ===null || token_d.id_especialista ==undefined ){
-            alert('Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
+            alert('No autorizado','Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
             await logout();
           }
 
