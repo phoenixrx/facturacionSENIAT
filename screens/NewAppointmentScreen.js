@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   searchButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: "#1b5f7d",
     padding: 10,
     borderRadius: 6,
     alignItems: "center",
@@ -240,11 +240,11 @@ const styles = StyleSheet.create({
   patientInfo: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: "#fef3c7",
+    backgroundColor: "#8fccc3",
     borderRadius: 6,
   },
   agendarButton: {
-    backgroundColor: "#10b981",
+    backgroundColor: "#204b5e",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
