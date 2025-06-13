@@ -24,6 +24,11 @@ export const SessionProvider = ({ children }) => {
         
         const [headerPart, payloadPart, signaturePart] = JSON.stringify(storedSession).split('.');
         let token_decoded = decodeJWT_local(payloadPart)
+        let token_d = JSON.parse(token_decoded);
+          if(token_d.id_especialista==0 || token_d.id_especialista ===null || token_d.id_especialista ==undefined ){
+            alert('Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
+            await logout();
+          }
         setTokenData(JSON.parse(token_decoded)); 
         
         }
@@ -46,7 +51,13 @@ export const SessionProvider = ({ children }) => {
       }
 
       const [headerPart, payloadPart, signaturePart] = JSON.stringify(sessionData).split('.');
-        let token_decoded = decodeJWT_local(payloadPart)
+        let token_decoded = decodeJWT_local(payloadPart);
+        let token_d = JSON.parse(token_decoded);
+          if(token_d.id_especialista==0 || token_d.id_especialista ===null || token_d.id_especialista ==undefined ){
+            alert('Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
+            await logout();
+          }
+
         setTokenData(JSON.parse(token_decoded));          
     } catch (error) {
       console.error('Error guardando la sesión:', error);
