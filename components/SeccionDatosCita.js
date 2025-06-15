@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput,StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 
@@ -11,11 +11,16 @@ const SeccionDatosCita = ({
   setFechaInicio,
   fechaFin,
   setFechaFin,
+  entidadSeleccionada,
+  setEntidadSeleccionada,
   seguroSeleccionado,
-  setSeguroSeleccionado
+  setSeguroSeleccionado,
+  idCli
 }) => {
   const [showPickerInicio, setShowPickerInicio] = useState(false);
   const [showPickerFin, setShowPickerFin] = useState(false);
+  const [entidades, setEntidades] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const tipos = [
     { label: 'Particular', key: 'P' },
@@ -23,16 +28,59 @@ const SeccionDatosCita = ({
     { label: 'Empresas', key: 'E' },
     { label: 'Interno', key: 'I' }
   ];
-  const opcionesSeguro = [
-    { label: 'Seleccione', value: '' },
-    { label: 'Seguro ABC', value: 'abc' },
-    { label: 'Seguro XYZ', value: 'xyz' },
-    { label: 'Seguro QRS', value: 'qrs' },
-  ];
+   const etiquetas = {
+    S: 'Seleccione seguro',
+    E: 'Seleccione empresa',
+    I: 'Seleccione entidad interna'
+  };
 
   const formatoFecha = (date) => {
     return date ? new Date(date).toLocaleString() : 'Seleccionar fecha';
   };
+
+  
+  useEffect(() => {
+    const fetchEntidades = async () => {
+      if (tipoAtencion === 'P') return;
+
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://pruebas.siac.historiaclinica.org/api/tipo_admision?tipo=${tipoAtencion}&clinic_id=${idCli}`
+        );
+        const json = await response.json();
+        let identificador = '';
+        switch (tipoAtencion) {
+          case 'S':
+            identificador = 'id_seguro';
+            break;
+          case 'E':
+            identificador = 'id_empresa';
+            break;
+          case 'I':
+            identificador = 'id_tipo_interno';
+            break;
+          default:
+            break;
+        }        
+        if (Array.isArray(json)) {
+          setEntidades([{ label: '-- Seleccione --', value: '' }, ...json.map(ent => ({
+            label: ent.descripcion,
+            value: ent[identificador]
+          }))]);
+        } else {
+          setEntidades([]);
+        }
+      } catch (error) {
+        console.error('Error al obtener entidades:', error);
+        setEntidades([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEntidades();
+  }, [tipoAtencion]);
 
   return (
     <View style={styles.section}>
@@ -75,61 +123,55 @@ const SeccionDatosCita = ({
       />
 
      {/* Tipo de atención (radio buttons agrupados) */}
+      <View style={{ marginTop: 16 }}>
       <Text style={styles.label}>Tipo de atención</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-  {tipos.slice(0, 2).map(({ label, key }) => (
-    <TouchableOpacity
-      key={key}
-      onPress={() => setTipoAtencion(key)}
-      style={[
-        styles.radioOption,
-        tipoAtencion === key && styles.radioSelected
-      ]}
-    >
-      <View style={styles.radioCircle}>
-        {tipoAtencion === key && <View style={styles.radioDot} />}
-      </View>
-      <Text style={{ marginLeft: 8 }}>{label}</Text>
-    </TouchableOpacity>
-  ))}
-</View>
 
-<View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-  {tipos.slice(2).map(({ label, key }) => (
-    <TouchableOpacity
-      key={key}
-      onPress={() => setTipoAtencion(key)}
-      style={[
-        styles.radioOption,
-        tipoAtencion === key && styles.radioSelected
-      ]}
-    >
-      <View style={styles.radioCircle}>
-        {tipoAtencion === key && <View style={styles.radioDot} />}
-      </View>
-      <Text style={{ marginLeft: 8 }}>{label}</Text>
-    </TouchableOpacity>
-  ))}
-</View>
-
-
-      {/* Picker adicional si no es Particular */}
-      {tipoAtencion !== 'Particular' && (
-        <>
-          <Text style={styles.label}>Seleccione seguro</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={seguroSeleccionado}
-              onValueChange={(itemValue) => setSeguroSeleccionado(itemValue)}
-              style={styles.picker}
+      {/* Radios agrupados */}
+      {[0, 2].map(start => (
+        <View key={start} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+          {tipos.slice(start, start + 2).map(({ label, key }) => (
+            <TouchableOpacity
+              key={key}
+              onPress={() => {
+                setTipoAtencion(key);
+                setEntidadSeleccionada(''); // Limpiar picker
+              }}
+              style={[
+                styles.radioOption,
+                tipoAtencion === key && styles.radioSelected
+              ]}
             >
-              {opcionesSeguro.map((item) => (
-                <Picker.Item key={item.value} label={item.label} value={item.value} />
-              ))}
-            </Picker>
+              <View style={styles.radioCircle}>
+                {tipoAtencion === key && <View style={styles.radioDot} />}
+              </View>
+              <Text style={{ marginLeft: 8 }}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ))}
+
+      {/* Picker condicional */}
+      {tipoAtencion !== 'P' && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={styles.label}>{etiquetas[tipoAtencion]}</Text>
+          <View style={styles.pickerContainer}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#000" />
+            ) : (
+              <Picker
+                selectedValue={entidadSeleccionada}
+                onValueChange={(itemValue) => setEntidadSeleccionada(itemValue)}
+                style={styles.picker}
+              >
+                {entidades.map(item => (
+                  <Picker.Item key={item.value} label={item.label} value={item.value} />
+                ))}
+              </Picker>
+            )}
           </View>
-        </>
+        </View>
       )}
+    </View>
     </View>
     
   );

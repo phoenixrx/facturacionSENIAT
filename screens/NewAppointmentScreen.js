@@ -47,10 +47,12 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [estudios, setEstudios] = useState("");
   const [idCli, setIdCli] = useState(null);
   const [nota, setNota] = useState('');
-   const [tipoAtencion, setTipoAtencion] = useState("");
+   
    const [fechaInicio, setFechaInicio] = useState("");
    const [fechaFin, setFechaFin] = useState("");
    const [seguroSeleccionado, setSeguroSeleccionado] = useState("");
+   const [tipoAtencion, setTipoAtencion] = useState('P');
+    const [entidadSeleccionada, setEntidadSeleccionada] = useState('');
 
   const handleBuscarPaciente = async () => {
     setLoading(true);
@@ -89,14 +91,38 @@ const NewAppointmentScreen = ({ navigation }) => {
       Alert.alert("Error", "Debes buscar o crear un paciente antes de agendar la cita.");
       return;
     }
-
-    if (!motivoCita) {
-      Alert.alert("Error", "Por favor ingresa el motivo de la cita.");
+    Alert.alert('Datos',`${paciente.id_paciente}`);
+    let titulo = paciente.nombres + ' ' + paciente.apellidos 
+    if(!idCli  || idCli=='' || idCli==0){
+      Alert.alert("Error", "Debes seleccionar la clinica antes de agendar la cita.");
+      return;
+    }
+    if(!id_medico || id_medico=='' || id_medico==0 ){
+      Alert.alert("Error", "Ocurrio un error al asignar el medico de la cita.");
       return;
     }
 
+
+    if(!fechaInicio || fechaInicio=='' || fechaInicio==0 ){
+      Alert.alert("Error", "Debes seleccionar la fecha antes de agendar la cita.");
+      return;
+    }
+
+    let data = {
+      id_paciente: paciente.id_paciente,
+      tipo_consulta:tipoAtencion || 'P',
+      id_cli: idCli,
+      title: titulo || 'Cita medica' ,
+      nota: nota,
+      id_med: id_medico,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      tipo_sel: seguroSeleccionado,
+      estudios: estudios
+    }
+    console.log(data)
     // Aquí podrías enviar todo a tu API
-    Alert.alert("Cita Agendada", `Motivo: ${motivoCita}\nEstudios: ${estudios}`);
+    //Alert.alert("Cita Agendada", `Motivo: Estudios: ${estudios}`);
   };
 
   return (
@@ -174,6 +200,9 @@ const NewAppointmentScreen = ({ navigation }) => {
             setFechaFin={setFechaFin}
             seguroSeleccionado={seguroSeleccionado}
             setSeguroSeleccionado={setSeguroSeleccionado}
+            entidadSeleccionada={entidadSeleccionada}
+            setEntidadSeleccionada={setEntidadSeleccionada}
+            idCli={idCli}
           />
         )}
 
