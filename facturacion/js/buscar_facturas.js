@@ -180,8 +180,9 @@ function generarPaginacionBusqueda(pagination) {
   prevLi.appendChild(prevLink);
   paginationEl.appendChild(prevLi);
 
+  let paginas_total = Math.min(pagination.totalPages, 15);
   // Páginas
-  for (let i = 1; i <= pagination.totalPages; i++) {
+  for (let i = 1; i <= paginas_total; i++) {
     const li = document.createElement('li');
     li.className = 'page-item' + (i === pagination.pagina ? ' active' : '');
     const link = document.createElement('a');

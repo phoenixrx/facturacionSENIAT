@@ -98,9 +98,21 @@ function primera_carga(){
     opciones();
     tasa();
     fetchMoneda();
-    const today = new Date().toISOString().split('T')[0];
+
+    function getLocalDateWithoutTime() {
+        const now = new Date();
+        const offsetInMilliseconds = -4 * 60 * 60 * 1000; // Caracas GMT-4
+        const localTime = new Date(now.getTime() + offsetInMilliseconds);
+
+        const year = localTime.getFullYear();
+        const month = String(localTime.getMonth() + 1).padStart(2, '0'); // Los meses empiezan en 0
+        const day = String(localTime.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+    
     document.querySelectorAll('input[type="date"]').forEach(input => {
-        input.value = today;
+        input.value = getLocalDateWithoutTime();
     });
     const urlParams = new URLSearchParams(window.location.search);
     const admision = urlParams.get('admision');
