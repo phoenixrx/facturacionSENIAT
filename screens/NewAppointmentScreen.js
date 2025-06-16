@@ -102,10 +102,25 @@ const NewAppointmentScreen = ({ navigation }) => {
       return;
     }
 
-
     if(!fechaInicio || fechaInicio=='' || fechaInicio==0 ){
       Alert.alert("Error", "Debes seleccionar la fecha antes de agendar la cita.");
       return;
+    }
+
+    if(!fechaFin || fechaFin=='' || fechaFin==0 ){
+      Alert.alert("Error", "Debes seleccionar la fecha antes de agendar la cita.");
+      return;
+    }
+
+    if(!estudios || estudios=='' || estudios==0 ){
+      Alert.alert("Error", "Debes seleccionar el estudio antes de agendar la cita.");
+      return;
+    }
+    if(tipoAtencion!='P'){
+      if(!seguroSeleccionado || seguroSeleccionado=='' || seguroSeleccionado==0 ){
+        Alert.alert("Error", "Debes seleccionar la empresa-seguro.");
+        return;
+      }
     }
 
     let data = {
@@ -117,7 +132,7 @@ const NewAppointmentScreen = ({ navigation }) => {
       id_med: id_medico,
       fecha_inicio: fechaInicio,
       fecha_fin: fechaFin,
-      tipo_sel: seguroSeleccionado,
+      tipo_sel: seguroSeleccionado||0,
       estudios: estudios
     }
     console.log(data)
