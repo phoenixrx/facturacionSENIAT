@@ -194,7 +194,36 @@ const NewAppointmentScreen = ({ navigation }) => {
                   [
                     {
                       text: 'OK',
-                      onPress: () => navigation.goBack()
+                      onPress: () => {
+                        setIsPacienteOpen(true);
+                        setIsDatosOpen(false);
+                        setIsEstudiosOpen(false);
+                        setTipoCedula("");
+                        setCedula("");
+                        setLoading(false);
+                        setLoadingAgregar(false);
+                        setPaciente(null);
+                        setNuevoPaciente(false);
+                        setNombre("");
+                        setApellidos("");
+                        setTelefono("");
+                        setCorreo("");
+                        setDireccion("");
+                        setFechaNacimiento("");
+                        setFechaNacimientoDate(new Date());
+                        setShowDatePicker(false);
+                        setSexo("");
+                        setEstudios("");
+                        setIdCli(null);
+                        setNota('');
+                      
+                        setFechaInicio("");
+                        setFechaFin("");
+                        setSeguroSeleccionado("");
+                        setTipoAtencion('P');
+                        setEntidadSeleccionada('');
+                        
+                        navigation.goBack()}
                     }
                   ],
                   { cancelable: false }
