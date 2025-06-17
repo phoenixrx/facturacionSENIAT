@@ -104,23 +104,14 @@ const SeccionDatosCita = ({
       />
 
       {/* Fecha y hora fin */}
-      <Text style={styles.label}>Fecha y hora de fin</Text>
-      <TouchableOpacity
-        onPress={() => setShowPickerFin(true)}
-        style={styles.input}
-      >
-        <Text>{formatoFecha(fechaFin)}</Text>
-      </TouchableOpacity>
-      <DateTimePickerModal
-        isVisible={showPickerFin}
-        mode="datetime"
-        date={fechaFin || new Date()}
-        onConfirm={(date) => {
-          setFechaFin(date);
-          setShowPickerFin(false);
-        }}
-        onCancel={() => setShowPickerFin(false)}
-      />
+      <Text style={styles.label}>Duración (minutos)</Text>
+          <TextInput            
+            style={[styles.input]}      
+            placeholder="00"
+            value={fechaFin}
+            onChangeText={setFechaFin}
+            keyboardType="numeric"
+          />
 
      {/* Tipo de atención (radio buttons agrupados) */}
       <View style={{ marginTop: 16 }}>

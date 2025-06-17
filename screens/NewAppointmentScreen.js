@@ -21,7 +21,7 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [isPacienteOpen, setIsPacienteOpen] = useState(true);
   const [isDatosOpen, setIsDatosOpen] = useState(false);
   const [isEstudiosOpen, setIsEstudiosOpen] = useState(false);
-  const { tokenData } = useSession();
+  const { tokenData, session } = useSession();
   const id_medico = tokenData?.id_especialista || '';
   const toggleSection = (setter, value) => setter(!value);
 
@@ -55,6 +55,10 @@ const NewAppointmentScreen = ({ navigation }) => {
     const [entidadSeleccionada, setEntidadSeleccionada] = useState('');
 
   const handleBuscarPaciente = async () => {
+    if(tipoCedula=='' || cedula=='' || cedula.length < 5 ){
+      Alert.alert('Cedula', 'Error de la cedula a buscar');
+      return;
+    }
     setLoading(true);
     try {
       const response = await fetch(
@@ -86,7 +90,7 @@ const NewAppointmentScreen = ({ navigation }) => {
     setFechaNacimiento(formattedDate);
   };
 
-  const handleAgendarCita = () => {
+  const handleAgendarCita = async () => {
     if (!paciente?.id_paciente) {
       Alert.alert("Error", "Debes buscar o crear un paciente antes de agendar la cita.");
       return;
@@ -107,8 +111,8 @@ const NewAppointmentScreen = ({ navigation }) => {
       return;
     }
 
-    if(!fechaFin || fechaFin=='' || fechaFin==0 ){
-      Alert.alert("Error", "Debes seleccionar la fecha antes de agendar la cita.");
+    if(!fechaFin || fechaFin=='' || fechaFin==0 || isNaN(fechaFin) ){
+      Alert.alert("Error", "Debes seleccionar la duración de la cita.");
       return;
     }
 
@@ -117,27 +121,93 @@ const NewAppointmentScreen = ({ navigation }) => {
       return;
     }
     if(tipoAtencion!='P'){
-      if(!seguroSeleccionado || seguroSeleccionado=='' || seguroSeleccionado==0 ){
+      if(!entidadSeleccionada || entidadSeleccionada=='' || entidadSeleccionada==0 ){
         Alert.alert("Error", "Debes seleccionar la empresa-seguro.");
         return;
       }
     }
 
+    // Validar que la fecha de inicio no sea menor a hoy
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const inicio = new Date(fechaInicio);
+    if (inicio < hoy) {
+      Alert.alert("Error", "La fecha de inicio no puede ser menor a hoy.");
+      return;
+    }
+
+    let fecha_inicio, fecha_fin;
+    if (fechaInicio) {
+      const f = new Date(fechaInicio);
+      const year = f.getFullYear();
+      const month = String(f.getMonth() + 1).padStart(2, '0');
+      const day = String(f.getDate()).padStart(2, '0');
+      const hours = String(f.getHours()).padStart(2, '0');
+      const minutes = String(f.getMinutes()).padStart(2, '0');
+      fecha_inicio = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    if (fecha_inicio && fechaFin) {
+      const f = new Date(fecha_inicio);
+      f.setMinutes(f.getMinutes() + parseInt(fechaFin));
+
+      const year = f.getFullYear();
+      const month = String(f.getMonth() + 1).padStart(2, '0');
+      const day = String(f.getDate()).padStart(2, '0');
+      const hours = String(f.getHours()).padStart(2, '0');
+      const minutes = String(f.getMinutes()).padStart(2, '0');
+
+      fecha_fin = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
     let data = {
-      id_paciente: paciente.id_paciente,
-      tipo_consulta:tipoAtencion || 'P',
-      id_cli: idCli,
-      title: titulo || 'Cita medica' ,
+      id_paciente: paciente.id_paciente.toString(),
+      tipo_consulta: tipoAtencion || 'P',
+      id_cli: idCli.toString(),
+      title: titulo || 'Cita medica',
       nota: nota,
       id_med: id_medico,
-      fecha_inicio: fechaInicio,
-      fecha_fin: fechaFin,
-      tipo_sel: seguroSeleccionado||0,
+      fecha_inicio: fecha_inicio,
+      fecha_fin: fecha_fin,
+      tipo_sel: entidadSeleccionada || 0,
       estudios: estudios
     }
-    console.log(data)
-    // Aquí podrías enviar todo a tu API
-    //Alert.alert("Cita Agendada", `Motivo: Estudios: ${estudios}`);
+    
+    const { token } = session;
+    try {
+    
+      const response = await fetch('https://pruebas.siac.historiaclinica.org/api/mobile/crear-cita', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    
+    if (result.success==true) {
+      Alert.alert(
+                  'Éxito',
+                  'Cita agendada correctamente',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => navigation.goBack()
+                    }
+                  ],
+                  { cancelable: false }
+                );
+    
+    } else {
+      console.error('Error en la respuesta del servidor', result);
+      Alert.alert('Error', result?.message || 'No se pudo agendar la cita.');
+    }
+  } catch (error) {
+    console.error('Error al enviar la solicitud', error);
+    Alert.alert('Error', 'Ocurrió un error al conectar con el servidor.');
+  }
   };
 
   return (

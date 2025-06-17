@@ -92,11 +92,12 @@ const SeccionPaciente = ({
         <TextInput
           style={[styles.input, { width: 80 }]}
           value={tipoCedula}
+          
           onChangeText={(text) => {
             const upper = text.toUpperCase();
             if (upper === "" || /^[VEPGJM]$/.test(upper)) setTipoCedula(upper);
           }}
-          placeholder="Tipo"
+          placeholder="V, E, J"
           maxLength={1}
         />
         <TextInput
