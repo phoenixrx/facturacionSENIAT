@@ -95,7 +95,6 @@ const NewAppointmentScreen = ({ navigation }) => {
       Alert.alert("Error", "Debes buscar o crear un paciente antes de agendar la cita.");
       return;
     }
-    Alert.alert('Datos',`${paciente.id_paciente}`);
     let titulo = paciente.nombres + ' ' + paciente.apellidos 
     if(!idCli  || idCli=='' || idCli==0){
       Alert.alert("Error", "Debes seleccionar la clinica antes de agendar la cita.");
@@ -173,6 +172,7 @@ const NewAppointmentScreen = ({ navigation }) => {
       estudios: estudios
     }
     
+    Alert.alert('Espere porfavor',`Agendando cita...`);
     const { token } = session;
     try {
     
