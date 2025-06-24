@@ -18,6 +18,7 @@ export const SessionProvider = ({ children }) => {
     const loadSession = async () => {
       try {
         const storedSession = await AsyncStorage.getItem('session');
+        
         if (storedSession) {
           const parsed = JSON.parse(storedSession);
           setSession(parsed);
@@ -29,7 +30,7 @@ export const SessionProvider = ({ children }) => {
         let token_decoded = decodeJWT_local(payloadPart)
         let token_d = JSON.parse(token_decoded);
           if(token_d.id_especialista==0 || token_d.id_especialista ===null || token_d.id_especialista ==undefined ){
-                        Alert.alert('No autorizado','Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
+            Alert.alert('No autorizado','Su cuenta no tiene permisos de especialista medico. Cerrando sesión.');
             await logout();
           }
         setTokenData(JSON.parse(token_decoded)); 
@@ -48,6 +49,7 @@ export const SessionProvider = ({ children }) => {
   const login = async (sessionData) => {
     try {
       await AsyncStorage.setItem('session', JSON.stringify(sessionData));
+           
       setSession(sessionData);
       if (sessionData.fotoUri) {
         setFotoUri(sessionData.fotoUri);

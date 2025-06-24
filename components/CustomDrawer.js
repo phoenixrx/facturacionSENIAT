@@ -19,7 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSession } from '../context/SessionContext';
 
 const CustomDrawer = ({ navigation }) => {
-  const { session, logout, fotoUri, setFotoUri } = useSession();
+  const { session, logout, fotoUri, setFotoUri, tokenData } = useSession();
   const [ipLocal, setIpLocal] = useState('');
   const [ipPublica, setIpPublica] = useState('');
 
@@ -27,62 +27,66 @@ const CustomDrawer = ({ navigation }) => {
       const cargarDatos = async () => {
       setIpLocal(await getLocalIp());
       setIpPublica(await getPublicIp());
-      
+      setFotoUri(`https://siac.empresas.historiaclinica.org/images/usuarios/${tokenData.foto}`)      
     };
     cargarDatos();
   }, []);
 
-  const cambiarFotoPerfil = async () => {
-    const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permiso.granted) {
-      Alert.alert('Permiso denegado', 'No se puede acceder a la galería');
-      return;
-    }
+const cambiarFotoPerfil = async () => {
+  const permiso = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (!permiso.granted) {
+    Alert.alert('Permiso denegado', 'No se puede acceder a la galería');
+    return;
+  }
 
-    const resultado = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.7,
+  const resultado = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    quality: 0.7,
+  });
+
+  if (resultado.canceled) return;
+
+  const image = resultado.assets[0];
+
+  const id_med = tokenData?.id_usuario;
+  const usuario = tokenData?.usuario;
+  if (!id_med || !usuario) {
+    Alert.alert('Error', 'Faltan datos de sesión');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('id_med', id_med);
+  formData.append('foto', {
+    uri: image.uri,
+    name: `${id_med}_${usuario}.jpg`,
+    type: 'image/jpeg',
+  });
+
+  try {
+    const res = await fetch('https://siac.empresas.historiaclinica.org/images/usuarios/subir_foto.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData,
     });
 
-    if (resultado.canceled) return;
+    const text = await res.text();
 
-    const image = resultado.assets[0];
-    const { token, usuario } = session;
-
-    const formData = new FormData();
-    formData.append('usuario', usuario);
-    formData.append('foto', {
-      uri: image.uri,
-      name: `perfil-${usuario}.jpg`,
-      type: 'image/jpeg',
-    });
-
-    try {
-      const res = await fetch(
-        'https://pruebas.siac.historiaclinica.org/api/mobile/cambiar-foto-perfil',
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData,
-        }
-      );
-
-      const json = await res.json();
-      if (res.ok) {
-        Alert.alert('Éxito', 'Foto actualizada con éxito');
-        setFotoUri(image.uri);
-      } else {
-        Alert.alert('Error', json?.message || 'No se pudo subir la foto');
-      }
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Error', 'Ocurrió un error al subir la imagen');
+    if (res.ok && text.includes('correctamente')) {
+      Alert.alert('Éxito', 'Foto actualizada correctamente');
+      setFotoUri(image.uri);
+    } else {
+      Alert.alert('Error', text || 'Error al subir la imagen');
     }
-  };
+  } catch (error) {
+    console.error('Error al subir:', error);
+    Alert.alert('Error', 'Ocurrió un error al subir la imagen');
+  }
+};
+
 
   return (
     <DrawerContentScrollView contentContainerStyle={styles.container}>
@@ -100,7 +104,7 @@ const CustomDrawer = ({ navigation }) => {
             : ''}
         </Text>
         <Text style={styles.ipText}>🌐 {ipPublica || 'Cargando...'}</Text>
-        <Text style={styles.ipText}>🖧 {ipLocal || 'Cargando...'}</Text>
+        <Text style={styles.ipText}>{ipLocal || 'Cargando...'}</Text>
       </View>
 
       <View style={styles.body}>
