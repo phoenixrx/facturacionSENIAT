@@ -15,6 +15,8 @@ import CustomDrawer from './components/CustomDrawer';
 import AppointmentsScreen from './screens/AppointmentsScreen';
 import NewAppointmentScreen from './screens/NewAppointmentScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import PatientsScreen from './screens/PatientsScreen';
+
 import { Provider as PaperProvider } from 'react-native-paper';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -27,6 +29,7 @@ function DrawerRoutes() {
     >
       <Drawer.Screen name="Inicio" component={HomeScreen} />
       <Drawer.Screen name="Citas" component={AppointmentsScreen} />
+      <Drawer.Screen name="Mis Pacientes" component={PatientsScreen} />
       <Drawer.Screen name="Profile" component={ProfileScreen} />
     </Drawer.Navigator>
   );

@@ -119,6 +119,13 @@ const CustomDrawer = ({ navigation }) => {
           <Ionicons name="calendar-outline" size={22} color="#333" />
           <Text style={styles.menuText}>Citas</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate('Mis Pacientes')}
+        >
+          <Ionicons name="accessibility-outline" size={22} color="#333" />
+          <Text style={styles.menuText}>Mis pacientes</Text>
+        </TouchableOpacity>
 
         <DrawerItem
           label="Perfil"

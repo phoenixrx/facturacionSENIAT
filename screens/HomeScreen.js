@@ -54,6 +54,14 @@ const HomeScreen = ({ navigation }) => {
           <Ionicons name="calendar-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
           <Text style={styles.appointmentsText}>Ver Agenda</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.appointmentsButton}
+          onPress={() => navigation.navigate('Mis Pacientes')}
+        >
+          <Ionicons name="accessibility-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.appointmentsText}>Mis Pacientes</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
