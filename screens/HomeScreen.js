@@ -40,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
 
       <View style={styles.content}>
         <Text style={styles.title}>SIAC</Text>
-        <Text style={styles.subtitle}>medic</Text>
+        <Text style={styles.subtitle}>medica</Text>
 
         {/* Mostramos el nombre completo del usuario */}
         <Text style={styles.text}>{nombreCompleto}</Text>

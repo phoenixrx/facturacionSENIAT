@@ -131,7 +131,7 @@ const CustomDrawer = ({ navigation }) => {
         <DrawerItem
           label="Configuración"
           labelStyle={styles.itemLabel}
-          onPress={() => alert('Ir a Configuración')}
+          onPress={() => alert('Proximamente')}
           icon={({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           )}
