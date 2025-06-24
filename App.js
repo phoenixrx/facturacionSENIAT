@@ -14,7 +14,8 @@ import SplashScreen from './screens/SplashScreen';
 import CustomDrawer from './components/CustomDrawer';
 import AppointmentsScreen from './screens/AppointmentsScreen';
 import NewAppointmentScreen from './screens/NewAppointmentScreen';
-
+import ProfileScreen from './screens/ProfileScreen';
+import { Provider as PaperProvider } from 'react-native-paper';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -26,6 +27,7 @@ function DrawerRoutes() {
     >
       <Drawer.Screen name="Inicio" component={HomeScreen} />
       <Drawer.Screen name="Citas" component={AppointmentsScreen} />
+      <Drawer.Screen name="Profile" component={ProfileScreen} />
     </Drawer.Navigator>
   );
 }
@@ -39,8 +41,10 @@ function AppNavigator() {
   if (loading || showSplash) {
     return <SplashScreen onFinish={handleSplashFinish} />;
   }
-   const now = Math.floor(Date.now() / 1000);
-   const isExpired = !tokenData?.exp || now >= tokenData?.exp;
+
+  const now = Math.floor(Date.now() / 1000);
+  const isExpired = !tokenData?.exp || now >= tokenData?.exp;
+
   if (isExpired) {
     return (
       <NavigationContainer>
@@ -50,6 +54,7 @@ function AppNavigator() {
       </NavigationContainer>
     );
   }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -70,8 +75,10 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SessionProvider>
-        <AppNavigator />
-        <Toast />
+         <PaperProvider>
+          <AppNavigator />
+          <Toast />
+        </PaperProvider>
       </SessionProvider>
     </SafeAreaProvider>
   );

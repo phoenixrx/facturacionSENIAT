@@ -123,7 +123,7 @@ const CustomDrawer = ({ navigation }) => {
         <DrawerItem
           label="Perfil"
           labelStyle={styles.itemLabel}
-          onPress={() => alert('Ir a Perfil')}
+          onPress={() => navigation.navigate('Profile')}
           icon={({ color, size }) => (
             <Ionicons name="person-circle-outline" size={size} color={color} />
           )}
