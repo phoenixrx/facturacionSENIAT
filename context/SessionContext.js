@@ -22,8 +22,8 @@ export const SessionProvider = ({ children }) => {
         if (storedSession) {
           const parsed = JSON.parse(storedSession);
           setSession(parsed);
-          if (parsed.fotoUri) {
-            setFotoUri(parsed.fotoUri);
+          if (parsed.foto) {
+            setFotoUri(parsed.foto);
           }
         
         const [headerPart, payloadPart, signaturePart] = JSON.stringify(storedSession).split('.');

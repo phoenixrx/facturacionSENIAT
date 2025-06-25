@@ -1,5 +1,6 @@
 // components/CustomDrawer.js
 import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -17,17 +18,53 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { getLocalIp, getPublicIp } from '../utils/network';
 import * as ImagePicker from 'expo-image-picker';
 import { useSession } from '../context/SessionContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const CustomDrawer = ({ navigation }) => {
   const { session, logout, fotoUri, setFotoUri, tokenData } = useSession();
   const [ipLocal, setIpLocal] = useState('');
   const [ipPublica, setIpPublica] = useState('');
+  
+useFocusEffect(
+  React.useCallback(() => {
+    const cargarDatos = async () => {
+
+      const storedSession = await AsyncStorage.getItem('session');
+      let fotourl = `https://siac.empresas.historiaclinica.org/images/usuarios/${tokenData.foto}`;
+
+      if (storedSession) {
+        const parsedSession = JSON.parse(storedSession);
+        if (parsedSession.foto) {
+            fotourl = parsedSession.foto ? parsedSession.foto : tokenData.foto;
+        }
+      }
+      
+      setFotoUri(fotourl);
+    };
+
+    cargarDatos();
+  }, [tokenData])
+);
 
   useEffect(() => {
       const cargarDatos = async () => {
       setIpLocal(await getLocalIp());
-      setIpPublica(await getPublicIp());
-      setFotoUri(`https://siac.empresas.historiaclinica.org/images/usuarios/${tokenData.foto}`)      
+      setIpPublica(await getPublicIp());      
+      const storedSession = await AsyncStorage.getItem('session');
+      let fotourl = `https://siac.empresas.historiaclinica.org/images/usuarios/${tokenData.foto}`
+      if (storedSession) {
+        const parsedSession = JSON.parse(storedSession);
+        fotourl = parsedSession.foto ? parsedSession.foto : tokenData.foto;
+      }
+      if(!fotourl.startsWith('file:')){
+        if (!fotourl.startsWith('https://siac.empresas.historiaclinica.org/images/usuarios/')) {
+          fotourl = `https://siac.empresas.historiaclinica.org/images/usuarios/${fotourl}`;
+        }
+      }
+     
+
+      
+      setFotoUri(fotourl)        
     };
     cargarDatos();
   }, []);
@@ -78,6 +115,16 @@ const cambiarFotoPerfil = async () => {
     if (res.ok && text.includes('correctamente')) {
       Alert.alert('Éxito', 'Foto actualizada correctamente');
       setFotoUri(image.uri);
+      const storedSession = await AsyncStorage.getItem('session');
+
+      if (storedSession) {
+        const parsedSession = JSON.parse(storedSession);
+
+        // Agregar o actualizar el campo "foto"
+        parsedSession.foto = image.uri;
+        // Guardar nuevamente en AsyncStorage
+        await AsyncStorage.setItem('session', JSON.stringify(parsedSession));
+      }
     } else {
       Alert.alert('Error', text || 'Error al subir la imagen');
     }
@@ -158,6 +205,8 @@ const cambiarFotoPerfil = async () => {
     </DrawerContentScrollView>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
