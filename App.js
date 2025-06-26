@@ -16,6 +16,7 @@ import AppointmentsScreen from './screens/AppointmentsScreen';
 import NewAppointmentScreen from './screens/NewAppointmentScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import PatientsScreen from './screens/PatientsScreen';
+import PatientDetailScreen from './screens/PatientDetailScreen';
 
 import { Provider as PaperProvider } from 'react-native-paper';
 const Stack = createNativeStackNavigator();
@@ -65,6 +66,7 @@ function AppNavigator() {
           <>
             <Stack.Screen name="Drawer" component={DrawerRoutes} />
             <Stack.Screen name="NewAppointment" component={NewAppointmentScreen} />
+            <Stack.Screen name="PatientDetail" component={PatientDetailScreen} options={{ title: 'Detalle del Paciente' }} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} />

@@ -8,6 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +17,7 @@ import { useSession } from '../context/SessionContext';
 
 const PatientsScreen = () => {
   const navigation = useNavigation();
-  const { tokenData } = useSession();
+  const { tokenData, session } = useSession();
   const id_medico = tokenData?.id_especialista || '';
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -57,9 +58,13 @@ const getPageGroup = () => {
   if (searchCedula) url.searchParams.append('cedula', searchCedula);
 
   try {
-    const res = await fetch(url.toString());
+    const res = await fetch(url.toString(), {
+            headers: {
+              Authorization: `Bearer ${session.token}`,
+            },
+          });
     const json = await res.json();
-    
+    console.log(json)
     if (json.success) {
       const nuevos = json.pacientes || [];
       setPacientes(reset ? nuevos : [...pacientes, ...nuevos]);
@@ -84,18 +89,22 @@ const getPageGroup = () => {
   }, []);
 
 const handleSearch = () => {
+    Keyboard.dismiss(); 
   setCurrentPage(1);
   fetchPacientes(1, true); // Página 1, reset de resultados
 };
 
   const renderPaciente = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity
+    style={styles.card}
+    onPress={() => navigation.navigate('PatientDetail', { paciente: item })}
+  >
       <Text style={styles.name}>{item.paciente}</Text>
       <Text>Cédula: {item.cedula}</Text>
       <Text>Edad: {item.edad}</Text>
       <Text>Estudios: {item.estudios}</Text>
       <Text>Fecha admisión: {new Date(item.fecha_admision).toLocaleDateString()}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderPagination = () => {
@@ -186,22 +195,42 @@ return (
         onSubmitEditing={handleSearch}
       />
 
-      <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
-        <Text style={{ color: '#fff', fontWeight: 'bold' }}>Buscar</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+  style={[styles.searchBtn, loading && { opacity: 0.6 }]}
+  onPress={handleSearch}
+  disabled={loading}
+>
+  {loading ? (
+    <ActivityIndicator color="#fff" />
+  ) : (
+    <Text style={{ color: '#fff', fontWeight: 'bold' }}>Buscar</Text>
+  )}
+</TouchableOpacity>
+
 
       {/* Listado */}
-      <FlatList
-        data={pacientes}
-        keyExtractor={(item, index) => `${item.id_paciente}_${index}`}
-        renderItem={renderPaciente}
-        contentContainerStyle={{ paddingBottom: 80 }}
-        ListEmptyComponent={
-          !loading && (
-            <Text style={{ textAlign: 'center', marginTop: 20 }}>No hay pacientes</Text>
-          )
-        }
-      />
+      {loading ? (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 30 }}>
+    <ActivityIndicator size="large" color="#204b5e" />
+    <Text style={{ marginTop: 10, color: '#204b5e' }}>Buscando pacientes...</Text>
+  </View>
+) : (
+  <FlatList
+    data={pacientes}
+    keyExtractor={(item, index) => `${item.id_paciente}_${index}`}
+    renderItem={renderPaciente}
+    contentContainerStyle={{ paddingBottom: 80 }}
+    ListEmptyComponent={
+      !loading && (
+        <Text style={{ textAlign: 'center', marginTop: 20 }}>
+          No hay pacientes
+        </Text>
+      )
+    }
+  />
+)}
+
+ 
     </View>
 
     {/* Paginación */}
