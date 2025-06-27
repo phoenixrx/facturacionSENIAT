@@ -5,7 +5,7 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  ScrollView,
+  ScrollView, Linking,TouchableOpacity
 } from 'react-native';
 import { useSession } from '../context/SessionContext';
 import { decode } from 'html-entities';
@@ -59,16 +59,26 @@ const ConsultasResumen = ({ paciente }) => {
       {loading ? (
         <ActivityIndicator size="large" color="#204b5e" />
       ) : resumenes.length > 0 ? (
-        <ScrollView style={{ maxHeight: 300 }}>
+        <ScrollView >
           {resumenes.map((item, index) => {
             const cleanText = stripHtml(item.motivo_resultado);
             const resumen = truncateWords(cleanText);
             const fecha = new Date(item.fecha_creacion).toLocaleString();
             return (
-              <View key={index} style={styles.card}>
+              <TouchableOpacity  key={index} style={styles.card}
+                onPress={() => {
+                  if (item.id_consulta) {
+                    const url = `https://siac.empresas.historiaclinica.org/portal_medico/anamnesis/informe.php?id_consulta=${item.id_consulta}`;
+                    Linking.openURL(url).catch(() =>
+                      Alert.alert('Error', 'No se pudo abrir la consulta en el navegador')
+                    );
+                  }
+                }}
+                
+              >
                 <Text style={styles.date}>{fecha}</Text>
                 <Text>{resumen}</Text>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>
