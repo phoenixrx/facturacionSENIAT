@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSession } from '../context/SessionContext';
 import AdmisionesPaciente from '../components/AdmisionesPaciente';
+import ConsultasResumen from '../components/ConsultasResumen';
 
 const PatientDetailScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -142,9 +143,7 @@ const PatientDetailScreen = ({ route }) => {
           <Ionicons name={showConsultas ? 'chevron-up' : 'chevron-down'} size={22} color="#204b5e" />
         </TouchableOpacity>
         {showConsultas && (
-          <View style={styles.sectionContent}>
-            <Text>No hay consultas disponibles.</Text>
-          </View>
+          <ConsultasResumen paciente={paciente} />
         )}
       </ScrollView>
     </SafeAreaView>

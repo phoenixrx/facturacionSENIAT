@@ -15,13 +15,14 @@ const AdmisionesPaciente = ({ idPaciente, idCli, idMedico }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            filtros: [idPaciente, idCli, idMedico, idMedico, idMedico],
-            id_query: 0,
+            filtros: [idPaciente,  idMedico, idMedico, idMedico],
+            id_query: 3,
             id_contenedor: 5,
           }),
         });
 
         const json = await response.json();
+         
         setHistorico(Array.isArray(json) ? json : []);
       } catch (error) {
         console.error("Error cargando histórico:", error);
