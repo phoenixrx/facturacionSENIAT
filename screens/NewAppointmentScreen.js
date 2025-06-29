@@ -253,7 +253,7 @@ const NewAppointmentScreen = ({ navigation }) => {
       <ClinicaSelector
                 id_medico={id_medico}
                 onSelectClinica={(clinica) => {
-                  setIdCli(clinica.id_cli); // esto define idCli correctamente
+                  setIdCli(clinica);                   
                 }}              
               />
       <ScrollView contentContainerStyle={styles.container}>
