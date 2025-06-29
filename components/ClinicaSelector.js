@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useSession } from '../context/SessionContext';
 
-const ClinicaSelector = ({ id_medico, onSelectClinica }) => {
+const ClinicaSelector = ({ id_medico, onSelectClinica  }) => {
   const [clinicas, setClinicas] = useState([]);
   const [selectedClinica, setSelectedClinica] = useState(null);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -58,8 +58,7 @@ const ClinicaSelector = ({ id_medico, onSelectClinica }) => {
   const handleSelect = (clinica) => {
     setSelectedClinica(clinica);
     setIsDropdownVisible(false);
-    onSelectClinica?.(clinica);
-    onClinicaSelect?.(clinica.id_cli);
+    onSelectClinica?.(clinica.id_cli);
   };
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;

@@ -83,6 +83,7 @@ return (
             style={isPasswordFocused ? styles.inputFocused : styles.input}
             onFocus={() => setIsPasswordFocused(true)}
             onBlur={() => setIsPasswordFocused(false)}
+            onSubmitEditing={handleLogin}
         />
         <Button
             title={loading ? 'Cargando...' : 'Ingresar'}
