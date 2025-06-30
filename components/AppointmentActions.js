@@ -23,21 +23,36 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
   if (!appointment || !position) return null;
   const [loading, setLoading] = useState(false);
   const openDatePicker = () => {
-    if (Platform.OS === 'android') {
-      DateTimePickerAndroid.open({
-        value: newDate,
-        mode: 'datetime',
-        is24Hour: true,
-        onChange: (event, selectedDate) => {
-          if (event.type === 'set' && selectedDate) {
-            setNewDate(selectedDate);
-          }
-        },
-      });
-    } else {
-      setShowDatePicker(true); // iOS
-    }
-  };
+  if (Platform.OS === 'android') {
+    // Primero seleccionamos la fecha
+    DateTimePickerAndroid.open({
+      value: newDate,
+      mode: 'date',
+      is24Hour: true,
+      onChange: (event, selectedDate) => {
+        if (event.type === 'set' && selectedDate) {
+          // Guardamos la fecha seleccionada y pedimos la hora
+          const updatedDate = new Date(selectedDate);
+          DateTimePickerAndroid.open({
+            value: updatedDate,
+            mode: 'time',
+            is24Hour: true,
+            onChange: (event2, selectedTime) => {
+              if (event2.type === 'set' && selectedTime) {
+                updatedDate.setHours(selectedTime.getHours());
+                updatedDate.setMinutes(selectedTime.getMinutes());
+                setNewDate(updatedDate);
+              }
+            }
+          });
+        }
+      }
+    });
+  } else {
+    setShowDatePicker(true); // iOS
+  }
+};
+
 
 
   const [showReprogramModal, setShowReprogramModal] = useState(false);
@@ -54,12 +69,13 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
       appointmentDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
       if (appointmentDate < today) {
-        Toast.show({
+        setTimeout(() => {Toast.show({
           type: 'error',
           text1: 'No se puede cancelar',
           text2: 'No puedes cancelar una cita pasada.',
           position: 'center',
-        });
+        });},300)
+        
         onClose();
         return;
       }
@@ -84,14 +100,14 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
               });
 
               const result = await response.json();
-
-              Toast.show({
+setTimeout(() => {Toast.show({
                 type: response.ok ? 'success' : 'error',
                 text1: response.ok ? 'Cita cancelada' : 'Error al cancelar',
                 text2: result?.message || 'Se ha procesado la solicitud.',
                 position: 'center',
                 visibilityTime: 3000
-              });
+              });},300)
+              
 
               if (response.ok && typeof fetchAppointments === 'function') {
                 await fetchAppointments();
@@ -158,24 +174,26 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
   const submitReprogram = async () => {
   const now = new Date();
   if (newDate < now) {
-    setShowReprogramModal(false); // <- Cerrar antes del Toast
-    Toast.show({
+    setShowReprogramModal(false); 
+    setTimeout(() => {Toast.show({
       type: 'error',
       text1: 'Fecha inválida',
       text2: 'No puedes reprogramar para una fecha anterior a hoy.',
       position: 'center'
-    });
+    });},300)
+    
     return;
   }
 
   if (duration < 15 || duration > 120) {
     setShowReprogramModal(false); // <- Cerrar antes del Toast
-    Toast.show({
+    setTimeout(() => {Toast.show({
       type: 'error',
       text1: 'Duración inválida',
       text2: 'Debe estar entre 15 y 120 minutos.',
       position: 'center'
-    });
+    });},300)
+    
     return;
   }
 
@@ -203,26 +221,27 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
 
     const result = await response.json();
 
-    setShowReprogramModal(false); // <- Cerrar antes del Toast
-
-    Toast.show({
+    setShowReprogramModal(false); 
+setTimeout(() => {Toast.show({
       type: response.ok ? 'success' : 'error',
       text1: response.ok ? 'Cita reprogramada' : 'Error al reprogramar',
       text2: result?.message || '',
       position: 'center'
-    });
+    });},300)
+    
 
     if (response.ok && typeof fetchAppointments === 'function') {
       await fetchAppointments();
     }
   } catch (err) {
-    setShowReprogramModal(false); // <- También aquí
-    Toast.show({
+    setShowReprogramModal(false); 
+    setTimeout(() => {Toast.show({
       type: 'error',
       text1: 'Error',
       text2: 'Ocurrió un error al reprogramar la cita.',
       position: 'center'
-    });
+    });},300)
+    
   } finally {
     setLoading(false);
     onClose(); // cerrar también el menú flotante

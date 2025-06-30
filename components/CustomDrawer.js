@@ -19,6 +19,8 @@ import { getLocalIp, getPublicIp } from '../utils/network';
 import * as ImagePicker from 'expo-image-picker';
 import { useSession } from '../context/SessionContext';
 import { useFocusEffect } from '@react-navigation/native';
+import Constants from 'expo-constants';
+
 
 const CustomDrawer = ({ navigation }) => {
   const { session, logout, fotoUri, setFotoUri, tokenData } = useSession();
@@ -136,6 +138,7 @@ const cambiarFotoPerfil = async () => {
 
 
   return (
+    
     <DrawerContentScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Image
@@ -202,6 +205,10 @@ const cambiarFotoPerfil = async () => {
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </Pressable>
       </View>
+      <Text style={styles.versionText}>
+                  Versión {Constants.manifest?.version || Constants.expoConfig?.version || '1.0.0'}
+
+      </Text>
     </DrawerContentScrollView>
   );
 };
@@ -209,6 +216,12 @@ const cambiarFotoPerfil = async () => {
 
 
 const styles = StyleSheet.create({
+  versionText: {
+    marginTop: 10,
+    fontSize: 12,
+    color: '#999',
+    textAlign: 'center',
+  },
   container: { flex: 1 },
   header: {
     backgroundColor: '#204b5e',

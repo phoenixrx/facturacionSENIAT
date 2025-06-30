@@ -2,7 +2,8 @@
   "expo": {
     "name": "SIACmedica",
     "slug": "SIACmedica",
-    "version": "1.0.0",
+     "version": "1.0.3",       
+    
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,6 +17,7 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 3,  
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"

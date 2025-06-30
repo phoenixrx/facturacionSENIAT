@@ -1,5 +1,5 @@
 // App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Toast from 'react-native-toast-message';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,6 +19,9 @@ import PatientsScreen from './screens/PatientsScreen';
 import PatientDetailScreen from './screens/PatientDetailScreen';
 
 import { Provider as PaperProvider } from 'react-native-paper';
+import * as Updates from 'expo-updates';
+import { Alert } from 'react-native';
+
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -77,10 +80,32 @@ function AppNavigator() {
 }
 
 export default function App() {
+  useEffect(() => {
+    async function checkForOTAUpdate() {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          Alert.alert(
+            "Actualización disponible",
+            "Se descargó una nueva versión. La app se reiniciará para aplicar los cambios.",
+            [
+              { text: "Aceptar", onPress: () => Updates.reloadAsync() }
+            ]
+          );
+        }
+      } catch (e) {
+        console.warn("Error al buscar actualización OTA:", e);
+      }
+    }
+
+    checkForOTAUpdate();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <SessionProvider>
-         <PaperProvider>
+        <PaperProvider>
           <AppNavigator />
           <Toast />
         </PaperProvider>
