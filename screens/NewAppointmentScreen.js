@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+
+import React, { useState, useRef } from 'react';
+
 import {
   View,
   Text,
@@ -47,7 +49,13 @@ const NewAppointmentScreen = ({ navigation }) => {
   const [estudios, setEstudios] = useState("");
   const [idCli, setIdCli] = useState(null);
   const [nota, setNota] = useState('');
-   
+   const seccionEstudiosRef = useRef();
+   const handleClinicaSeleccionada = (idSeleccionado) => {
+      setIdCli(idSeleccionado);
+      setEstudios(""); // limpiar selección previa
+      seccionEstudiosRef.current?.setClinicaPorDefecto(idSeleccionado);
+    };
+
    const [fechaInicio, setFechaInicio] = useState("");
    const [fechaFin, setFechaFin] = useState("");
    const [seguroSeleccionado, setSeguroSeleccionado] = useState("");
@@ -251,11 +259,12 @@ const NewAppointmentScreen = ({ navigation }) => {
 
       {/* Contenido Scrollable cambiar id_medico */}
       <ClinicaSelector
-                id_medico={id_medico}
-                onSelectClinica={(clinica) => {
-                  setIdCli(clinica);                   
-                }}              
-              />
+          id_medico={id_medico}
+          onSelectClinica={(clinica) => {
+            setIdCli(clinica);
+            seccionEstudiosRef.current?.setClinicaPorDefecto(clinica);
+          }}              
+        />
       <ScrollView contentContainerStyle={styles.container}>
         
         {/* Paciente */}
@@ -326,8 +335,9 @@ const NewAppointmentScreen = ({ navigation }) => {
           <Ionicons name={isEstudiosOpen ? "chevron-up" : "chevron-down"} size={20} />
         </TouchableOpacity>
 
-        {isEstudiosOpen && idCli && (
+        {isEstudiosOpen &&  (
           <SeccionEstudios
+            ref={seccionEstudiosRef}
             styles={styles}
             estudios={estudios}
             setEstudios={setEstudios}
@@ -335,8 +345,9 @@ const NewAppointmentScreen = ({ navigation }) => {
             idCli={idCli}
             nota={nota}
             setNota={setNota}
-          />
+          />          
         )}
+        
 
         {/* Botón Agendar */}
         <TouchableOpacity style={styles.agendarButton} onPress={handleAgendarCita}>

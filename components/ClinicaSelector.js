@@ -37,7 +37,7 @@ const ClinicaSelector = ({ id_medico, onSelectClinica  }) => {
         
         if (json.success && json.clinicas?.length > 0) {
           setClinicas(json.clinicas);
-
+          
           if (json.clinicas.length === 1) {
             setSelectedClinica(json.clinicas[0]);
             onSelectClinica?.(json.clinicas[0]);
@@ -58,7 +58,7 @@ const ClinicaSelector = ({ id_medico, onSelectClinica  }) => {
   const handleSelect = (clinica) => {
     setSelectedClinica(clinica);
     setIsDropdownVisible(false);
-    onSelectClinica?.(clinica.id_cli);
+    onSelectClinica?.(clinica);
   };
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;

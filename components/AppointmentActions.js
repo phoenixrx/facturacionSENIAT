@@ -23,35 +23,35 @@ const AppointmentActions = ({ appointment, visible, onClose, position, fetchAppo
   if (!appointment || !position) return null;
   const [loading, setLoading] = useState(false);
   const openDatePicker = () => {
-  if (Platform.OS === 'android') {
-    // Primero seleccionamos la fecha
-    DateTimePickerAndroid.open({
-      value: newDate,
-      mode: 'date',
-      is24Hour: true,
-      onChange: (event, selectedDate) => {
-        if (event.type === 'set' && selectedDate) {
-          // Guardamos la fecha seleccionada y pedimos la hora
-          const updatedDate = new Date(selectedDate);
-          DateTimePickerAndroid.open({
-            value: updatedDate,
-            mode: 'time',
-            is24Hour: true,
-            onChange: (event2, selectedTime) => {
-              if (event2.type === 'set' && selectedTime) {
-                updatedDate.setHours(selectedTime.getHours());
-                updatedDate.setMinutes(selectedTime.getMinutes());
-                setNewDate(updatedDate);
+    if (Platform.OS === 'android') {
+      // Primero seleccionamos la fecha
+      DateTimePickerAndroid.open({
+        value: newDate,
+        mode: 'date',
+        is24Hour: true,
+        onChange: (event, selectedDate) => {
+          if (event.type === 'set' && selectedDate) {
+            // Guardamos la fecha seleccionada y pedimos la hora
+            const updatedDate = new Date(selectedDate);
+            DateTimePickerAndroid.open({
+              value: updatedDate,
+              mode: 'time',
+              is24Hour: true,
+              onChange: (event2, selectedTime) => {
+                if (event2.type === 'set' && selectedTime) {
+                  updatedDate.setHours(selectedTime.getHours());
+                  updatedDate.setMinutes(selectedTime.getMinutes());
+                  setNewDate(updatedDate);
+                }
               }
-            }
-          });
+            });
+          }
         }
-      }
-    });
-  } else {
-    setShowDatePicker(true); // iOS
-  }
-};
+      });
+    } else {
+      setShowDatePicker(true); // iOS
+    }
+  };
 
 
 
@@ -201,8 +201,8 @@ setTimeout(() => {Toast.show({
   const end = new Date(newDate.getTime() + duration * 60000);
   const body = {
     id_cal: appointment.id,
-    start: start.toISOString(),
-    end: end.toISOString(),
+    start: formatLocalISO(start),
+    end: formatLocalISO(end),
     usuario: appointment.user,
     motivo: 1
   };
@@ -247,6 +247,17 @@ setTimeout(() => {Toast.show({
     onClose(); // cerrar también el menú flotante
   }
 };
+function formatLocalISO(date) {
+  const pad = (n) => n.toString().padStart(2, '0');
+  const yyyy = date.getFullYear();
+  const mm = pad(date.getMonth() + 1);
+  const dd = pad(date.getDate());
+  const hh = pad(date.getHours());
+  const min = pad(date.getMinutes());
+  const ss = pad(date.getSeconds());
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}:${ss}`;
+}
 
   return (
     <>
