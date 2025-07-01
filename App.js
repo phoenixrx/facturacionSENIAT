@@ -8,6 +8,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SessionProvider, useSession } from './context/SessionContext';
 
+import ErrorBoundary from './components/ErrorBoundary';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import SplashScreen from './screens/SplashScreen';
@@ -105,10 +106,12 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SessionProvider>
-        <PaperProvider>
-          <AppNavigator />
-          <Toast />
-        </PaperProvider>
+        <ErrorBoundary>
+          <PaperProvider>
+            <AppNavigator />
+            <Toast />
+          </PaperProvider>
+        </ErrorBoundary>
       </SessionProvider>
     </SafeAreaProvider>
   );
