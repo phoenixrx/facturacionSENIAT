@@ -12,6 +12,7 @@ export const SessionProvider = ({ children }) => {
   const [tokenData, setTokenData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Cargar sesión al iniciar
   useEffect(() => {
     const loadSession = async () => {
       try {
@@ -19,13 +20,11 @@ export const SessionProvider = ({ children }) => {
         if (storedSession) {
           const parsed = JSON.parse(storedSession);
           setSession(parsed);
-          if (parsed.foto) {
-            setFotoUri(parsed.foto);
-          }
+          if (parsed.foto) setFotoUri(parsed.foto);
 
-          const [headerPart, payloadPart, signaturePart] = JSON.stringify(parsed).split('.');
-          const token_decoded = decodeJWT_local(payloadPart);
-          const token_d = JSON.parse(token_decoded);
+          const [_, payloadPart] = JSON.stringify(parsed).split('.');
+          const tokenDecoded = decodeJWT_local(payloadPart);
+          const token_d = JSON.parse(tokenDecoded);
 
           if (!token_d.id_especialista) {
             Alert.alert('No autorizado', 'Su cuenta no tiene permisos de especialista médico. Cerrando sesión.');
@@ -34,7 +33,6 @@ export const SessionProvider = ({ children }) => {
           }
 
           setTokenData(token_d);
-          await registerPushToken(parsed.token, token_d.id_especialista);
         }
       } catch (error) {
         console.error('Error cargando la sesión:', error);
@@ -46,6 +44,13 @@ export const SessionProvider = ({ children }) => {
     loadSession();
   }, []);
 
+  // Registramos el token de notificación en un efecto aparte
+  useEffect(() => {
+    if (session && tokenData) {
+      //registerPushToken(session.token, tokenData.id_especialista);
+    }
+  }, [session, tokenData]);
+
   const login = async (sessionData) => {
     try {
       await AsyncStorage.setItem('session', JSON.stringify(sessionData));
@@ -53,9 +58,9 @@ export const SessionProvider = ({ children }) => {
 
       if (sessionData.fotoUri) setFotoUri(sessionData.fotoUri);
 
-      const [headerPart, payloadPart, signaturePart] = JSON.stringify(sessionData).split('.');
-      const token_decoded = decodeJWT_local(payloadPart);
-      const token_d = JSON.parse(token_decoded);
+      const [_, payloadPart] = JSON.stringify(sessionData).split('.');
+      const tokenDecoded = decodeJWT_local(payloadPart);
+      const token_d = JSON.parse(tokenDecoded);
 
       if (!token_d.id_especialista) {
         alert('No autorizado', 'Su cuenta no tiene permisos de especialista médico. Cerrando sesión.');
@@ -64,7 +69,6 @@ export const SessionProvider = ({ children }) => {
       }
 
       setTokenData(token_d);
-      await registerPushToken(sessionData.token, token_d.id_especialista);
     } catch (error) {
       console.error('Error guardando la sesión:', error);
     }
@@ -92,7 +96,12 @@ export const SessionProvider = ({ children }) => {
 
   const registerPushToken = async (authToken, idMedico) => {
     try {
-      if (!Device.isDevice) return;
+      console.log("🔔 Intentando registrar push token...");
+
+      if (!Device.isDevice) {
+        console.log("📱 No es un dispositivo físico. Registro cancelado.");
+        return;
+      }
 
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -102,11 +111,16 @@ export const SessionProvider = ({ children }) => {
         finalStatus = status;
       }
 
-      if (finalStatus !== 'granted') return;
+      if (finalStatus !== 'granted') {
+        console.log("🚫 Permiso de notificaciones no concedido.");
+        return;
+      }
 
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      const tokenData = await Notifications.getExpoPushTokenAsync();
+      const pushToken = tokenData.data;
+      console.log("✅ Token generado:", pushToken);
 
-      await fetch('https://pruebas.siac.historiaclinica.org/api/mobile/registrar-token-push', {
+      const response = await fetch('https://pruebas.siac.historiaclinica.org/api/mobile/registrar-token-push', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,12 +128,15 @@ export const SessionProvider = ({ children }) => {
         },
         body: JSON.stringify({
           id_medico: idMedico,
-          push_token: token,
+          push_token: pushToken,
           plataforma: Platform.OS,
         }),
       });
+
+      const result = await response.json();
+      console.log("📬 Respuesta al registrar token:", result);
     } catch (error) {
-      console.error('Error registrando token de notificación:', error);
+      console.error("❌ Error registrando token de notificación:", error);
     }
   };
 
