@@ -131,7 +131,10 @@ function detalles_fatura(data) {
         </tr>
     `;
     table.appendChild(thead);
-    detalles.forEach(detalle => {
+    if(document.getElementById('chk_ocultar_ceros').checked==true){
+            data = data.filter(detalle => detalle.precio_bs_cant !== 0);
+        }
+    data.forEach(detalle => {
         const row = document.createElement("tr");
         row.innerHTML = `
         <td>${detalle.estudio}</td>
@@ -146,7 +149,6 @@ function detalles_fatura(data) {
         table.appendChild(tbody);
     const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
     const admisiones = selectedAdmisiones.map(admision => admision.value);
-    // ?admision=18121
     if(admisiones.length==0){
         const urlParams = new URLSearchParams(window.location.search);
         const admision = urlParams.get('admision');
@@ -163,6 +165,10 @@ function detalles_fatura(data) {
 
 function agruparPorTipo(data, formato ="tipo") {
     const resultado = {};
+        if(document.getElementById('chk_ocultar_ceros').checked==true){
+            data = data.filter(detalle => detalle.precio_bs_cant !== 0);
+        }
+
     data.forEach(item => {
         
         const tipo = (formato=="tipo") ? item.tipo: item.grupo;
@@ -256,10 +262,31 @@ function agruparPorTipo(data, formato ="tipo") {
     fetchDescuentos(admisiones);
     marcar_max_lines()
 }
+document.getElementById('chk_ocultar_ceros').addEventListener('change', function(){
+    console.log(detalles)
+    let tipoAgrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
+    
+    switch (tipoAgrupamiento) {
+        case "tipo":
+            agruparPorTipo(detalles)
+            break;            
+        case "agrupada":
+            agruparPorTipo(detalles, "agrupada")
+            break;     
+        case "porcentual":
+                agruparPorcentual(detalles)
+                break;   
+        default:
+            detalles_fatura(detalles)
+            break;
+    }
+})
 
 async function agruparPorcentual(data) {
     const resultado = {};
-
+    if(document.getElementById('chk_ocultar_ceros').checked==true){
+        data = data.filter(detalle => detalle.precio_bs_cant !== 0);
+    }
     const admisiones = data.map(item => item.id_detalle);
 
     try {                        
@@ -328,6 +355,7 @@ async function agruparPorcentual(data) {
         Swal.hideLoading();
     }     
 }
+
 function generarTabla(json_data) {
 
     // Paso 1: Filtrar los datos donde estudio_activo sea null o "1"

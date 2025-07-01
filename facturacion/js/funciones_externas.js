@@ -188,11 +188,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
         }
 
         const data = await response.json();
-        console.log(data)
-        
-
         mostrarResultados(data, tipos);
-
     } catch (error) {
         Swal.fire({
         title: "Error1",
@@ -294,7 +290,7 @@ async function fetchDetalles(admisiones) {
                 inventario: detalle.inventario
             };
         });
-
+          
         //ordenamos los detalles para que el primero sea el mas reciente
         detalles.sort((a, b) => {
             const idA = Number(a.id_admision);
@@ -357,7 +353,8 @@ async function fetchDetalles(admisiones) {
         table.appendChild(thead);
         
         calcularTotales(document.getElementById('tasa_admi').textContent)
-
+        
+        
         switch (tipoAgrupamiento) {
             case "tipo":
                 agruparPorTipo(detalles)
