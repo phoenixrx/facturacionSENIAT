@@ -47,7 +47,7 @@ export const SessionProvider = ({ children }) => {
   // Registramos el token de notificación en un efecto aparte
   useEffect(() => {
     if (session && tokenData) {
-      registerPushToken(session.token, tokenData.id_especialista);
+      //registerPushToken(session.token, tokenData.id_especialista);
     }
   }, [session, tokenData]);
 

@@ -68,14 +68,12 @@ const ConsultasResumen = ({ paciente }) => {
               <TouchableOpacity  key={index} style={styles.card}
                 onPress={() => {
                   if (item.id_consulta) {
-                    const url = `https://siac.empresas.historiaclinica.org/portal_medico/anamnesis/informe.php?id_consulta=${item.id_consulta}`;
+                    const url = `https://siac.empresas.historiaclinica.org/portal_medico/informes/contenedor_reportes.html?id_admidet=${item.id_admidet}`;
                     Linking.openURL(url).catch(() =>
                       Alert.alert('Error', 'No se pudo abrir la consulta en el navegador')
                     );
                   }
-                }}
-                
-              >
+                }}>
                 <Text style={styles.date}>{fecha}</Text>
                 <Text>{resumen}</Text>
               </TouchableOpacity>
