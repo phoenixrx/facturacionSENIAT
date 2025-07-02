@@ -64,7 +64,7 @@ const getPageGroup = () => {
             },
           });
     const json = await res.json();
-    console.log(json)
+    
     if (json.success) {
       const nuevos = json.pacientes || [];
       setPacientes(reset ? nuevos : [...pacientes, ...nuevos]);
