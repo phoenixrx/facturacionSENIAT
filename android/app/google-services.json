@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "516773196718",
+    "project_id": "siacmedica",
+    "storage_bucket": "siacmedica.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516773196718:android:57361a837d77c2f61e4e3f",
+        "android_client_info": {
+          "package_name": "com.phoenixrx.SIACmedica"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUZSRfgqxpRAGPtteVvNGjfBu7MFlKeDQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
