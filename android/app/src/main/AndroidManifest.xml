@@ -54,13 +54,6 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="exp+siacmedica" />
       </intent-filter>
-    </activity>
-
-    <!-- 🔔 Servicio de Firebase Cloud Messaging -->
-    <service
-        android:name="com.google.firebase.messaging.FirebaseMessagingService"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
-      </intent-filter>
-    </service>
+    </activity>   
+  </application>
+</manifest>  
