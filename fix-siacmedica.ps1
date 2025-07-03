@@ -1,20 +1,16 @@
-# Limpieza completa del proyecto React Native con Expo en Windows
-
 Write-Host "🧹 Limpiando entorno..."
 
-# Eliminar node_modules, cache y archivos temporales
+# Eliminar node_modules, caches y carpetas de build
 Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force android\.gradle -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force android\.cxx -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force android\app\build -ErrorAction SilentlyContinue
 Remove-Item -Force package-lock.json -ErrorAction SilentlyContinue
 
-# Limpiar caché de npm y Metro bundler
+Write-Host "♻️ Limpiando caché de npm..."
 npm cache clean --force
 
-Write-Host "📦 Reinstalando dependencias desde cero..."
-
-# Reinstalar dependencias con versiones compatibles
+Write-Host "📦 Reinstalando dependencias con versiones compatibles..."
 npm install --save-exact `
   @expo/metro-runtime@~5.0.4 `
   @react-native-async-storage/async-storage@2.1.2 `
@@ -22,7 +18,7 @@ npm install --save-exact `
   @react-native-masked-view/masked-view@0.3.2 `
   @react-native-picker/picker@2.11.1 `
   @react-navigation/drawer@7.4.1 `
-  @react-navigation/native@7.1.10 `
+  @react-navigation/native@7.1.14 `
   @react-navigation/native-stack@7.3.14 `
   axios@1.9.0 `
   expo@~53.0.9 `
@@ -45,24 +41,22 @@ npm install --save-exact `
   react-native-modal@14.0.0-rc.1 `
   react-native-modal-datetime-picker@18.0.0 `
   react-native-paper@5.14.5 `
-  react-native-reanimated@3.7.4 `
+  react-native-reanimated@3.6.1 `
   react-native-safe-area-context@5.4.0 `
   react-native-screens@4.11.1 `
   react-native-toast-message@2.3.0 `
   react-native-vector-icons@10.2.0 `
   react-native-web@0.20.0
 
-# Instalar devDependencies
+Write-Host "🔧 Instalando devDependencies..."
 npm install --save-dev `
   @react-native-community/cli@18.0.0 `
   @babel/core@^7.22.20
 
-Write-Host "✅ Instalación completada. Limpieza final..."
-
-# Limpiar y reconstruir
+Write-Host "🧹 Limpiando build de Android..."
 cd android
-./gradlew clean
+.\gradlew clean
 cd ..
 
-Write-Host "🚀 Ejecutando Expo..."
-npx expo run:android
+Write-Host "🚀 Iniciando build con EAS (perfil preview)..."
+eas build -p android --profile preview
