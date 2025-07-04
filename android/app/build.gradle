@@ -83,11 +83,19 @@ def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
     ndkVersion rootProject.ext.ndkVersion
-
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-
     namespace 'com.phoenixrx.SIACmedica'
+    kotlin {
+        // It's good practice to explicitly set the JVM toolchain for Kotlin compilation.
+        // Use your installed JDK version (e.g., 11, 17, or 21).
+        // Based on your recent versions, JDK 17 is a good bet.
+        jvmToolchain(17)
+        compilerOptions {
+            // This is the crucial line to skip metadata version checks
+            freeCompilerArgs.add("-Xskip-metadata-version-check")
+        }
+    }
     defaultConfig {
         applicationId 'com.phoenixrx.SIACmedica'
         minSdkVersion rootProject.ext.minSdkVersion
