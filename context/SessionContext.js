@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
+import messaging from '@react-native-firebase/messaging'; // 🔁 FCM
 
 const SessionContext = createContext();
 
@@ -12,7 +11,6 @@ export const SessionProvider = ({ children }) => {
   const [tokenData, setTokenData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Cargar sesión al iniciar
   useEffect(() => {
     const loadSession = async () => {
       try {
@@ -44,7 +42,7 @@ export const SessionProvider = ({ children }) => {
     loadSession();
   }, []);
 
-  // Registramos el token de notificación en un efecto aparte
+  // 🔁 Registro de token FCM real
   useEffect(() => {
     if (session && tokenData) {
       registerPushToken(session.token, tokenData.id_especialista);
@@ -96,30 +94,21 @@ export const SessionProvider = ({ children }) => {
 
   const registerPushToken = async (authToken, idMedico) => {
     try {
-      console.log("🔔 Intentando registrar push token...");
+      // 👇 Solicitar permisos y obtener token FCM
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-      if (!Device.isDevice) {
-        console.log("📱 No es un dispositivo físico. Registro cancelado.");
+      if (!enabled) {
+        console.log('🚫 Permiso de notificaciones no concedido.');
         return;
       }
 
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
+      const pushToken = await messaging().getToken();
+      console.log('✅ Token FCM:', pushToken);
 
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-
-      if (finalStatus !== 'granted') {
-        console.log("🚫 Permiso de notificaciones no concedido.");
-        return;
-      }
-
-      const tokenData = await Notifications.getExpoPushTokenAsync();
-      const pushToken = tokenData.data;
-      console.log("✅ Token generado:", pushToken);
-
+      // 👇 Enviar token a tu backend
       const response = await fetch('https://pruebas.siac.historiaclinica.org/api/mobile/registrar-token-push', {
         method: 'POST',
         headers: {
@@ -133,10 +122,11 @@ export const SessionProvider = ({ children }) => {
         }),
       });
 
-      const result = await response.json();
-      console.log("📬 Respuesta al registrar token:", result);
+      const data = await response.json();
+      console.log('📡 Registro del token:', data);
+
     } catch (error) {
-      console.error("❌ Error registrando token de notificación:", error);
+      console.error('❌ Error registrando token FCM:', error);
     }
   };
 
