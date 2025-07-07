@@ -37,5 +37,4 @@ yarn-error.*
 *.tsbuildinfo
 credentials.json
 
-/android
-/ios
+
