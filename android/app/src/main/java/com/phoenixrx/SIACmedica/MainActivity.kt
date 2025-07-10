@@ -1,7 +1,5 @@
 package com.phoenixrx.SIACmedica
 
-import com.google.firebase.FirebaseApp
-
 import android.os.Build
 import android.os.Bundle
 
@@ -14,10 +12,11 @@ import expo.modules.ReactActivityDelegateWrapper
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-     FirebaseApp.initializeApp(this)
+    // Set the theme to AppTheme BEFORE onCreate to support
+    // coloring the background, status bar, and navigation bar.
+    // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
     super.onCreate(null)
-
   }
 
   /**
