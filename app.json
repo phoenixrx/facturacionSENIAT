@@ -13,7 +13,7 @@
       "backgroundColor": "#ffffff"
     },
     "android": {
-      "googleServicesFile": "./android/app/google-services.json",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
@@ -36,6 +36,10 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/7ac5c1fc-2e67-4a89-b502-cbbce93d5420"
     },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging"
+    ],
 
     "owner": "phoenixrx"
   }
