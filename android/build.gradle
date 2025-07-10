@@ -1,47 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath('com.android.tools.build:gradle:8.4.0')
-        classpath('com.facebook.react:react-native-gradle-plugin')
-        classpath('com.google.gms:google-services:4.3.15')
-        // ❌ NO declares aquí el plugin de Kotlin manualmente
-    }
-}
-
-def reactNativeAndroidDir = new File(
-    providers.exec {
-        workingDir(rootDir)
-        commandLine("node", "--print", "require.resolve('react-native/package.json')")
-    }.standardOutput.asText.get().trim(),
-    "../android"
-)
-
-allprojects {
-    repositories {
-        google()
-        maven {
-            url(reactNativeAndroidDir)
-        }
-        mavenCentral()
-        maven { url 'https://www.jitpack.io' }
-    }
-
-    // ❌ Elimina forzar manual de versiones Kotlin (Expo maneja esto internamente)
-    // configurations.all {
-    //     resolutionStrategy {
-    //         force "org.jetbrains.kotlin:kotlin-stdlib:2.0.0"
-    //         force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.0"
-    //         force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.0"
-    //     }
-    // }
-}
-
-// ✅ Solo estos plugins
+// The Expo and React Native plugins will apply the necessary repositories and dependencies.
+// This is the modern way of configuring a React Native project.
+// You can read more about this here: https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
 apply plugin: "com.google.gms.google-services"

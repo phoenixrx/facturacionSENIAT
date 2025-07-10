@@ -1,41 +1,11 @@
-pluginManagement {
-  def reactNativeGradlePlugin = new File(
-    providers.exec {
-      workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
-    }.standardOutput.asText.get().trim()
-  ).getParentFile().absolutePath
-  includeBuild(reactNativeGradlePlugin)
-  
-  def expoPluginsPath = new File(
-    providers.exec {
-      workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
-    }.standardOutput.asText.get().trim(),
-    "../android/expo-gradle-plugin"
-  ).absolutePath
-  includeBuild(expoPluginsPath)
-}
-
-plugins {
-  id("com.facebook.react.settings")
-  id("expo-autolinking-settings")
-}
-
-extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
-  if (System.getenv('EXPO_USE_COMMUNITY_AUTOLINKING') == '1') {
-    ex.autolinkLibrariesFromCommand()
-  } else {
-    ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
-  }
-}
-expoAutolinking.useExpoModules()
+// This is the modern, recommended way to set up an Expo project.
+// It delegates the complex task of finding and configuring plugins to a script
+// provided by the `expo` package, which is more robust than manual configuration.
+apply from: new File(
+  // Use Node to find the expo package and then navigate to the script.
+  new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim()).parentFile,
+  "android/settings.gradle"
+)
 
 rootProject.name = 'SIACmedica'
-
-expoAutolinking.useExpoVersionCatalog()
-
 include ':app'
-includeBuild(expoAutolinking.reactNativeGradlePlugin)
-include ':@react-native-async-storage_async-storage'
-project(':@react-native-async-storage_async-storage').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-async-storage/async-storage/android')
