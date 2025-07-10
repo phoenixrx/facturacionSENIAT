@@ -1,11 +1,26 @@
-// This is the modern, recommended way to set up an Expo project.
-// It delegates the complex task of finding and configuring plugins to a script
-// provided by the `expo` package, which is more robust than manual configuration.
-apply from: new File(
-  // Use Node to find the expo package and then navigate to the script.
-  new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim()).parentFile,
-  "android/settings.gradle"
-)
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+// Include the build of the plugins themselves so Gradle can find them by ID.
+includeBuild(new File(settings.rootDir, "../node_modules/@react-native/gradle-plugin"))
+includeBuild(new File(settings.rootDir, "../node_modules/expo-modules-autolinking/android/expo-gradle-plugin"))
+
+// Configure the autolinking plugin.
+apply plugin: "expo-autolinking-settings"
+expoAutolinking.useExpoModules()
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 
 rootProject.name = 'SIACmedica'
 include ':app'
