@@ -9,6 +9,7 @@ async function tasa(){
     try {
         let data = await fetch(url);
         let tasas = await data.json();
+        let opciones = await opciones_tasa()
         
         if (tasas.error) { 
             Swal.update({
@@ -19,8 +20,9 @@ async function tasa(){
             Swal.hideLoading()
                             
         } else {
-            document.getElementById('chk_tasa_actual').dataset.tasa = Number(tasas.data.tasas.USD).toFixed(2);
-            document.getElementById('tasa_actual').textContent = Number(tasas.data.tasas.USD).toFixed(2);
+            var tasa =(opciones[0].USD_EUR=='USD') ? tasas.data.tasas.USD: tasas.data.tasas.EUR
+            document.getElementById('chk_tasa_actual').dataset.tasa = Number(tasa).toFixed(2);
+            document.getElementById('tasa_actual').textContent = Number(tasa).toFixed(2);
         }
         
         } catch (error) {
@@ -33,6 +35,24 @@ async function tasa(){
             console.log(error)
         } 
 }
+
+async function opciones_tasa() {  
+  try {
+          const response = await fetch(
+          "https://pruebas.siac.historiaclinica.org/cargar_query",
+          {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ filtros: [configs_token.id_cli], id_query: 18, id_contenedor:0 }),
+          }
+      );
+      const opciones = await response.json();         
+      return opciones;
+    }catch(error){
+      return error;
+    }
+  
+} 
 
 async function opciones(){
     //cargar las opciones y los formatos
