@@ -549,12 +549,14 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
     
       let sql =`
         SELECT 
-            MAX(factura) as num_factura,
-            MAX(num_control) as num_control
+            fc.*,
+            c.descripcion as caja
         FROM 
-            facturas
+            facturas_controles fc
+        INNER JOIN 
+            cajas c ON fc.id_caja = c.id
         WHERE 
-            id_cli = ?`;
+            fc.id_cli = ?`;
 
       const params = [id_cli]
       try {

@@ -1,0 +1,948 @@
+<body class="layout-fixed layout-navbar-fixed layout-footer-fixed sidebar-mini sidebar-closed sidebar-collapse" style="height: auto;">
+
+    
+        <div class="wrapper">
+
+        
+        
+
+        
+                    <nav class="main-header navbar
+    navbar-expand
+    navbar-dark navbar-primary">
+
+    
+    <ul class="navbar-nav">
+        
+        <li class="nav-item">
+    <a class="nav-link" data-widget="pushmenu" href="#">
+        <i class="fas fa-bars"></i>
+        <span class="sr-only">Alternar barra de navegación</span>
+    </a>
+</li>
+        
+        
+        
+            </ul>
+
+    
+    <ul class="navbar-nav ml-auto">
+        
+        
+        
+        
+        
+                                    <li class="nav-item dropdown user-menu">
+
+    
+    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    <img src="https://portal.suve.com.ve/images/avatar-users.png" class="user-image img-circle elevation-2" alt="phoenixrx">
+                <span class="d-none d-md-inline">
+            phoenixrx
+        </span>
+    </a>
+
+    
+    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+
+        
+                    <li class="user-header bg-primary
+                ">
+                                    <img src="https://portal.suve.com.ve/images/avatar-users.png" class="img-circle elevation-2" alt="phoenixrx">
+                                <p class="">
+                    
+                     
+                                            <small>USUARIO</small>
+                                    </p>
+                <a href="/datos-usuario" class="btn btn-sm "><i class="fas fa-edit"></i></a>
+            </li>
+        
+        
+        
+        
+        
+        
+        <li class="user-footer">
+                            <a href="/cambioClave" class="btn btn-default btn-flat">
+                    <i class="fa fa-fw fa-lock text-lightblue"></i>
+                    
+                    Contraseña
+                </a>
+                        <a class="btn btn-default btn-flat float-right " href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="fa fa-fw fa-power-off text-red"></i>
+                Salir
+            </a>
+            <form id="logout-form" action="https://portal.suve.com.ve/logout" method="POST" style="display: none;">
+                                <input type="hidden" name="_token" value="IDexnXvJlOQvrvcd8jp5S0J29KcAHuDf0xNYvR9r" autocomplete="off">
+            </form>
+        </li>
+
+    </ul>
+
+</li>
+                    
+        
+            </ul>
+
+</nav>
+        
+        
+                    <aside class="main-sidebar sidebar-white-primary elevation-4">
+
+    
+            <a href="https://portal.suve.com.ve/home" class="brand-link logo-switch brand-link bg-white">
+
+    
+    <img src="https://portal.suve.com.ve/images/suve_logo.png" alt="AdminLTE" class="brand-image img-rounded elevation-3 logo-xs">
+
+    
+    <img src="https://portal.suve.com.ve/images/KS2-h.png" alt="AdminLTE" class="brand-image-xl logo-xl">
+
+</a>
+    
+    
+    <div class="sidebar os-host os-theme-light os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition" style="background: white;"><div class="os-resize-observer-host observed"><div class="os-resize-observer" style="left: 0px; right: auto;"></div></div><div class="os-size-auto-observer observed" style="height: calc(100% + 1px); float: left;"><div class="os-resize-observer"></div></div><div class="os-content-glue" style="margin: 0px -8px; width: 249px; height: 624px;"></div><div class="os-padding"><div class="os-viewport os-viewport-native-scrollbars-invisible"><div class="os-content" style="padding: 0px 8px; height: 100%; width: 100%;">
+        <!-- Sidebar user panel (optional) -->
+        
+                
+                
+        <nav class="pt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column " data-widget="treeview" role="menu">
+                
+                <li class="nav-item">
+
+    <a class="nav-link  " href="https://portal.suve.com.ve/home">
+
+        <i class="nav-icon fas fa-home "></i>
+
+        <p>
+            Inicio
+
+                    </p>
+
+    </a>
+
+</li>
+
+<li class="nav-item has-treeview menu-open">
+
+    
+    <a class="nav-link active " href="">
+
+        <i class="nav-icon fas fa-credit-card "></i>
+
+        <p>
+            Gestión de Tarjetas
+            <i class="fas fa-angle-left right"></i>
+
+                    </p>
+
+    </a>
+
+    
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+
+    <a class="nav-link  " href="https://portal.suve.com.ve/saldo">
+
+        <i class="nav-icon fas fa-coins "></i>
+
+        <p>
+            Consulta de Saldo
+
+                    </p>
+
+    </a>
+
+</li>
+
+<li class="nav-item">
+
+    <a class="nav-link  " href="https://portal.suve.com.ve/beneficiario">
+
+        <i class="nav-icon fa fa-users "></i>
+
+        <p>
+            Agregar Beneficiario
+
+                    </p>
+
+    </a>
+
+</li>
+
+<li class="nav-item">
+
+    <a class="nav-link active " href="https://portal.suve.com.ve/recarga">
+
+        <i class="nav-icon fas fa-money-bill "></i>
+
+        <p>
+            Recarga
+
+                    </p>
+
+    </a>
+
+</li>
+
+    </ul>
+
+</li>
+
+<li class="nav-item has-treeview ">
+
+    
+    <a class="nav-link  " href="">
+
+        <i class="nav-icon fas fa-shield-alt "></i>
+
+        <p>
+            Seguridad
+            <i class="fas fa-angle-left right"></i>
+
+                    </p>
+
+    </a>
+
+    
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+
+    <a class="nav-link  " href="https://portal.suve.com.ve/cambioClave">
+
+        <i class="nav-icon fas fa-shield-alt "></i>
+
+        <p>
+            Cambio de contraseña
+
+                    </p>
+
+    </a>
+
+</li>
+
+    </ul>
+
+</li>
+
+            </ul>
+        </nav>
+    </div></div></div><div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="width: 100%; transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable os-scrollbar-auto-hidden"><div class="os-scrollbar-track"><div class="os-scrollbar-handle" style="height: 100%; transform: translate(0px, 0px);"></div></div></div><div class="os-scrollbar-corner"></div></div>
+
+</aside>
+        
+        
+                    <div class="content-wrapper " style="min-height: 682px;">
+
+    
+            <div class="content-header">
+            <div class="container-fluid">
+                    <div id="app" data-v-app=""><div class="container"><div class="row justify-content-center"><!--v-if--></div></div></div>
+            <div class="container-fluid">
+            <div class="row container-breadcrumb">
+                <div class="col-sm-12">
+                    <ol class="breadcrumb float-sm-left">
+                                                    <li class="breadcrumb-item"><strong><a class="primary" href="#">Recarga de Tarjeta</a></strong></li>
+                                                    <li class="breadcrumb-item"><strong><a class="primary" href="/recarga">Recarga Tarjeta</a></strong></li>
+                                            </ol>
+                </div>
+            </div>
+        </div>
+        <!-- if there are creation errors, they will show here -->
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    
+    
+    <div class="content">
+        <div class="container-fluid">
+            
+    <div class="row">
+        <div class="col-12">
+            <div class="card fondo card-body-principal">
+                <div class="card-header sub-title">
+                    <h1 class="card-title bold">Recarga De Tarjeta</h1>
+                </div>
+
+                
+                    <div style="display:flex; flex-wrap: wrap; flex:  1  0 auto; justify-content: flex-start;">
+                                                    <div style="margin:10px 31.34px !important; border:  1px solid #d4d4d4; background: #f2f2f2; border-radius:15px; width:100%; max-width:400px;">
+                                <div class="beneficiario-indicator d-none">B</div>
+                                <div class="exento-indicator d-none">E</div>
+                                <div style="display:flex !important; align-items:center; justify-content:space-around; gap:10px;">
+                                    <div class="text-center">
+                                        <div class="logo my-2">
+                                            <img src="https://portal.suve.com.ve/./images/suve_logo.png" alt="Logo Suve" width="120">
+                                        </div>
+                                        <div >
+                                            <p class="bold">Saldo Disponible:</p>
+                                            <p class="remaining-amount my-1">
+                                                <span id="">20.00</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div class="d-block">
+                                            <p class="bold my-1">Nombre y Apellido:</p>
+                                            <p id="name">JOSE
+                                                LUNA <br></p>
+                                        </div>
+
+                                        <div class="d-block">
+                                            <p class="bold my-1">Número de Tarjeta:</p>
+                                            <p id="">954671AC<br></p>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div style="background-color: #B21526; padding:  10px; max-width:  100%; margin:  5px  0;">
+                                </div>
+                                <div class="text-center">
+                                    <div style="margin-bottom: 10px; ">
+                                                                                <div id="divBtnDesactivar" class="">
+                                            <a id="btnRecargaModal" type="button" class="btn btn-recarga">
+                                                <p> Posee Recarga Pendiente </p>
+                                            </a>
+                                        </div>
+
+                                        
+                                        
+                                    </div>
+
+                                </div>
+                            </div>
+                                            </div>
+                
+                <div class="card-body records-history d-none" id="recordsHistory">
+                    <form action="" method="POST" role="form" id="form">
+                        <input type="hidden" name="_token" value="IDexnXvJlOQvrvcd8jp5S0J29KcAHuDf0xNYvR9r" autocomplete="off">
+                        <div class="card collapsed-card">
+                            <div class="card-header">
+                                <h2 class="card-title">Criterios de Búsqueda</h2>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-plus"></i></button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label for="recharge">Tipo de transacción:</label>
+                                        <select class="form-control" id="recharge">
+                                            <option value="" selected="">Seleccione una opción</option>
+                                            <option value="1">RECARGA</option>
+                                            <option value="0">VIAJE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label for="month">Mes de transacción:</label>
+                                        <input class="form-control" type="month" id="month">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="float-right">
+                                    <button type="button" name="send" onclick="validar()" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-search"></i> Buscar
+                                    </button>
+
+                                    <a href="https://portal.suve.com.ve/saldo" type="button" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-eye"></i> Ver Todos
+                                    </a>
+
+                                    <button type="reset" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa fa-trash"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <ul class="transactions-list" id="transactions-list"></ul>
+                    <div class="paginator" id="paginator"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="" id="modalOpcionesPago" data-backdrop="static">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <label for="" id="titulo_header" name="titulo_header">Opciones de Pago:</label>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 p-2 ">
+                        <a id="btnRecarga" type="button" class="btn btn-lg btn-success btn_pagos d-flex">
+                        <h5>Recarga Pago Móvil</h5>
+                    </a>
+                    </div>
+                    <div class="col-md-6 p-2">
+                        <a id="btnRecargaDebitoCredito" type="button" class="btn btn-lg btn-success btn_pagos d-flex">
+                        <h5>Recarga Débito - Crédito BDV</h5>
+                    </a>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+    </div>
+
+</div>
+        
+        
+        
+            <footer class="main-footer">
+        <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+        <b>Versión</b> 
+    </div>
+    <!-- Default to the left -->
+    Copyright © 2025 <strong>Sistema Único de Viaje Electrónico</strong>. Todos los derechos reservados.
+</footer>
+        
+
+        
+        
+    <div id="sidebar-overlay"></div></div>
+    <div class="modal bd-example-modal-lg align-items-center justify-center modal-backdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" id="loadingModal">
+        <div class="modal-dialog modal-sm text-center" style="background-color: #fff !important; padding: 1em; border-radius:2px; color:black; z-index:9999; opacity:1 !important;">
+
+
+            
+            <div class="contenedor-loader">
+                <img src="https://portal.suve.com.ve/loader/gif-metro.gif" alt="Metro Loader">
+            </div>
+            
+
+
+
+            <div class="text-primary" role="status">
+                <span class="">Cargando... Espere un momento, por favor.</span>
+            </div>
+        </div>
+    </div>
+    
+
+            <script src="https://portal.suve.com.ve/vendor/jquery/jquery.min.js"></script>
+        <script src="https://portal.suve.com.ve/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="https://portal.suve.com.ve/vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+        <script src="https://portal.suve.com.ve/vendor/jsvalidation/js/jsvalidation.js"></script>
+        <script src="https://portal.suve.com.ve/js/jquery.mask.min.js"></script>
+        <script src="https://portal.suve.com.ve/vendor/inputmask/jquery.inputmask.js"></script>
+        
+
+        
+        <script src="https://portal.suve.com.ve/vendor/datatables/js/jquery.dataTables.min.js"></script>
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/datatables/js/dataTables.bootstrap4.min.js"></script>
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/datatables-plugins/responsive/js/dataTables.responsive.min.js"></script>
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/datatables-plugins/responsive/js/responsive.bootstrap4.min.js"></script>
+            
+        
+            
+            
+            
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/select2/js/select2.min.js"></script>
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+                            
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/imask/imask.js"></script>
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/jquery-ui/jquery-ui.min.js"></script>
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+        
+            
+            
+            
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js"></script>
+            
+        
+            
+            
+            
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/sweetalert2/sweetalert2.min.js"></script>
+            
+        
+            
+            
+            
+            
+                            
+            
+            
+            
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/toastr/toastr.min.js"></script>
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+            
+                            
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/summernote/summernote-bs4.min.js"></script>
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/summernote/lang/summernote-es-ES.min.js"></script>
+            
+        
+            
+            
+            
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/moment/moment.min.js"></script>
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/daterangepicker/daterangepicker.js"></script>
+            
+        
+            
+            
+            
+            
+                            
+            
+            
+            
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/vendor/bootstrap4-toggle/bootstrap4-toggle.min.js"></script>
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/ckeditor5-build-classic/ckeditor.js"></script>
+            
+        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/ckeditor5-build-classic/translations/es.js"></script>
+            
+                        
+            
+            
+            
+                            <script src="https://portal.suve.com.ve/js/app.js"></script>
+            
+            
+        
+    
+            <script type="text/javascript">
+            document.oncontextmenu = function() {
+                return false;
+            }
+
+            document.onkeydown = function(e) {
+                if (e.keyCode == 123) {
+                    return false;
+                }
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                    return false;
+                }
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                    return false;
+                }
+                if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                    return false;
+                }
+            }
+        </script>
+    
+    
+    
+    
+        <script src="https://portal.suve.com.ve/vendor/adminlte/dist/js/adminlte.min.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            //validarSesiones();
+        });
+
+        function validarSesiones(){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+
+                    method: "POST",
+                    url: "/validarsesiones",
+                    data: {"_token": $("meta[name='csrf-token']").attr("content")},
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        if(response.msg=='ok'){
+
+                            window.location.href = "https://portal.suve.com.ve";
+
+                        }
+                    },
+                });
+        }
+   </script>
+            <script type="text/javascript">
+function createPaginator(cardId = null, start, limit, totalPages, totalLinks, page, funcion) {
+    let paginationContainer = document.getElementById('paginator');
+    paginationContainer.innerHTML = '';
+
+
+    $('#leyenda-paginador').html('Página ' + page + ' de ' + totalPages);
+
+    // Ajustar el inicio y límite si totalLinks es igual a totalPages
+    if (totalLinks == totalPages) {
+        start = 0;
+        limit = 10;
+    }
+
+    // Crear enlaces de paginación
+    let arrayLinks = [];
+    for (let i = 0; i < totalPages; i++) {
+        let link = document.createElement('button');
+        link.innerHTML = i + 1;
+        link.setAttribute("data-start", start + i * limit);
+        link.setAttribute("data-limit", limit);
+        link.addEventListener('click', () => {
+            funcion(cardId, link.getAttribute("data-start"), link.getAttribute("data-limit"));
+        });
+        arrayLinks.push(link);
+    }
+
+    // Lógica para mostrar las páginas de forma secuencial con la página actual en el centro
+    const maxLength = arrayLinks.length;
+    const maxLinks = 10; // Ajusta este valor según cuántos enlaces quieras mostrar
+    const startIndex = Math.max(0, Math.floor((page - 1) / (maxLinks - 1)) * (maxLinks - 1));
+    const endIndex = Math.min(maxLength, startIndex + maxLinks);
+
+    // Crear y agregar enlaces de paginación relevantes
+    for (let i = startIndex; i < endIndex; i++) {
+        paginationContainer.append(arrayLinks[i]);
+    }
+
+    let prevButton = document.createElement('button');
+    prevButton.innerHTML = '<i class="fas fa-chevron-left"></i> Anterior';
+    prevButton.addEventListener('click', () => {
+        if (page > 1) {
+            funcion(cardId, start + (page - 2) * limit, limit);
+        }
+    });
+    paginationContainer.prepend(prevButton);
+    // Agregar botones de navegación
+    let firstButton = document.createElement('button');
+    firstButton.innerHTML = '<i class="fas fa-angle-double-left"></i> Primero';
+    firstButton.addEventListener('click', () => {
+        funcion(cardId, 0, limit);
+    });
+    paginationContainer.prepend(firstButton);
+
+
+
+    let nextButton = document.createElement('button');
+    nextButton.innerHTML = 'Siguiente <i class="fas fa-chevron-right"></i>';
+    nextButton.addEventListener('click', () => {
+        if (page < totalPages) {
+            funcion(cardId, start + (page) * limit, limit);
+        }
+    });
+    paginationContainer.append(nextButton);
+
+    let lastButton = document.createElement('button');
+    lastButton.innerHTML = 'Último <i class="fas fa-angle-double-right"></i>';
+    lastButton.addEventListener('click', () => {
+        funcion(cardId, start + (totalPages - 1) * limit, limit);
+    });
+    paginationContainer.append(lastButton);
+
+    // Deshabilitar botones si es necesario
+    if (page == 1) {
+        firstButton.setAttribute("disabled", "");
+        prevButton.setAttribute("disabled", "");
+    } else {
+        firstButton.removeAttribute("disabled");
+        prevButton.removeAttribute("disabled");
+    }
+
+    if (page == totalPages) {
+        nextButton.setAttribute("disabled", "");
+        lastButton.setAttribute("disabled", "");
+    } else {
+        nextButton.removeAttribute("disabled");
+        lastButton.removeAttribute("disabled");
+    }
+
+    // Asegurarse de que la página actual esté en el centro
+    if(page > 0){
+        arrayLinks[page - 1].className = "pageActive";
+    }else{
+        page = 0;
+    }
+}
+    </script>
+        <script>
+function formatDate(date) {
+    const dateObject = new Date(date);
+
+    let day = dateObject.getDate();
+    let month = dateObject.getMonth() + 1;
+    let year = dateObject.getFullYear();
+
+    let hours = dateObject.getHours();
+    let minutes = dateObject.getMinutes();
+    let seconds = dateObject.getSeconds();
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+
+    day = ('0' + day).slice(-2);
+    month = ('0' + month).slice(-2);
+    hours = ('0' + hours).slice(-2);
+    minutes = ('0' + minutes).slice(-2);
+    seconds = ('0' + seconds).slice(-2);
+
+    const formattedDate = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+
+    return formattedDate;
+}
+
+  function formatAmount(amount) {
+      const formattedAmount = new Intl.NumberFormat('es-VE', {
+          style: 'decimal',
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+      }).format(amount);
+
+      return formattedAmount;
+  }
+</script>
+    <script>
+        function getCardData(input) {
+
+            const cardId = input.value;
+            document.getElementById('selectedCardId').value = input.value;
+
+            if (!cardId) {
+                $('#name').text("").append("<br>");
+                $('#cardNumber').text("").append("<br>");
+                $('#remainingAmount').text("");
+                $('#remainingAmountDiv').addClass('d-none');
+                $('#recordsHistory').addClass('d-none');
+                return;
+            }
+
+            Promise.all([
+                obtenerDatosTarjeta(cardId),
+            ])
+        }
+
+        function recargaModal(card_id) {
+            console.log('here', card_id);
+
+            let url = '/recarga/pagoMovil/' + card_id;//2978215
+            let url2 = '/recarga/CreditoDebito/' + card_id;
+
+
+
+            $('#btnRecarga').prop("href", url);
+            $('#btnRecargaDebitoCredito').prop("href", url2);
+            $('#modalOpcionesPago').modal('show');
+        }
+
+        function obtenerDatosTarjeta(cardId) {
+            $.ajax({
+                url: '/saldo/datosTarjeta',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: 'IDexnXvJlOQvrvcd8jp5S0J29KcAHuDf0xNYvR9r',
+                    tarjeta_id: cardId,
+                },
+                success: function(response) {
+                    const saldo = response.saldo ? response.saldo : 0;
+
+                    $('#name').text(`${response.primernombre} ${response.primerapellido}`);
+                    $('#cardNumber').text(response.codigo);
+                    $('#remainingAmount').text(`Bs. ${formatAmount(saldo)}`);
+                    $('#remainingAmountDiv').removeClass('d-none');
+                    $('#divBtnDesactivar').removeClass('d-none');
+                },
+                error: function(error) {
+                    console.error(error);
+                },
+            });
+        }
+
+        function loadTransactions(transactions) {
+            $('#transactions-list').empty();
+
+            transactions.map(transaction => {
+                const acceso = transaction.mensaje_actividad_id === 1;
+                const recarga = transaction.mensaje_actividad_id === 4;
+
+                $('#transactions-list').append(`
+                <li class="transaction shadow" title="${transaction.descripcion}">
+                    <div class="transaction-icon">
+                        ${acceso ? `
+                        <div class="travel-icon">
+                            <div class="horizontal-line"></div>
+                        </div>
+                    ` : recarga ? `
+                        <div class="recharge-icon">
+                            <div class="vertical-line"></div>
+                            <div class="horizontal-line"></div>
+                        </div>
+                    ` : `
+                        <div class="other-ops"></div>
+                    `}
+                    </div>
+
+                    <div class="transaction-info">
+                        <p class="transaction-info-date">
+                            ${formatDate(transaction.created_at)}
+                        </p>
+                        <p class="transaction-info-station" title="Operación realizada en: ${transaction.referencia}">
+                            ${transaction.referencia}
+                        </p>
+                    </div>
+
+                    <div class="transaction-amount">
+                        ${acceso ? `
+                                <p class="red-text">Bs. ${formatAmount(transaction.monto)}</p>
+                            ` : recarga ? `
+                                <p class="green-text">Bs. ${formatAmount(transaction.monto)}</p>
+                            ` : `
+                                <p class="other-ops">${transaction.descripcion}</p>
+                            `}
+                    </div>
+                </li>
+            `);
+            });
+        }
+    </script>
+
+    <script>
+        $(window).on('load', function() {
+
+            $('#loadingModal').removeClass('d-flex');
+        })
+    </script>
+
+
+
+</body>
