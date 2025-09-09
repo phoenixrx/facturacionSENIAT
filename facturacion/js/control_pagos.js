@@ -621,7 +621,8 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
     json_cuotas: json_cuotas,
     json_factura: json_factura,
     json_detalle: json_detalle,
-    items_inventario:items_inventario
+    items_inventario:items_inventario,
+    caja: configs_token.caja_usuario
 };
    const response = await fetch(
         `${HOST}/api/facturar`,

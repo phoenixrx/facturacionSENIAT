@@ -97,8 +97,10 @@ async function opciones(){
                     sel_formatos.selectedIndex = 1; // Selecciona el primer ítem después de "Seleccione..."
                 }
             let consec = await consecutivos();
-            document.getElementById("num_control").value = Number(consec.consecutivos[0].num_control) + 1;
-            let num_factura = consec.consecutivos[0].num_factura;
+            let consecutivos_caja =consec.consecutivos.filter(item => item.id == configs_token.caja_usuario);
+            
+            document.getElementById("num_control").value = Number(consecutivos_caja[0].num_control) + 1;
+            let num_factura = consecutivos_caja[0].num_factura;
             
             let originalLength = num_factura.length;
             num_factura = Number(num_factura) + 1;
@@ -134,7 +136,7 @@ async function consecutivos(){
                 icon: 'error',
                 allowOutsideClick: () => false,
             });
-            console.log(consecutivos.message)
+            
             Swal.hideLoading()
             document.getElementById("num_control").readOnly = false;
             document.getElementById("num_factura").readOnly = false;            
@@ -504,7 +506,7 @@ async function verif_admision(admision) {
     try {
         let factura_admision = await fetch(url);
         let datas = await factura_admision.json();
-         console.log(datas)
+         
         if(datas.success==false ){
                  Swal.fire({
                     title: "Facturacion",

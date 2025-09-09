@@ -77,6 +77,35 @@ function authenticateToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
+
+    const requestId = Date.now() + Math.random();
+const requestQuery = Object.keys(req.query).length > 0 
+  ? JSON.stringify(req.query) 
+  : null;
+    // ✅ Adjuntar datos al request para usarlos después
+    req.requestId = requestId;
+    req.logData = {
+      id_usuario: decoded.id_usuario,
+      ip_origen: decoded.ip_internet,
+      metodo: req.method,
+      ruta: req.path,
+      user_agent: req.headers['user-agent'],
+      request_body: req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE' 
+        ? JSON.stringify(req.body) 
+        : null,
+      requestQuery:requestQuery || '{}'
+    };
+    setTimeout(() => {
+      // ✅ Registrar inicio de petición
+      registrarInicioPeticion(req.logData)
+      .then(logId => {
+        req.logId = logId; // opcional: guardarlo para después
+      })
+      .catch(err => {
+        console.error('[LOG] Error al registrar inicio (no bloquea):', err.message);
+      });
+    }, 10);
+    
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
@@ -91,6 +120,44 @@ app.use(express.static(path.join(__dirname, '..')));
 app.get('/facturacion/', (req, res) => {
     res.redirect('/facturacion/facturador.html');
 });
+
+async function registrarInicioPeticion(logData) {
+  const query = `
+    INSERT INTO logs_peticiones 
+    (id_usuario, ip_origen, metodo, ruta, request_body, user_agent, request_query)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  try {
+    const [result] = await retornar_query(query, [
+      logData.id_usuario,
+      logData.ip_origen,
+      logData.metodo,
+      logData.ruta,
+      logData.request_body,
+      logData.user_agent, 
+      logData.requestQuery
+    ]);
+    return result.insertId; // Devuelve el ID para usarlo después
+  } catch (error) {
+    console.error('[LOG] No se pudo insertar en logs_peticiones:', error.message);
+    return null; // No detiene nada
+  }
+}
+async function registrarErrorPeticion(logId, mensaje) {
+   await retornar_query(`
+    UPDATE logs_peticiones 
+    SET status = 'fallido', error = ?, fecha_fin = NOW(), duracion_ms = TIMESTAMPDIFF(MICROSECOND, fecha_inicio, NOW()) / 1000
+    WHERE id = ?
+  `, [mensaje, logId]);
+}
+
+async function registrarFinPeticion(logId) {
+  await retornar_query(`
+    UPDATE logs_peticiones 
+    SET status = 'completado', fecha_fin = NOW(), duracion_ms = TIMESTAMPDIFF(MICROSECOND, fecha_inicio, NOW()) / 1000
+    WHERE id = ?
+  `, [logId]);
+}
 
 app.get('/api/tipo_admision', async (req, res) => {
     
@@ -647,7 +714,7 @@ WHERE
   app.post('/api/facturar', authenticateToken, async (req, res)=>{
               
 
-    const { desglose_pago, json_cuotas, json_factura, json_detalle, items_inventario } = req.body;
+    const { desglose_pago, json_cuotas, json_factura, json_detalle, items_inventario, caja } = req.body;
     
     let admisiones = desglose_pago[0].id_externa
     admisiones = admisiones.replace(/\s+/g, '');
@@ -733,8 +800,7 @@ WHERE
                       cuotas,
                       formato_factura,
                       tipo_agrupamiento,
-                      descuentos) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                `
+                      descuentos) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
     const params = [
                       data.paciente, 
@@ -767,9 +833,18 @@ WHERE
 let result=""
   try{
     result = await retornar_query(query, params);
+    
+    let query_actualizar_controles = `UPDATE facturas_controles 
+                                      SET 
+                                        num_factura=?,
+                                        num_control=?
+                                      WHERE id_caja=?`
+    let params_compr = [data.factura, data.num_control, caja]                                 
+
+    let controles_act = await retornar_query(query_actualizar_controles, params_compr);
    
   } catch (error) {
-    console.log(error.message)
+    
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA01',

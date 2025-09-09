@@ -15,10 +15,7 @@
     let configs_token = [];
     
     if (token) {
-        params.delete("token");
-
-        const nuevaUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}${window.location.hash}`;
-        window.history.replaceState({}, document.title, nuevaUrl);
+        
       localStorage.setItem("token", token);
       get_config_token()
       

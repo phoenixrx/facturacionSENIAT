@@ -263,7 +263,7 @@ function agruparPorTipo(data, formato ="tipo") {
     marcar_max_lines()
 }
 document.getElementById('chk_ocultar_ceros').addEventListener('change', function(){
-    console.log(detalles)
+    
     let tipoAgrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
     
     switch (tipoAgrupamiento) {
