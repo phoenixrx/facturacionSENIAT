@@ -6,6 +6,7 @@ const { retornar_query } = require('./middlewares/retornarQuery');
 const { validateFactura } = require('./schemas/facturas');
 const  { authenticateToken, registrarInicioPeticion, registrarErrorPeticion, registrarFinPeticion} = require('./middlewares/autenticarToken');
 const retencionesRoutes = require('./routes/retenciones');  
+const proveedoresRoutes = require('./routes/proveedores');  
 const app = express();
 
 exports.app = app;
@@ -21,6 +22,7 @@ app.get('/facturacion/', (req, res) => {
 });
 
 app.use('/api/retenciones', retencionesRoutes);
+app.use('/api/proveedores', proveedoresRoutes);
 
 app.get('/api/tipo_admision', async (req, res) => {
     
