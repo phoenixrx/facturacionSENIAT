@@ -97,7 +97,7 @@ async function opciones(){
                     sel_formatos.selectedIndex = 1; // Selecciona el primer ítem después de "Seleccione..."
                 }
             let consec = await consecutivos();
-            let consecutivos_caja =consec.consecutivos.filter(item => item.id == configs_token.caja_usuario);
+            let consecutivos_caja =consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
             
             document.getElementById("num_control").value = Number(consecutivos_caja[0].num_control) + 1;
             let num_factura = consecutivos_caja[0].num_factura;

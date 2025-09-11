@@ -55,9 +55,7 @@ aside div.botonera {
 .botoneras {
   display: flex;
   justify-content: center;
-  position: fixed;
   gap: 10px;
-  bottom: 1%;
   width: 100%;
   background-color: white;
 }
@@ -67,140 +65,102 @@ aside div.botonera {
     left: 10px;
     width: fit-content;
 }
+
 </style>
 <body>
-    <div class="container">   
-        <h1>Retenciones IVA</h1>     
-        <div id="botones" class="botoneras">
-        <div>
-            <lord-icon
-                id="btn_new_iva"
-                src="../images/plus-circle.json"
-                trigger="hover"
-                style="width:30px;height:30px" class="svg disk_save botonera">
-            </lord-icon>
-            <span>Nueva</span>
-        </div>
-        <div>
-            <lord-icon
-                id="btn_sav_iva"
-                src="../images/pendrive-storage.json"
-                trigger="morph"
-                state="morph-put-in"
-                style="width:30px;height:30px" class="svg disk_save botonera">
-            </lord-icon>
-        <span>Guardar</span>
-        </div>
-        <div>
-            <lord-icon
-                id="btn_update_iva"
-                src="../images/edit.json"
-                trigger="hover"
-                state="hover-line"
-                style="width:30px;height:30px" class="svg disk_save botonera">
-            </lord-icon>
-            <span>Actualizar</span>
-        </div>
-        <div>
-            <lord-icon
-                id="btn_delete_iva"
-                src="../images/trash-bin.json"
-                trigger="morph"
-                state="morph-trash-in"
-                style="width:30px;height:30px" class="svg disk_save botonera">
-            </lord-icon>
-            <span>Eliminar</span>
-        </div>
-        <div>
-            <lord-icon
-                id="btn_search_iva"
-                src="../images/wired-lineal-19-magnifier-zoom-search.json"
-                trigger="morph"
-                state="morph-check"
-                style="width:30px;height:30px" class="svg disk_save botonera">
-            </lord-icon>
-            <span>Buscar</span>
-        </div>
-        <div>
-            <lord-icon
-                id="btn_print_iva"
-                src="../images/wired-lineal-732-printer.json"
-                trigger="hover"
-                style="width:30px;height:30px" class="svg disk_save botonera ">
-            </lord-icon>
-            <span>Imprimir</span>
-        </div>
-        </div>            
-        <div class="row border border-secondary-subtle mt-3 rounded-1 contribuyente">
+    <div class="ms-3 me-3">                         
+        <div class="row border border-secondary-subtle mt-2 rounded-1 contribuyente">
             <span class="bg-white contribTitle">Datos del contribuyente</span>
             <div class="row mb-2">
                 <div class="col">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="rif_iva" placeholder="RIF" autocapitalize="ON" autocomplete="off">
+                        <input type="text" 
+                            class="form-control" 
+                            id="rif_iva" 
+                            placeholder="RIF" 
+                            maxlength="15" 
+                            autocomplete="off"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-custom-class="custom-tooltip"
+                            data-bs-title="RIF del proveedor, normalmente J123456789.">
                         <label for="rif_iva">RIF</label>
                     </div>
                 </div>
                 <div class="col-8">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="razon_social" placeholder="Razon Social" readonly>
+                        <input type="text" class="form-control contribuyenteInput" id="razon_social" placeholder="Razon Social" readonly disabled>
                         <label>Razon Social</label>
                     </div>
                 </div>
-                <div class="col-1 align-content-center">
-                    
+                <div class="col-1 align-content-center">                    
                     <a role="button" class="btn btn-outline-danger" href="http://contribuyente.seniat.gob.ve/BuscaRif/BuscaRif.jsp" target="_blank">SENIAT</a>
                 </div>
 
             </div>
-            <div class="row mb-1">
+            <div class="row mb-2">
                 <div class="col-2">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tipoContribuyente" value="1" checked>
-                        <label class="form-check-label" >
+                        <input id="juridico" 
+                            class="form-check-input tipoContribuyenteJ contribuyenteInput" 
+                            data-campo="is_juridico"
+                            type="radio" name="tipoContribuyente" value="1" checked >
+                        <label class="form-check-label" for="juridico">
                             Juridico
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tipoContribuyente"  value="0" >
-                        <label class="form-check-label" >
+                        <input id="natural"
+                            class="form-check-input tipoContribuyenteN contribuyenteInput" 
+                            data-campo="is_juridico"
+                            type="radio" name="tipoContribuyente"  value="0" >
+                        <label class="form-check-label" for="natural">
                             Natural
                         </label>
                     </div>
                 </div>
                 
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input" type="checkbox" role="switch" id="contribuyenteResidente" checked>
+                    <input class="form-check-input contribuyenteInput" 
+                        data-campo="is_residente"
+                        type="checkbox" role="switch" id="contribuyenteResidente" checked>
                     <label class="form-check-label" for="contribuyenteResidente">
                         Residente
                     </label>
                 </div>
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input" type="checkbox" role="switch" id="agenteRetencion" >
+                    <input class="form-check-input contribuyenteInput" 
+                        data-campo="is_agente"
+                        type="checkbox" role="switch" id="agenteRetencion" >
                     <label class="form-check-label" for="agenteRetencion">
                         Agente de Retención
                     </label>
                 </div>
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input" type="checkbox" role="switch" id="contribuyenteRetencion" checked>
+                    <input class="form-check-input contribuyenteInput" type="checkbox" 
+                        data-campo="is_contribuyente"
+                        role="switch" id="contribuyenteRetencion" checked>
                     <label class="form-check-label" for="contribuyenteRetencion">
                         Contribuyente IVA
                     </label>
                 </div>
                 <div class="col">
                      <div class="form-floating">
-                        <input type="text" class="form-control" id="retencion_iva" placeholder="porcentaje" readonly>
-                        <label>Porcentaje</label>
+                        <input type="text" 
+                            class="form-control contribuyenteInput" 
+                            id="retencion_iva" 
+                            data-campo="porcentaje_retencion"
+                            placeholder="porcentaje" 
+                            value="100">
+                        <label>% Retener</label>
                     </div>
                 </div>
-
-                
-                
             </div>
         </div>
-        <div class="row retencion mt-3">
-            <div class="row mb-2">
+        
+        <div class="row retencion   border-secondary-subtle rounded-top row border-end border-start">
+            <div class="row mb-2 mt-2">
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                             <input type="date" name="fecha_operacion" id="fecha_operacion"
                                 class=" form_actu_admi form-date form-control" data-campo='fecha_admision' required />
                             <label for="fecha_operacion">F. operacion: </label>
@@ -236,117 +196,402 @@ aside div.botonera {
             </div>
             <div class="row mb-2">
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="numeroDocumento"
                             class=" form-control" required placeholder="Numero Doc." />
                         <label for="numeroDocumento">Numero Documento:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="numeroControl"
                             class=" form-control" required placeholder="Numero Cont." />
                         <label >Numero Control:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="numeroDocumentoAf"
-                            class=" form-control" required placeholder="Numero doc." />
+                            class=" form-control" required placeholder="Numero doc." value="0"/>
                         <label >Num. doc. afectado:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="numeroExpediente"
-                            class=" form-control" required placeholder="Numero Exp." />
+                            class=" form-control" required placeholder="Numero Exp." value="0"/>
                         <label >Numero Expediente:</label>
                     </div>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
+                        <input type="text" id="totalBaseImponible"
+                            class="form-control valores" required placeholder="Exento." />
+                        <label >Total Base Imponible:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating">                                                         
                         <input type="text" id="totalExento"
-                            class="form-control" required placeholder="Exento." />
+                            class="form-control valores" required placeholder="Exento." value="0"/>
                         <label >Total Exento:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
-                        <input type="text" id="totalDocumento"
-                            class="form-control" required placeholder="Numero Cont." />
-                        <label >Total Documento:</label>
-                    </div>
-                </div>
-                <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="totalIva"
-                            class=" form-control" required placeholder="Numero doc." />
+                            class=" form-control valores" required placeholder="TotalIva." disabled/>
                         <label>Total IVA:</label>
                     </div>
                 </div>
-                
+                <div class="col">
+                    <div class="form-floating">                                                         
+                        <input type="text" id="totalDocumento"
+                            class="form-control valores" required placeholder="Total Documento" disabled readonly/>
+                        <label >Total Documento:</label>
+                    </div>
+                </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                     <div class="form-floating">                                                         
-                        <input type="text" id="alicuota"
-                            class="form-control" required placeholder="alicuota" />
+                    <div class="form-floating">                                                         
+                        <input type="number" id="alicuota"
+                            class="form-control valores" required placeholder="alicuota" value="16" readonly disabled/>
                         <label >Alicuota %:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="porcentajeRetener"
-                            class="form-control" required placeholder="Numero Con" />
+                            class="form-control valores" required placeholder="Numero Con"  value=100 disabled readonly  />
                         <label >% Retenido:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="totalIvaRetenido"
-                            class=" form-control" required placeholder="Numero doc." />
+                            class=" form-control" required placeholder="IVA retenido." disabled readonly />
                         <label>IVA retenido:</label>
                     </div>
                 </div>
                 
             </div>
         </div>
-        <div class="row resultado mt-3"> 
+        <div class="row resultado mt-3  border-secondary-subtle rounded-bottom row border-end border-bottom border-start"> 
             <div class="row mb-2">
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="num_comprobante"
-                            class="form-control" placeholder="numero" readonly />
+                            class="form-control" placeholder="numero" readonly  disabled/>
                         <label>Comprobante:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="fechaEmision"
-                            class="form-control" placeholder="Numero Con" readonly/>
+                            class="form-control" placeholder="Numero Con" readonly disabled/>
                         <label>F. Emision:</label>
                     </div>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="totalPagado"
-                            class="form-control" placeholder="numero" readonly />
+                            class="form-control" placeholder="numero" readonly  disabled/>
                         <label>Total Pagado:</label>
                     </div>
                 </div>
                 <div class="col">
-                     <div class="form-floating">                                                         
+                    <div class="form-floating">                                                         
                         <input type="text" id="totalRetener"
-                            class="form-control" placeholder="Numero Con" readonly/>
+                            class="form-control" placeholder="Numero Con" readonly disabled/>
                         <label>Total Retener Comprobante:</label>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div id="botones" class="botoneras mt-3">
+            <div>
+                <lord-icon
+                    id="btn_new_iva"
+                    src="../images/plus-circle.json"
+                    trigger="hover"
+                    style="width:30px;height:30px" class="svg disk_save botonera">
+                </lord-icon>
+                <span>Nueva</span>
+            </div>
+            <div>
+                <lord-icon
+                    id="btn_sav_iva"
+                    src="../images/pendrive-storage.json"
+                    trigger="morph"
+                    state="morph-put-in"
+                    style="width:30px;height:30px" class="svg disk_save botonera">
+                </lord-icon>
+            <span>Guardar</span>
+            </div>
+            <div>
+                <lord-icon
+                    id="btn_update_iva"
+                    src="../images/edit.json"
+                    trigger="hover"
+                    state="hover-line"
+                    style="width:30px;height:30px" class="svg disk_save botonera">
+                </lord-icon>
+                <span>Actualizar</span>
+            </div>
+            <div>
+                <lord-icon
+                    id="btn_delete_iva"
+                    src="../images/trash-bin.json"
+                    trigger="morph"
+                    state="morph-trash-in"
+                    style="width:30px;height:30px" class="svg disk_save botonera">
+                </lord-icon>
+                <span>Eliminar</span>
+            </div>
+            <div>
+                <lord-icon
+                    id="btn_search_iva"
+                    src="../images/wired-lineal-19-magnifier-zoom-search.json"
+                    trigger="morph"
+                    state="morph-check"
+                    style="width:30px;height:30px" class="svg disk_save botonera">
+                </lord-icon>
+                <span>Buscar</span>
+            </div>
+            <div>
+                <lord-icon
+                    id="btn_print_iva"
+                    src="../images/wired-lineal-732-printer.json"
+                    trigger="hover"
+                    style="width:30px;height:30px" class="svg disk_save botonera ">
+                </lord-icon>
+                <span>Imprimir</span>
+            </div>
+        </div>   
     </div>
 </body>
 
+<script>
+var id_cli = 3
+document.querySelectorAll('.valores').forEach(item => {
+        item.addEventListener('input', event => {
+            item.value = item.value.replace(/[^0-9.]/g, '').replace(/,/g, '.');
+        })
+        item.addEventListener('blur', event => {
+            validar_monto_bs(item);
+        })
+    })
+
+function validar_monto(monto) {
+    var filter = /^-?(\d{0,9}[.\s]?|)\d{0,3}$/;
+
+    if (filter.test(monto)) {
+        return true;
+        } else {
+        return false;
+    }
+}
+
+function validar_monto_bs(objeto) {
+    
+    var objeto_objetivo = objeto;
+    objeto_objetivo.classList.remove('is-invalid')
+    
+    var monto = objeto_objetivo.value;
+    if (!validar_monto(monto)) {
+        objeto_objetivo.classList.add('is-invalid')
+        objeto_objetivo.focus();
+        const quitar_validacion = setTimeout(() => {
+                objeto_objetivo.classList.remove('is-invalid')
+                clearTimeout(quitar_validacion);
+            }, "5000");
+        return "invalido";
+    }
+    recalcular();
+    return true;
+}
+
+function recalcular(){
+    let baseImponible = parseFloat(document.getElementById("totalBaseImponible").value) || 0;
+    let totalExento = parseFloat(document.getElementById("totalExento").value) || 0;
+    let alicuota = parseFloat(document.getElementById("alicuota").value) || 0;
+    let porcentajeRetener = parseFloat(document.getElementById("porcentajeRetener").value) || 0;
+
+    let totalIva = baseImponible * (alicuota / 100);
+    document.getElementById("totalIva").value = totalIva.toFixed(2);
+
+    document.getElementById("totalDocumento").value = (totalIva + baseImponible + totalExento).toFixed(2);
+
+
+    let totalIvaRetenido = totalIva * (porcentajeRetener / 100);
+    document.getElementById("totalIvaRetenido").value = totalIvaRetenido.toFixed(2);
+
+    let totalDocumento = (parseFloat(document.getElementById("totalDocumento").value) || 0);
+    
+    document.getElementById("totalPagado").value = (totalDocumento - totalIvaRetenido).toFixed(2);
+    document.getElementById("totalRetener").value = totalIvaRetenido.toFixed(2);
+}
+
+document.getElementById('rif_iva').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); 
+        document.getElementById("numeroDocumento").focus()
+        buscarProveedor(this.value);
+    }
+});
+document.getElementById('rif_iva').addEventListener('blur', function(event) {   
+        buscarProveedor(this.value);
+});
+
+async function buscarProveedor(rif) {
+    //https://facturacion.siac.historiaclinica.org/api/retenciones/proveedores/J409132803?id_cli=29
+    if (rif.length < 5) {
+        return;
+    }
+    Swal.fire({
+        title: 'Buscando...',
+        icon:'info',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    contribuyente=0;
+    const response = await fetch(
+        `https://facturacion.siac.historiaclinica.org/api/retenciones/proveedores/${rif}?id_cli=${id_cli}`,
+        {
+            method: "GET",
+            headers: { 
+                "Content-Type": "application/json", 
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+        }
+    );
+    const proveedor = await response.json();  
+    console.log(proveedor)
+    Swal.close()
+    if (proveedor.error == "No data") {
+        Swal.fire({
+                title: 'Error',
+                text: 'Proveedor no encontrado',
+                icon:'info',
+                allowOutsideClick: false,                
+            });
+            return;
+    }
+    if (proveedor.error) {
+        Swal.fire({
+                title: 'Error',
+                text: proveedor.error,
+                icon:'info',
+                allowOutsideClick: false,                
+            });
+            return;
+    }
+
+    document.getElementById("razon_social").value = proveedor.data[0].nombre;
+    if(proveedor.data[0].is_juridico){
+        document.querySelector(".tipoContribuyenteJ").checked = true;
+    }else{
+        document.querySelector(".tipoContribuyenteN").checked = true;
+    }
+    contribuyente= proveedor.data[0].id_proveedor;
+    document.getElementById('retencion_iva').value = proveedor.data[0].porcentaje_retencion;
+    document.getElementById('porcentajeRetener').value = proveedor.data[0].porcentaje_retencion;
+    document.getElementById('contribuyenteResidente').checked = proveedor.data[0].is_residente;
+    document.getElementById('agenteRetencion').checked = proveedor.data[0].is_agente;
+    document.getElementById('contribuyenteRetencion').checked = proveedor.data[0].is_contribuyente;
+    document.getElementById("numeroDocumento").focus()
+
+}
+
+document.querySelectorAll('.contribuyenteInput').forEach(item => {
+    item.addEventListener('change', event => {
+        let c = item.dataset.campo;
+        let v = null;
+        if (item.type === "checkbox") {
+            v = item.checked ? 1 : 0;
+        } else if (item.type === "radio") {
+            v = document.querySelector('input[name="tipoContribuyente"]:checked').value;
+        } else {
+            v = item.value;
+        }
+        actualizarProveedor(c,v);
+    })
+})
+
+
+async function actualizarProveedor(c,v) {
+    if (contribuyente==0) {
+        return;
+    }
+    Swal.fire({
+        title: 'Actualizando...',
+        icon:'info',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    const response = await fetch(
+        `https://facturacion.siac.historiaclinica.org/api/retenciones/proveedores/${contribuyente}`,
+        {
+            method: "PUT",
+            headers: { 
+                "Content-Type": "application/json", 
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({ c: c, v: v })
+        }
+    );
+    const proveedor = await response.json();  
+    Swal.close()
+    if (proveedor.error) {
+        Swal.fire({
+                title: 'Error',
+                text: proveedor.error,
+                icon:'info',
+                allowOutsideClick: false,                
+            });
+            return;
+    }    
+}
+
+document.getElementById('btn_new_iva').addEventListener('click', function() {
+    contribuyente=0;
+
+    document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+        input.value = '';
+    });
+
+    // Restablecer checkboxes y radios a su estado predeterminado
+    document.getElementById('juridico').checked = true;
+    document.getElementById('natural').checked = false;
+    document.getElementById('contribuyenteResidente').checked = true;
+    document.getElementById('agenteRetencion').checked = false;
+    document.getElementById('contribuyenteRetencion').checked = true;
+
+    // Restablecer valores por defecto
+    document.getElementById('retencion_iva').value = '100';
+    document.getElementById('porcentajeRetener').value = '100';
+    document.getElementById('totalExento').value = '0';
+    document.getElementById('numeroDocumentoAf').value = '0';
+    document.getElementById('numeroExpediente').value = '0';
+    document.getElementById('alicuota').value = '16';
+    document.getElementById('fecha_operacion').value = toDateInputValue(new Date());
+
+    // Limpiar campos de solo lectura
+    recalcular();
+    document.getElementById("rif_iva").focus()
+})
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+</script>
