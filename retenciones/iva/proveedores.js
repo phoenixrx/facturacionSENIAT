@@ -15,6 +15,7 @@ async function buscarProveedor(rif) {
     if (buscandoProveedor) {
         return;
     }
+    limpiarTodo();
     buscandoProveedor = true;
     if (rif.length < 5) {
         buscandoProveedor = false;
@@ -28,7 +29,9 @@ async function buscarProveedor(rif) {
             Swal.showLoading();
         }
     });
+    console.log(contribuyente)
     contribuyente=0;
+
     const response = await fetch(
         `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${rif}?id_cli=${id_cli}`,
         {
@@ -75,14 +78,15 @@ async function buscarProveedor(rif) {
     }else{
         document.querySelector(".tipoContribuyenteN").checked = true;
     }
+    
     contribuyente= proveedor.data[0].id_proveedor;
+    document.getElementById('rif_iva').value = proveedor.data[0].RIF;
     document.getElementById('retencion_iva').value = proveedor.data[0].porcentaje_retencion;
     document.getElementById('porcentajeRetener').value = proveedor.data[0].porcentaje_retencion;
     document.getElementById('contribuyenteResidente').checked = proveedor.data[0].is_residente;
     document.getElementById('agenteRetencion').checked = proveedor.data[0].is_agente;
     document.getElementById('contribuyenteRetencion').checked = proveedor.data[0].is_contribuyente;
     document.getElementById("numeroDocumento").focus()
-
 }
 
 document.querySelectorAll('.contribuyenteInput').forEach(item => {
@@ -104,6 +108,7 @@ async function actualizarProveedor(c,v) {
     if (contribuyente==0) {
         return;
     }
+    console.log(contribuyente)
     Swal.fire({
         title: 'Actualizando...',
         icon:'info',
@@ -139,14 +144,16 @@ async function actualizarProveedor(c,v) {
 async function crearProveedor(rif) {
     const myModalProveedor = new bootstrap.Modal('#modalProveedor', {
         keyboard: false
-    })
-    contribuyente=0;
+    })    
     myModalProveedor.show();
     document.getElementById('rifProveedor').value= rif;
+    document.getElementById('retencion_ivaProveedor').value = 100;
+    document.getElementById('razonSocialProveedor').focus();
 }
 
 document.getElementById("btnCancelarProveedor").addEventListener("click", function(event) {
     event.preventDefault();
+    console.log(contribuyente)
     contribuyente=0;
     document.getElementById("rif_iva").value="";
     document.getElementById("razon_social").value="";
@@ -155,7 +162,6 @@ document.getElementById("btnCancelarProveedor").addEventListener("click", functi
 
 document.getElementById("btnGuardarProveedor").addEventListener("click", async function(event) {
     event.preventDefault();
-    contribuyente=0;
     document.getElementById("rif_iva").value="";
     const rif = document.getElementById('rifProveedor').value;
     const razonsocial = document.getElementById('razonSocialProveedor').value;

@@ -26,6 +26,10 @@ img.botonera {
 .svg.disk_save.botonera{
   cursor: pointer;
 }
+.svg.disk_save.botonera.pe-none{
+    background: lightgrey;
+}
+
 .botoneras div {
   display: flex;
   flex-direction: column;
@@ -65,6 +69,57 @@ aside div.botonera {
 }
 .modal-xl {
     --bs-modal-width: 800px!important;
+} 
+#tablaResultadosBusqueda th {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+#tablaResultadosBusqueda td {
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+.form-check-input {
+    margin: 0;
+    cursor: pointer;
+}
+.table-danger {
+    background-color: #ffebee !important;
+}
+.table-danger:hover {
+    background-color: #ffcdd2 !important;
+}
+.badge {
+    font-size: 0.75rem;
+}
+
+/* Estilos para filas seleccionadas */
+#cuerpoTablaResultados tr {
+    transition: background-color 0.15s ease;
+}
+
+#cuerpoTablaResultados tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+#cuerpoTablaResultados tr.table-danger:hover {
+    background-color: #ffcdd2 !important;
+}
+
+/* Estilo para fila seleccionada */
+#cuerpoTablaResultados tr.selected {
+    background-color: #e3f2fd !important;
+}
+
+#cuerpoTablaResultados tr.table-danger.selected {
+    background-color: #ffcdd2 !important;
+}
+
+/* Evitar selección de texto al hacer clic */
+#cuerpoTablaResultados tr {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 </style>
 <body>
@@ -162,7 +217,8 @@ aside div.botonera {
                 <div class="col">
                     <div class="form-floating">                                                         
                             <input type="date" name="fecha_operacion" id="fecha_operacion"
-                                class=" form_actu_admi form-date form-control" data-campo='fecha_admision' required />
+                                class=" form_actu_admi form-date form-control retencionInput"
+                                data-campo='fecha_retencion' required />
                             <label for="fecha_operacion">F. operacion: </label>
                         </div>
                         <script> 
@@ -178,7 +234,9 @@ aside div.botonera {
                 </div>
                 <div class="col">
                     <div class="form-floating">
-                        <select class="form-select" id="tipoRetencion" aria-label="Floating label select example">                            
+                        <select class="form-select retencionInput" 
+                            data-campo='tipo'
+                            id="tipoRetencion" >                            
                             <option selected value="C">Completa</option>
                             <option value="P">Parcial</option>                            
                         </select>
@@ -187,7 +245,9 @@ aside div.botonera {
                 </div>
                 <div class="col">
                     <div class="form-floating">
-                        <select class="form-select" id="documentoRetencion" aria-label="Floating label select example">                            
+                        <select class="form-select retencionInput" 
+                            data-campo='id_tipo_documento'
+                            id="documentoRetencion">                            
                             <option selected value="1">Factura</option>                            
                         </select>
                         <label>Documento</label>
@@ -198,28 +258,32 @@ aside div.botonera {
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroDocumento"
-                            class=" form-control" required placeholder="Numero Doc." />
+                            data-campo='numero_documento'
+                            class=" form-control retencionInput" required placeholder="Numero Doc." />
                         <label for="numeroDocumento">Numero Documento:</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroControl"
-                            class=" form-control" required placeholder="Numero Cont." />
+                            data-campo='numero_control'
+                            class=" form-control retencionInput" required placeholder="Numero Cont." />
                         <label >Numero Control:</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroDocumentoAf"
-                            class=" form-control" required placeholder="Numero doc." value="0"/>
+                            data-campo='numero_afectado'
+                            class=" form-control retencionInput" required placeholder="Numero doc." value="0"/>
                         <label >Num. doc. afectado:</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroExpediente"
-                            class=" form-control" required placeholder="Numero Exp." value="0"/>
+                            data-campo='numero_expediente'
+                            class=" form-control retencionInput" required placeholder="Numero Exp." value="0"/>
                         <label >Numero Expediente:</label>
                     </div>
                 </div>
@@ -228,14 +292,20 @@ aside div.botonera {
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="totalBaseImponible"
-                            class="form-control valores" required placeholder="Exento." />
+                            class="form-control valores" required placeholder="Exento." 
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-custom-class="custom-tooltip"
+                            data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
                         <label >Total Base Imponible:</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="totalExento"
-                            class="form-control valores" required placeholder="Exento." value="0"/>
+                            class="form-control valores" required placeholder="Exento." value="0"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-custom-class="custom-tooltip"
+                            data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
                         <label >Total Exento:</label>
                     </div>
                 </div>
@@ -336,23 +406,13 @@ aside div.botonera {
             </div>
             <div>
                 <lord-icon
-                    id="btn_update_iva"
-                    src="../../images/edit.json"
-                    trigger="hover"
-                    state="hover-line"
-                    style="width:30px;height:30px" class="svg disk_save botonera">
-                </lord-icon>
-                <span>Actualizar</span>
-            </div>
-            <div>
-                <lord-icon
                     id="btn_delete_iva"
                     src="../../images/trash-bin.json"
                     trigger="morph"
                     state="morph-trash-in"
                     style="width:30px;height:30px" class="svg disk_save botonera">
                 </lord-icon>
-                <span>Eliminar</span>
+                <span>Anular</span>
             </div>
             <div>
                 <lord-icon
@@ -360,7 +420,9 @@ aside div.botonera {
                     src="../../images/wired-lineal-19-magnifier-zoom-search.json"
                     trigger="morph"
                     state="morph-check"
-                    style="width:30px;height:30px" class="svg disk_save botonera">
+                    style="width:30px;height:30px" class="svg disk_save botonera"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalBuscarComprobante">
                 </lord-icon>
                 <span>Buscar</span>
             </div>
@@ -507,11 +569,118 @@ aside div.botonera {
             </div>
         </div>
     </div>
+<!-- Modal Búsqueda de Comprobantes -->
+<div class="modal fade" id="modalBuscarComprobante" tabindex="-1" aria-labelledby="modalBuscarComprobanteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalBuscarComprobanteLabel">
+                    <i class="bi bi-search"></i> Buscar Comprobantes
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">                
+                <div class="row mb-2">
+                    <div class="col-md-4 form-floating">                        
+                        <select class="form-select" id="filtroBusqueda">
+                            <option value="proveedor_nombre" selected>Nombre Proveedor</option>
+                            <option value="proveedor_rif">RIF Proveedor</option>
+                            <option value="numero_comprobante">Número Comprobante</option>
+                        </select>
+                        <label for="filtroBusqueda" class="form-label">Buscar por:</label>
+                    </div>
+                    <div class="col-md-8">
+                        
+                        <div class="input-group form-floating">
+                            
+                            <input type="text" class="form-control" id="terminoBusqueda" 
+                                   placeholder="Escriba para buscar..." autocomplete="off">
+                                   <label for="terminoBusqueda" class="form-label">Término de búsqueda</label>
+                            <span class="input-group-text bg-transparent">
+                                <i class="bi bi-search"></i>
+                            </span>
+                        </div>
+                        <div class="form-text">
+                            <span id="textoAyuda">
+                                Buscar por nombre del proveedor
+                            </span>
+                            <span class="float-end" id="contadorBusqueda">0 resultados</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-3">
+
+                <!-- Resultados de Búsqueda -->
+                <div >
+          
+                    
+                    <!-- Loading -->
+                    <div id="loadingBusqueda" class="text-center d-none">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Buscando...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Buscando comprobantes...</p>
+                    </div>
+
+                    <!-- Mensaje sin resultados -->
+                    <div id="sinResultados" class="alert alert-info d-none">
+                        <i class="bi bi-info-circle"></i> No se encontraron comprobantes. Intente con otros términos.
+                    </div>
+
+                    <!-- Mensaje inicial -->
+                    <div id="mensajeInicial" class="alert alert-light">
+                        <i class="bi bi-lightbulb"></i> Escriba en el campo de búsqueda para comenzar.
+                    </div>
+
+                    <!-- Tabla de resultados -->
+                    <div class="table-responsive d-none" id="contenedorTabla">
+                        <table class="table table-sm table-hover" id="tablaResultadosBusqueda">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 40px;">Sel.</th>
+                                    <th>Comprobante</th>
+                                    <th>Proveedor</th>
+                                    <th>RIF</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpoTablaResultados">
+                                <!-- Los resultados se cargarán aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    <nav aria-label="Paginación de resultados" class="mt-3 d-none" id="contenedorPaginacion">
+                        <ul class="pagination pagination-sm justify-content-center" id="paginacionResultados">
+                            <!-- La paginación se generará dinámicamente -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-success d-none" id="btnSeleccionarComprobante">
+                    <i class="bi bi-check2-square"></i> Seleccionar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 </body>
 
 <script>
 var id_cli = 3
-
+let contribuyente = 0;
+let retencionIva =0;
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
@@ -519,3 +688,4 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 <script src="proveedores.js"></script>
 <script src="calculos.js"></script>
 <script src="retenciones.js"></script>
+<script src="buscar.js"></script>

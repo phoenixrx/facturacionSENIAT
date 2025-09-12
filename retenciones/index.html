@@ -105,18 +105,17 @@ body{
             </div>
         </div>
     </div>
-    <div class="row border border-1 border-info contenedorPrincipal">
+    <div class="contenedorPrincipal">
         <h3 class="m-3">Seleccione un módulo para empezar...</h3>
     </div>
     
 
 </body>
 </html>
-<script>
-    let contribuyente = 0;
+<script>    
 document.getElementById("ficha_iva").addEventListener("click",function (){
     document.getElementById("sub_panel_1").style.display="none";
-    document.querySelector(".tituloPrincipal").innerText="Sistema de Retenciones - IVA";
-    document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="iva/retencionIva.html" style="width:100%;height:750px;"></object>';
+    document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - IVA <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
+    document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="iva/retencionIva.html" style="width:100%;height:665px;"></object>';
 })
 </script>

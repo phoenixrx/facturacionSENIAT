@@ -38,7 +38,6 @@ router.put('/proveedores/:id',  async (req, res) => {
     const {id} = req.params;    
     const {c,v} = req.body;
 
-
     if(isNaN(id)){
         return res.status(400).json({
             success: false,
@@ -107,10 +106,10 @@ router.post('/proveedores',  async (req, res) => {
         });        
     }
     
-    is_residente = is_residente ? 1 : 0;
-    is_agente = is_agente ? 1 : 0;
-    is_contribuyente = is_contribuyente ? 1 : 0;
-    is_juridico = is_juridico ? 1 : 0;
+    let is_residenteVar = is_residente ? 1 : 0;
+    let is_agenteVar = is_agente ? 1 : 0;
+    let is_contribuyenteVar = is_contribuyente ? 1 : 0;
+    let is_juridicoVar = is_juridico ? 1 : 0;
     /*const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (correo && !emailRegex.test(correo)) {
         return res.status(400).json({
@@ -122,13 +121,13 @@ router.post('/proveedores',  async (req, res) => {
     try {
         const query = `
         INSERT INTO proveedores 
-        (RIF, nombre, telefono, correo, direccion, id_cli, persona_contacto, telefono_contacto, porcentaje_retencion, is_residente, is_agente, is_contribuyente, is_juridico)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
+        (RIF, nombre, telefono, correo, direccion, id_cli, contacto_nombre, contacto_telefono, porcentaje_retencion, is_residente, is_agente, is_contribuyente, is_juridico, tipo_proveedor)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SERVICIOS');`
         
         const resultado = await retornar_query(query,[
             rif, razonsocial, telefono, correo, direccion, id_cli, 
-            contacto, telefcontact, porcentaje_retencion, is_residente, 
-            is_agente, is_contribuyente, is_juridico
+            contacto, telefcontact, porcentaje_retencion, is_residenteVar, 
+            is_agenteVar, is_contribuyenteVar, is_juridicoVar
         ]);
 
         return res.json({
