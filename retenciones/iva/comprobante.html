@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../../facturacion/js/sweetalert2.all.min.js"></script>
+    <link href="../../facturacion/css/sweetalert2.min.css" rel="stylesheet" />
+    <script src="../../facturacion/js/bootstrap.bundle.min.js"></script>
+    <link href="../../facturacion/css/bootstrap.min.css" rel="stylesheet" />    
+    <link rel="icon" type="image/x-icon" href="https://siac.empresas.historiaclinica.org/images/Imagen1.ico">
+    <title>SIAC-Comprobante IVA</title>
+</head>
+<style>
+    html {
+        background-color: lightgrey;
+    }
+    td{
+        padding: .2rem!important;
+    }
+    .totales{
+        font-size: large;
+        font-weight: bold;
+    }
+    .totales>span{
+        font-size: large;
+        font-weight: bold;
+    }
+   
+    body {
+        overflow-y: scroll;
+        background-color: white;
+        /*display: grid;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: "header" "contenido" "footer";*/
+        margin: 0 auto !important;
+        min-height: 216mm;
+        max-width: 279mm;
+        width: 279mm;
+        padding: .5em;
+        background-color: white;
+        font-size: 10pt;
+        box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+    }
+    span, b, .nota {
+        font-size: 8pt;
+    }
+    tr, th, th>span {
+        font-size: 7pt;
+    }
+    div.nota{
+        line-height: 75%;
+    }
+    @media print {
+        body {
+            box-shadow: none;                  
+        }
+        html {
+        background-color: white!important;
+        transform: rotate(90deg);
+        }
+    }
+</style>
+<body class="hoja d-flex flex-column">    
+    <div class="row mt-3">
+        <div class="col-10">
+            <h4 class="text-center mb-1">COMPROBANTE DE RETENCIÓN DE IMPUESTO AL VALOR AGREGADO I.V.A.</h4>
+        <div class="text-center nota"><small class="text-muted ">Ley IVA - Articulo 11:  La administracion Tributaria podrá designar como responsable del pago del impuesto, en calidad de agentes de retencion, a quienes por sus funciones públicas o por razon de sus actividades privadas intervengan en operaciones gravadas con el impuesto establecido en este decreto cn Rango, Valor y Fuerza de Ley</small></div>
+        </div>
+        <div class="col-2 logo"></div>
+    </div>    
+    <hr class="my-3">
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-2">
+            <div class="row">
+                <b>Numero de Comprobante</b><br>
+                <span id="num_comprobante"></span>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="row">
+                <b>Fecha de Emision</b><br>
+                <span id="fechaEmision"></span>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <b>Fecha de Entrega <small class="text-muted">(si es diferente a la de emisión)</small></b><br>
+                <span>________/________/_____________</span>
+            </div>
+        </div>
+        <div class="col-1"></div>
+    </div>
+    <div class="row mt-3  lh-1">
+        <div class="col-8">
+            <b>Nombre o Razón Social del Agente de Retención</b><br>
+            <span id="razonSocialAgente"></span>
+        </div>
+        <div class="col-2">
+            <b>Rif del Agente de Retención</b><br>
+            <span id="rifAgente"></span>
+        </div>
+        <div class="col-2">
+            <b>Periodo Fiscal</b><br>
+            <span id="periodoFiscal"></span>
+        </div>
+    </div>
+    <div class="row mt-2  lh-1">
+        <div class="col-12">
+            <b>Dirección fiscal del Agente de Retención</b><br>
+            <span id="direccionAgente"></span>
+        </div>
+    </div>
+    <div class="row mt-2 lh-1">
+        <div class="col-8">
+            <b>Nombre o Razón Social del Sujeto Retenido</b><br>
+            <span id="razonSocialSujeto"></span>
+        </div>
+        <div class="col-4">
+            <b>Rif del Sujeto Retenido</b><br>
+            <span id="rifSujeto"></span>
+        </div>
+    </div>
+    <div class="row mt-2 lh-1">
+        <div class="col-12">
+            <b>Dirección fiscal del Sujeto Retenido</b><br>
+            <span id="direccionSujeto"></span>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <table class="table table-bordered">
+                <thead>
+                    <th>Op N°</th>
+                    <th>Fecha de Documento</th>
+                    <th>Tipo Documento</th>
+                    <th>Numero de Documento</th>
+                    <th>Numero de control de Documento</th>
+                    <th>Numero de factura afectada</th>
+                    <th>Transac</th>
+                    <th>Total Compra mas IVA</th>
+                    <th>Total Compra exenta</th>
+                    <th>Base Imponible</th>
+                    <th>Alicuota %</th>
+                    <th>Impuesto IVA</th>
+                    <th>IVA Retenido (<span id="porcentajeRetener"></span>%)</th>
+                </thead>
+                <tbody id="cuerpoTablaComprobante">
+                    <!-- Los datos se insertarán aquí -->
+                </tbody>
+                <tfoot id="pieTablaComprobante">
+                    <!-- Los totales se insertarán aquí -->
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-1 mb-3 mx-1">  
+          
+        <div class="col-6 border text-end totales">Total pagado Bs. <span id="totalPagado"></span></div>
+        <div class="col-6 border totales">Total retenido Bs. <span id="totalRetenido"></span></div>
+    </div>
+    <div class="row mt-3">        
+        <div class="col-6 mt-3 text-center ">
+            ___________________________________________<br>
+            El agente de Retención
+        </div>
+        <div class="col-6 mt-3 text-center ">
+            ___________________________________________<br>
+            El sujeto retenido
+        </div>
+    </div>
+    <footer class="mt-auto">
+        <div class="row border-top border-bottom border-2 border-dark mx-1">
+            <b><small>Este comprobante se emite cumpliendo con lo establecido en el articulo N° 16 de la Providencia
+                Administrativa SNAT/2015/0049 de fecha 14/07/2015, publicada en Gaceta Oficial N° 40720 de Fecha
+                10 de Agosto de 2015</small>
+            </b>
+        </div>
+        <div>
+            <small class="text-muted">SIACmedica - Retenciones IVA <span id="version">1.0.0</span> Software administrativo clinico desarrollado por JSH13 CodeStudio, C.A. - www.siacmedica.com</small>
+        </div>
+    </footer>
+
+</body>
+</html>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener el ID del comprobante desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const idComprobante = urlParams.get('id');
+
+        if (idComprobante) {
+            cargarComprobante(idComprobante);
+        } else {
+            Swal.fire('Error', 'No se ha especificado un ID de comprobante.', 'error');
+        }
+    });
+
+    /**
+     * Formatea un monto a un formato numérico con dos decimales.
+     * @param {string|number} monto El monto a formatear.
+     * @returns {string} El monto formateado.
+     */
+    function formatearMonto(monto) {
+        if (monto === null || monto === undefined) return '0,00';
+        return new Intl.NumberFormat('es-VE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(monto);
+    }
+
+    /**
+     * Formatea una fecha en formato YYYY-MM-DD a DD/MM/YYYY.
+     * @param {string} fechaString La fecha en formato ISO (YYYY-MM-DD...).
+     * @returns {string} La fecha formateada.
+     */
+    function formatearFecha(fechaString) {
+        if (!fechaString) return 'N/A';
+        const fecha = new Date(fechaString);
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const anio = fecha.getFullYear();
+        return `${dia}/${mes}/${anio}`;
+    }
+
+    /**
+     * Carga los datos de un comprobante de retención de IVA y los muestra en la página.
+     * @param {number|string} id El ID del comprobante a cargar.
+     */
+    async function cargarComprobante(id) {
+        try {
+            Swal.fire({
+                title: 'Cargando comprobante...',
+                icon: 'info',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Asumo que el token está en localStorage
+            const token = localStorage.getItem("token");
+            const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/comprobante-iva/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error en la solicitud: ${response.statusText}`);
+            }
+
+            const resultado = await response.json();
+            Swal.close();
+
+            if (resultado.success && resultado.data.length > 0) {
+                const comprobantes = resultado.data;
+                const primerComprobante = comprobantes[0];
+
+                // Llenar encabezado
+                document.getElementById('num_comprobante').textContent = primerComprobante.numero_comprobante;
+                document.getElementById('fechaEmision').textContent = formatearFecha(primerComprobante.fecha_creacion);
+                
+                const fechaRetencion = new Date(primerComprobante.fecha_retencion);
+                document.getElementById('periodoFiscal').textContent = `Año: ${fechaRetencion.getFullYear()} Mes: ${String(fechaRetencion.getMonth() + 1).padStart(2, '0')}`;
+
+                // Datos del Agente de Retención
+                document.getElementById('razonSocialAgente').textContent = primerComprobante.agente_nombre;
+                document.getElementById('rifAgente').textContent = primerComprobante.agente_rif;
+                document.getElementById('direccionAgente').textContent = primerComprobante.agente_direccion;
+
+                // Datos del Sujeto Retenido
+                document.getElementById('razonSocialSujeto').textContent = primerComprobante.proveedor_nombre;
+                document.getElementById('rifSujeto').textContent = primerComprobante.proveedor_rif;
+                document.getElementById('direccionSujeto').textContent = primerComprobante.proveedor_direccion;
+
+                // Llenar tabla
+                const cuerpoTabla = document.getElementById('cuerpoTablaComprobante');
+                const pieTabla = document.getElementById('pieTablaComprobante');
+                let filasHtml = '';
+                let totalCompraMasIva = 0;
+                let totalExentoAcumulado = 0;
+                let totalBaseImponible = 0;
+                let totalImpuestoIva = 0;
+                let totalIvaRetenidoAcumulado = 0;
+
+                comprobantes.forEach((data, index) => {
+                    totalCompraMasIva += parseFloat(data.total_documento);
+                    totalExentoAcumulado += parseFloat(data.total_exento);
+                    totalBaseImponible += parseFloat(data.base_imponible);
+                    totalImpuestoIva += parseFloat(data.total_iva);
+                    totalIvaRetenidoAcumulado += parseFloat(data.total_iva_retenido);
+                    let tipoD =""
+                    switch (data.id_tipo_documento ) {
+                        case 1:
+                            tipoD='Factura';
+                            break;
+                        case 2:
+                            tipoD='NDD';
+                            break;
+                        case 3:
+                            tipoD='NDC';
+                            break;
+                        default:
+                            break;
+                    }
+                    filasHtml += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${formatearFecha(data.fecha_retencion)}</td>
+                        <td>${tipoD}</td>
+                        <td>${data.numero_documento}</td>
+                        <td>${data.numero_control}</td>
+                        <td>${data.numero_afectado}</td>
+                        <td>${data.tipo}</td>
+                        <td>${formatearMonto(data.total_documento)}</td>
+                        <td>${formatearMonto(data.total_exento)}</td>
+                        <td>${formatearMonto(data.base_imponible)}</td>
+                        <td>${formatearMonto(data.alicuota)}</td>
+                        <td>${formatearMonto(data.total_iva)}</td>
+                        <td>${formatearMonto(data.total_iva_retenido)}</td>
+                    </tr>
+                    `;
+                });
+
+                cuerpoTabla.innerHTML = filasHtml;
+
+                // Llenar pie de tabla con totales
+                pieTabla.innerHTML = `
+                    <tr class="fw-bold">
+                        <td colspan="7" class="text-end"></td>
+                        <td>${formatearMonto(totalCompraMasIva)}</td>
+                        <td>${formatearMonto(totalExentoAcumulado)}</td>
+                        <td>${formatearMonto(totalBaseImponible)}</td>
+                        <td>-</td>
+                        <td>${formatearMonto(totalImpuestoIva)}</td>
+                        <td>${formatearMonto(totalIvaRetenidoAcumulado)}</td>
+                    </tr>
+                `
+
+                // Llenar totales
+                document.getElementById('porcentajeRetener').textContent = parseFloat(primerComprobante.porcent_retencion).toFixed(0);
+                document.getElementById('totalPagado').textContent = formatearMonto(totalCompraMasIva - totalIvaRetenidoAcumulado);
+                document.getElementById('totalRetenido').textContent = formatearMonto(totalIvaRetenidoAcumulado);
+
+                // Logo
+                if (primerComprobante.logo) {
+                    const logoContainer = document.querySelector('.logo');
+                    let logo=primerComprobante.logo.replace('../', '');
+                    logoContainer.innerHTML = `<img src="https://siac.empresas.historiaclinica.org/${logo}" alt="Logo" style="max-width: auto; height: 50px;">`;
+                }
+
+            } else {
+                throw new Error(resultado.error || 'No se encontraron datos para el comprobante.');
+            }
+        } catch (error) {
+            Swal.fire('Error', `No se pudo cargar el comprobante: ${error.message}`, 'error');
+            console.error('Error al cargar el comprobante:', error);
+        }
+    }
+</script>

@@ -3,6 +3,13 @@ const express = require('express');
 const router = express.Router();
 const { retornar_query } = require('../middlewares/retornarQuery');
 const { authenticateToken } = require('../middlewares/autenticarToken');
+function isValidDate(dateString) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(dateString)) return false;
+    
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date);
+}
 
 // GET /api/retenciones 
 router.post('/iva', async (req, res) => {    
@@ -31,10 +38,10 @@ router.post('/iva', async (req, res) => {
     }
 
     // Validación de tipo
-    if (!['C', 'P'].includes(tipo.toUpperCase())) {
+    if (!['C', 'V'].includes(tipo.toUpperCase())) {
         return res.status(400).json({
             success: false,
-            error: 'El tipo debe ser  C o P'
+            error: 'El tipo debe ser  Compra o Venta'
         });
     }
 
@@ -224,6 +231,7 @@ router.get('/iva', async (req, res) => {
             numero_comprobante,
             proveedor_nombre,
             proveedor_rif,
+            id,
             fecha_desde,
             fecha_hasta,
             page = 1,
@@ -231,7 +239,7 @@ router.get('/iva', async (req, res) => {
         } = req.query;
 
         // Validar que al menos un parámetro de búsqueda esté presente
-        if (!numero_comprobante && !proveedor_nombre && !proveedor_rif && !fecha_desde && !fecha_hasta) {
+        if (!numero_comprobante && !proveedor_nombre && !proveedor_rif && !fecha_desde && !fecha_hasta && !id) {
             return res.status(400).json({
                 success: false,
                 error: 'Debe proporcionar al menos un criterio de búsqueda: numero_comprobante, proveedor_nombre, proveedor_rif, fecha_desde o fecha_hasta'
@@ -280,6 +288,11 @@ router.get('/iva', async (req, res) => {
         if (numero_comprobante) {
             query += ` AND ri.numero_comprobante LIKE ?`;
             params.push(`%${numero_comprobante}%`);
+        }
+
+        if (id) {
+            query += ` AND ri.id = ?`;
+            params.push(`${id}`);
         }
 
         if (proveedor_nombre) {
@@ -337,7 +350,8 @@ router.get('/iva', async (req, res) => {
                     proveedor_nombre,
                     proveedor_rif,
                     fecha_desde,
-                    fecha_hasta
+                    fecha_hasta,
+                    id
                 }
             });
         }
@@ -385,14 +399,87 @@ router.get('/iva', async (req, res) => {
     }
 });
 
+router.get('/comprobante-iva/:id', async (req, res) => {
+    const {id} = req.params;       
+    if(isNaN(id)){
+        return res.status(400).json({
+            success: false,
+            error: 'Faltan datos para procesar la solicitud'
+        });
+    }
+    try {       
 
-// Función auxiliar para validar formato de fecha
-function isValidDate(dateString) {
-    const regex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!regex.test(dateString)) return false;
-    
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date);
-}
+        let query = `
+            SELECT 
+                ri.*,
+                p.nombre as proveedor_nombre,
+                p.RIF as proveedor_rif,
+                p.telefono as proveedor_telefono,
+                p.direccion as proveedor_direccion,
+                a.logo_empresa as logo,
+                CONCAT(ab.tipo_cedula, ab.cedula) as agente_rif,
+                ab.direccion as agente_direccion,
+                ab.nombre as agente_nombre
+            FROM retenciones_iva ri
+            INNER JOIN proveedores p ON ri.id_proveedor = p.id_proveedor
+            INNER JOIN perfil_usuario_empresa a ON ri.id_cli = a.id_usuario
+            INNER JOIN perfil_usuario_basico ab ON ri.id_cli = ab.id_usuario
+            WHERE ri.id =?
+        `;
+        
+        let resultados;
+        try {
+            resultados = await retornar_query(query, [id]);
+        } catch (error) {
+            return res.json({
+            success: false,
+            data: error
+        });
+        }
+
+        return res.json({
+            success: true,
+            data: resultados
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: 'Error interno del servidor al buscar comprobantes'
+        });
+    }
+});
+
+router.get('/codigos-islr', async (req, res) => {    
+    try {       
+
+        let query = `
+            SELECT * FROM retenciones_codigos_isrl WHERE activo=?
+        `;
+        
+        let resultados;
+        try {
+            resultados = await retornar_query(query, [1]);
+        } catch (error) {
+            return res.json({
+            success: false,
+            data: error
+        });
+        }
+
+        return res.json({
+            success: true,
+            data: resultados
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: 'Error interno del servidor al buscar comprobantes'
+        });
+    }
+});
+
+
 
 module.exports = router;

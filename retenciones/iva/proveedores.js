@@ -1,5 +1,5 @@
 let buscandoProveedor = false;
-
+let proveedor_info = {};
 document.getElementById('rif_iva').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault(); 
@@ -29,7 +29,7 @@ async function buscarProveedor(rif) {
             Swal.showLoading();
         }
     });
-    console.log(contribuyente)
+    
     contribuyente=0;
 
     const response = await fetch(
@@ -71,7 +71,7 @@ async function buscarProveedor(rif) {
             });
             return;
     }
-
+    proveedor_info = proveedor.data[0];
     document.getElementById("razon_social").value = proveedor.data[0].nombre;
     if(proveedor.data[0].is_juridico){
         document.querySelector(".tipoContribuyenteJ").checked = true;

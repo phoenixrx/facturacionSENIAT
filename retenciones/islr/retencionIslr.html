@@ -7,10 +7,9 @@
     <link href="../../facturacion/css/sweetalert2.min.css" rel="stylesheet" />
     <script src="../../facturacion/js/bootstrap.bundle.min.js"></script>
     <link href="../../facturacion/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="../../facturacion/js/lordicon.js"></script>  
-     
+    <script src="../../facturacion/js/lordicon.js"></script>       
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">         
-    <title>SIAC-Retenciones IVA</title>
+    <title>SIAC-Retenciones ISLR</title>
 </head>
 <style>
 
@@ -106,7 +105,6 @@ aside div.botonera {
     background-color: #ffcdd2 !important;
 }
 
-/* Estilo para fila seleccionada */
 #cuerpoTablaResultados tr.selected {
     background-color: #e3f2fd !important;
 }
@@ -154,66 +152,70 @@ aside div.botonera {
 
             </div>
             <div class="row mb-2">
-                <div class="col-2">
+                <div class="col-4">
+                    <div class="form-check">
+                        <input id="retencionSalario" 
+                            class="form-check-input " 
+                            data-campo="tipo_retencion_islr"
+                            type="radio" name="tipoRetencion" value="1" checked >
+                        <label class="form-check-label" for="retencionSalario">
+                            Salarios y otras retenciones
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input id="retencionDiv"
+                            class="form-check-input " 
+                            data-campo="tipo_retencion_islr"
+                            type="radio" name="tipoRetencion"  value="0" >
+                        <label class="form-check-label" for="retencionDiv">
+                            Dividendos y Acciones
+                        </label>
+                    </div>
+                </div>
+                <div class="col-4">
                     <div class="form-check">
                         <input id="juridico" 
-                            class="form-check-input tipoContribuyenteJ contribuyenteInput" 
+                            class="form-check-input filtro_select tipoContribuyenteJ"  
                             data-campo="is_juridico"
-                            type="radio" name="tipoContribuyente" value="1" checked >
+                            type="radio" name="tipoContribuyenteIsrl" value="1" checked >
                         <label class="form-check-label" for="juridico">
                             Juridico
                         </label>
                     </div>
                     <div class="form-check">
                         <input id="natural"
-                            class="form-check-input tipoContribuyenteN contribuyenteInput" 
+                            class="form-check-input filtro_select tipoContribuyenteN" 
                             data-campo="is_juridico"
-                            type="radio" name="tipoContribuyente"  value="0" >
+                            type="radio" name="tipoContribuyenteIsrl"  value="0" >
                         <label class="form-check-label" for="natural">
                             Natural
                         </label>
                     </div>
                 </div>
+                <input type="hidden" id="retencion_iva">
+                <input type="hidden" id="porcentajeRetener">
+                <input type="hidden" id="agenteRetencion">
+                <input type="hidden" id="contribuyenteRetencion">
                 
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input contribuyenteInput" 
+                    <input class="form-check-input filtro_select" 
                         data-campo="is_residente"
                         type="checkbox" role="switch" id="contribuyenteResidente" checked>
                     <label class="form-check-label" for="contribuyenteResidente">
                         Residente
                     </label>
                 </div>
-                <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input contribuyenteInput" 
-                        data-campo="is_agente"
-                        type="checkbox" role="switch" id="agenteRetencion" >
-                    <label class="form-check-label" for="agenteRetencion">
-                        Agente de Retención
-                    </label>
-                </div>
-                <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input contribuyenteInput" type="checkbox" 
-                        data-campo="is_contribuyente"
-                        role="switch" id="contribuyenteRetencion" checked>
-                    <label class="form-check-label" for="contribuyenteRetencion">
-                        Contribuyente IVA
-                    </label>
-                </div>
-                <div class="col">
-                     <div class="form-floating">
-                        <input type="text" 
-                            class="form-control contribuyenteInput" 
-                            id="retencion_iva" 
-                            data-campo="porcentaje_retencion"
-                            placeholder="porcentaje" 
-                            value="100">
-                        <label>% Retener</label>
-                    </div>
-                </div>
+                
             </div>
         </div>
         
         <div class="row retencion   border-secondary-subtle rounded-top row border-end border-start">
+            <div class="form-floating mt-3 col-11">
+                <select class="form-select" id="conceptoIslr" aria-label="Floating label select example">
+                    
+                </select>
+                <label for="conceptoIslr">Concepto del pago o retención</label>
+            </div>
             <div class="row mb-2 mt-2">
                 <div class="col">
                     <div class="form-floating">                                                         
@@ -234,31 +236,6 @@ aside div.botonera {
                         </script>
                 </div>
                 <div class="col">
-                    <div class="form-floating">
-                        <select class="form-select retencionInput" 
-                            data-campo='tipo'
-                            id="tipoRetencion" >                            
-                            <option selected value="C">Compra</option>
-                            <option value="V">Venta</option>                            
-                        </select>
-                        <label>Tipo</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating">
-                        <select class="form-select retencionInput" 
-                            data-campo='id_tipo_documento'
-                            id="documentoRetencion">                            
-                            <option selected value="1">Factura</option>
-                            <option  value="2">NDD</option>
-                            <option  value="3">NDC</option>                            
-                        </select>
-                        <label>Documento</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroDocumento"
                             data-campo='numero_documento'
@@ -274,83 +251,54 @@ aside div.botonera {
                         <label >Numero Control:</label>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="numeroDocumentoAf"
-                            data-campo='numero_afectado'
-                            class=" form-control retencionInput" required placeholder="Numero doc." value="0"/>
-                        <label >Num. doc. afectado:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="numeroExpediente"
-                            data-campo='numero_expediente'
-                            class=" form-control retencionInput" required placeholder="Numero Exp." value="0"/>
-                        <label >Numero Expediente:</label>
-                    </div>
-                </div>
-            </div>
+            </div>            
             <div class="row mb-2">
-                <div class="col">
+                <div class="col-4">
                     <div class="form-floating">                                                         
                         <input type="text" id="totalBaseImponible"
                             class="form-control valores" required placeholder="Exento." 
                             data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
                             data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
-                        <label >Total Base Imponible:</label>
+                        <label >Monto Sujeto a retención Bs:</label>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-2">
                     <div class="form-floating">                                                         
-                        <input type="text" id="totalExento"
-                            class="form-control valores" required placeholder="Exento." value="0"
+                        <input type="text" id="porcentajeBaseImponible"
+                            class="form-control valores" required placeholder="Exento." disabled readonly>
+                        <label >% imponible:</label>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-floating">                                                         
+                        <input type="text" id="totalUT"
+                            class=" form-control valores" 
+                            required placeholder="TotalUT." 
+                            disabled
                             data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
-                            data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
-                        <label >Total Exento:</label>
+                            data-bs-title="Total de UT acumuladas, incluyendo el pago actual, en caso de que la retencion sea acumulativa (Artículo 9, Parágrafo Primero)"/>
+                        <label>Total en U.T.:</label>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-2">
                     <div class="form-floating">                                                         
-                        <input type="text" id="totalIva"
-                            class=" form-control valores" required placeholder="TotalIva." disabled/>
-                        <label>Total IVA:</label>
+                        <input type="text" id="porcentAplicable"
+                            class="form-control valores" 
+                            placeholder="Total Documento" disabled readonly/>
+                        <label for="porcentAplicable">% Aplicable:</label>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-2">
                     <div class="form-floating">                                                         
-                        <input type="text" id="totalDocumento"
-                            class="form-control valores" required placeholder="Total Documento" disabled readonly/>
-                        <label >Total Documento:</label>
+                        <input type="text" id="menosSustraendo"
+                            class="form-control valores" 
+                            placeholder="Total Documento" disabled readonly/>
+                        <label for="menosSustraendo">Sustraendo</label>
                     </div>
                 </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="number" id="alicuota"
-                            class="form-control valores" required placeholder="alicuota" value="16" readonly disabled/>
-                        <label >Alicuota %:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="porcentajeRetener"
-                            class="form-control valores" required placeholder="Numero Con"  value=100 disabled readonly  />
-                        <label >% Retenido:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalIvaRetenido"
-                            class=" form-control" required placeholder="IVA retenido." disabled readonly />
-                        <label>IVA retenido:</label>
-                    </div>
-                </div>
-                
-            </div>
+            </div>            
         </div>
         <div class="row resultado mt-3  border-secondary-subtle rounded-bottom row border-end border-bottom border-start"> 
             <div class="row mb-2">
@@ -390,7 +338,7 @@ aside div.botonera {
         <div id="botones" class="botoneras mt-3">
             <div>
                 <lord-icon
-                    id="btn_new_iva"
+                    id="btn_newIslr"
                     src="../../images/plus-circle.json"
                     trigger="hover"
                     style="width:30px;height:30px" class="svg disk_save botonera">
@@ -399,17 +347,17 @@ aside div.botonera {
             </div>
             <div>
                 <lord-icon
-                    id="btn_sav_iva"
+                    id="btn_savIslr"
                     src="../../images/pendrive-storage.json"
                     trigger="morph"
                     state="morph-put-in"
-                    style="width:30px;height:30px" class="svg disk_save botonera">
+                    style="width:30px;height:30px" class="svg disk_save botonera pe-none">
                 </lord-icon>
             <span>Guardar</span>
             </div>
             <div>
                 <lord-icon
-                    id="btn_delete_iva"
+                    id="btn_deleteIslr"
                     src="../../images/trash-bin.json"
                     trigger="morph"
                     state="morph-trash-in"
@@ -419,7 +367,7 @@ aside div.botonera {
             </div>
             <div>
                 <lord-icon
-                    id="btn_search_iva"
+                    id="btn_searchIslr"
                     src="../../images/wired-lineal-19-magnifier-zoom-search.json"
                     trigger="morph"
                     state="morph-check"
@@ -431,7 +379,7 @@ aside div.botonera {
             </div>
             <div>
                 <lord-icon
-                    id="btn_print_iva"
+                    id="btn_printIslr"
                     src="../../images/wired-lineal-732-printer.json"
                     trigger="hover"
                     style="width:30px;height:30px" class="svg disk_save botonera ">
@@ -549,14 +497,14 @@ aside div.botonera {
                             data-campo="is_contribuyente"
                             role="switch" id="proveedorRetencion" checked>
                         <label class="form-check-label" for="proveedorRetencion">
-                            Contribuyente IVA
+                            Contribuyente Islr
                         </label>
                     </div>
                     <div class="col">
                         <div class="form-floating">
                             <input type="text" 
                                 class="form-control contribuyenteInput" 
-                                id="retencion_ivaProveedor" 
+                                id="retencionIslrProveedor" 
                                 data-campo="porcentaje_retencion"
                                 placeholder="porcentaje" 
                                 value="100">
@@ -683,13 +631,15 @@ aside div.botonera {
 <script>
 var id_cli = 3
 let contribuyente = 0;
-let retencionIva =0;
+let retencionIslr =0;
+let minimoIslr =0;
+let is_acumulable =0;
+const UT =[{"valor":43}];
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 </script>
-<script src="proveedores.js"></script>
-<script src="calculos.js"></script>
-<script src="retenciones.js"></script>
-<script src="buscar.js"></script>
+<script src="retencionesIslr.js"></script>
+<script src="calculosIslr.js"></script>
 <script src="../auxiliares.js"></script>   
+<script src="../iva/proveedores.js"></script>   

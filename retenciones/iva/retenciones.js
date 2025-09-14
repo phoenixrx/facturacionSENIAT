@@ -306,3 +306,15 @@ document.getElementById('btn_delete_iva').addEventListener('click', async functi
         }
     });
 });
+document.getElementById('btn_print_iva').addEventListener('click', function() {
+    if(retencionIva == 0){
+        Swal.fire({
+            title: 'Debe seleccionar una retención',
+            icon: 'info',
+            confirmButtonText: 'Ok'
+        });
+        return;
+    }
+    window.open(`https://facturacion.siac.historiaclinica.org/retenciones/iva/comprobante.html?id=${retencionIva}`, '_blank');
+});
+

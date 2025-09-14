@@ -345,19 +345,6 @@ function cambiarPagina(pagina) {
     document.getElementById('contenedorTabla').scrollTop = 0;
 }
 
-function formatearFecha(fecha) {
-    if (!fecha) return 'N/A';
-    return new Date(fecha).toLocaleDateString('es-ES');
-}
-
-function formatearMonto(monto) {
-    if (!monto) return '0,00';
-    return new Intl.NumberFormat('es-VE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(monto);
-}
-
 function seleccionarComprobante() {
     if (!comprobanteSeleccionado) {
         Swal.fire({
@@ -384,21 +371,10 @@ function seleccionarComprobante() {
         }
     }
 
-    console.log('Comprobante seleccionado:', comprobanteSeleccionado);
-    
-    // Aquí implementa lo que sucede cuando se selecciona un comprobante
     const bootstrapModal = bootstrap.Modal.getInstance(document.getElementById('modalBuscarComprobante'));
     bootstrapModal.hide();
     
-    Swal.fire({
-        title: 'Comprobante seleccionado',
-        text: `ID: ${comprobanteSeleccionado}`,
-        icon: 'success',
-        confirmButtonText: 'Ok'
-    });
-    
-    // Puedes devolver el comprobante seleccionado a tu función principal
-    // devolverComprobanteSeleccionado(comprobanteSeleccionado);
+    devolverComprobanteSeleccionado(comprobanteSeleccionado);
 }
 
 document.getElementById('btnSeleccionarComprobante').addEventListener('click', function() {
@@ -410,3 +386,59 @@ document.getElementById('modalBuscarComprobante').addEventListener('shown.bs.mod
         document.getElementById('terminoBusqueda').focus();
     }, 100);
 });
+
+async function devolverComprobanteSeleccionado(comprobante) {
+      Swal.fire({
+        title: 'Buscando comprobante...',
+        icon:'info',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+     const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/iva?id=${comprobante}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
+        const data = await response.json();
+        Swal.close()
+        if (data.success) {
+            buscarProveedor(data.data[0].proveedor_rif)
+                     
+            document.getElementById("num_comprobante").value = data.data[0].numero_comprobante; // Assuming this is already in the desired format from the API
+            document.getElementById("fechaEmision").value = formatearFechaDDMMYYYY(data.data[0].fecha_retencion); // YYYY-MM-DD
+            document.getElementById("fecha_operacion").value = formatearFechaUsa(data.data[0].fecha_creacion); // DD/MM/YYYY
+            document.getElementById("tipoRetencion").value = data.data[0].tipo;
+            document.getElementById("documentoRetencion").value = data.data[0].id_tipo_documento;
+            document.getElementById("numeroDocumento").value = data.data[0].numero_documento;
+            document.getElementById("numeroControl").value = data.data[0].numero_control;
+            document.getElementById("numeroDocumentoAf").value = data.data[0].numero_afectado;
+            document.getElementById("numeroExpediente").value = data.data[0].numero_expediente;
+            document.getElementById("totalBaseImponible").value = data.data[0].base_imponible;
+            document.getElementById("totalExento").value = data.data[0].total_exento;
+            document.getElementById("totalIva").value = data.data[0].total_iva;
+            document.getElementById("totalDocumento").value = data.data[0].total_documento;
+            document.getElementById("alicuota").value = data.data[0].alicuota;
+            document.getElementById("porcentajeRetener").value = data.data[0].porcent_retencion;
+            document.getElementById("totalIvaRetenido").value = data.data[0].total_iva_retenido;
+            retencionIva = data.data[0].id;
+            document.getElementById('btn_sav_iva').classList.add('pe-none');
+            document.getElementById("num_comprobante").classList.add("is-valid");
+            setTimeout(() => {
+                document.getElementById("fecha_operacion").focus();    
+            }, 500);
+            
+
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.error || 'Error al cargar el comprobante',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        }
+}
