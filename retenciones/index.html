@@ -118,4 +118,9 @@ document.getElementById("ficha_iva").addEventListener("click",function (){
     document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - IVA <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
     document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="iva/retencionIva.html" style="width:100%;height:665px;"></object>';
 })
+document.getElementById("ficha_islr").addEventListener("click",function (){
+    document.getElementById("sub_panel_1").style.display="none";
+    document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - ISLR <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
+    document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="islr/retencionIslr.html" style="width:100%;height:665px;"></object>';
+})
 </script>

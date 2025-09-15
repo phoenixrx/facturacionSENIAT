@@ -3,8 +3,7 @@ document.getElementById('conceptoIslr').addEventListener('change',  function() {
      conceptoSeleccionado = codigos_retenciones.find(codigo => codigo.id === selectedId);
     
     if (conceptoSeleccionado) {
-        is_acumulable= conceptoSeleccionado.acum;
-        console.log(is_acumulable)
+        is_acumulable= conceptoSeleccionado.acum;        
         minimoIslr = conceptoSeleccionado.minimo        
         document.getElementById('porcentajeBaseImponible').value = conceptoSeleccionado.base;
         document.getElementById('porcentAplicable').value = conceptoSeleccionado.tarifa;
@@ -40,12 +39,16 @@ function recalcular(){
     const porcentAplicable = parseFloat(document.getElementById('porcentAplicable').value);
     const menosSustraendo = parseFloat(document.getElementById('menosSustraendo').value);
     const totalBaseImponible = parseFloat(document.getElementById('totalBaseImponible').value);
-    const totalUT = parseFloat(document.getElementById('totalUT').value);
+    const totalUT = parseFloat(document.getElementById('totalBaseImponible').value)/UT[0].valor;
+    
+    document.getElementById('totalUT').value= totalUT.toFixed(2);
     document.getElementById('btn_savIslr').classList.add('pe-none');
     if(totalBaseImponible<1){
         return;
     }
-
+    if(contribuyente==0){
+        return;
+    }
     if(totalBaseImponible<minimoIslr){
         Swal.fire({
             title: 'No supera el minimo',
@@ -69,7 +72,7 @@ function recalcular(){
     }else{
         let total_retener = 0;
 
-        let acumulado = proveedor_info.total_pagos || 0; //cantidades pagadas en fechas anteriores dentro del ejercicio
+        let acumulado = proveedor_islr.base_imponible || 0; //cantidades pagadas en fechas anteriores dentro del ejercicio
 
         total_retener = acumulado+totalBaseImponible;   // se le suma el pago actual
         
@@ -77,12 +80,14 @@ function recalcular(){
         
         total_retener=total_retener-menosSustraendo; //se le resta en caso que aplique 140ut/500ut
          
-        let retenido_acumulado = proveedor_info.total_retenido || 0; //retenciones hechas anteriormente en el periodo de ejercicio
+        let retenido_acumulado = proveedor_islr.retenido || 0; //retenciones hechas anteriormente en el periodo de ejercicio
         
         total_retener=total_retener-retenido_acumulado;
          
         document.getElementById('totalRetener').value = total_retener.toFixed(2);
 
     }
+    document.getElementById('totalPagado').value= Number(totalBaseImponible-Number(document.getElementById('totalRetener').value)).toFixed(2);
+
 
 }

@@ -1,5 +1,8 @@
 let buscandoProveedor = false;
 let proveedor_info = {};
+let proveedor_iva =0;
+let proveedor_islr =0;
+
 document.getElementById('rif_iva').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault(); 
@@ -70,7 +73,9 @@ async function buscarProveedor(rif) {
                 allowOutsideClick: false,                
             });
             return;
-    }
+    }    
+    proveedor_iva = proveedor.iva[0];
+    proveedor_islr = proveedor.islr[0];
     proveedor_info = proveedor.data[0];
     document.getElementById("razon_social").value = proveedor.data[0].nombre;
     if(proveedor.data[0].is_juridico){

@@ -22,9 +22,33 @@ router.get('/proveedores/:rif',  async (req, res) => {
         
         const resultado = await retornar_query(query,[rif,id_cli]);
 
+        let acumulados_iva_query =`
+            SELECT 
+                SUM(base_imponible) AS base_imponible,
+                SUM(total_iva) AS total_iva,
+                SUM(total_iva_retenido) AS total_iva_retenido 
+            FROM retenciones_iva
+            WHERE id_proveedor=? AND id_cli=?
+            AND fecha_retencion <= DATE_FORMAT(NOW(), '%Y-12-31');
+        `
+
+        let acumulados_iva = await retornar_query(acumulados_iva_query,[resultado[0].id_proveedor,id_cli]);
+
+        let acumulados_islr_query =`
+            SELECT 
+                SUM(monto_sujeto) AS base_imponible,
+                SUM(total_retener) AS retenido                
+            FROM retenciones_islr
+            WHERE id_proveedor=? AND id_cli=?
+            AND fecha_operacion <= DATE_FORMAT(NOW(), '%Y-12-31');`
+
+        let acumulados_islr = await retornar_query(acumulados_islr_query,[resultado[0].id_proveedor,id_cli]);
+
         return res.json({
             success: true,
-            data: resultado
+            data: resultado,
+            iva: acumulados_iva,
+            islr: acumulados_islr
         });
     } catch (error) {
         return res.status(400).json({
@@ -125,8 +149,8 @@ router.post('/proveedores',  async (req, res) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SERVICIOS');`
         
         const resultado = await retornar_query(query,[
-            rif, razonsocial, telefono, correo, direccion, id_cli, 
-            contacto, telefcontact, porcentaje_retencion, is_residenteVar, 
+            rif.toUpperCase(), razonsocial.toUpperCase(), telefono, correo.toLowerCase(), direccion, id_cli, 
+            contacto.toUpperCase(), telefcontact, porcentaje_retencion, is_residenteVar, 
             is_agenteVar, is_contribuyenteVar, is_juridicoVar
         ]);
 

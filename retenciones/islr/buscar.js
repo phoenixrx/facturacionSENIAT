@@ -165,7 +165,7 @@ async function realizarBusqueda() {
         params.append('page', paginaActual);
         params.append('limit', 5);
 
-        const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/iva?${params}`, {
+        const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/islr?${params}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ function renderizarResultados(resultados, pagination) {
     resultados.forEach(comprobante => {
         const tr = document.createElement('tr');
         
-        // Agregar clase de danger si está anulado
+        // Agregar clase de danger si está inactivo
         if (comprobante.activo === 0 || comprobante.activo === false) {
             tr.classList.add('table-danger');
         }
@@ -239,7 +239,7 @@ function renderizarResultados(resultados, pagination) {
             <td>${comprobante.numero_comprobante || 'N/A'}</td>
             <td>${comprobante.proveedor_nombre || 'N/A'}</td>
             <td>${comprobante.proveedor_rif || 'N/A'}</td>
-            <td>${formatearFecha(comprobante.fecha_retencion)}</td>
+            <td>${formatearFecha(comprobante.fecha_operacion)}</td>
             <td>${formatearMonto(comprobante.total_documento)}</td>
             <td>
                 <span class="badge ${comprobante.activo ? 'bg-success' : 'bg-danger'}">
@@ -265,7 +265,7 @@ function actualizarBotonSeleccion() {
             btnSeleccionar.classList.remove('d-none');
             btnSeleccionar.disabled = false;
             
-            // Verificar si el comprobante seleccionado está anulado
+            // Verificar si el comprobante seleccionado está inactivo
             const comprobanteId = parseInt(radioSeleccionado.value);
             const fila = radioSeleccionado.closest('tr');
             btnSeleccionar.dataset.radioseleccionado=comprobanteId;
@@ -356,7 +356,7 @@ function seleccionarComprobante() {
         return;
     }
 
-    // Verificar si está anulado
+    // Verificar si está inactivo
     const radioSeleccionado = document.querySelector(`input[value="${comprobanteSeleccionado}"]`);
     if (radioSeleccionado) {
         const fila = radioSeleccionado.closest('tr');
@@ -396,7 +396,7 @@ async function devolverComprobanteSeleccionado(comprobante) {
             Swal.showLoading();
         }
     });
-     const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/iva?id=${comprobante}`, {
+     const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/islr?id=${comprobante}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -409,29 +409,44 @@ async function devolverComprobanteSeleccionado(comprobante) {
         if (data.success) {
             buscarProveedor(data.data[0].proveedor_rif)
                      
-            document.getElementById("num_comprobante").value = data.data[0].numero_comprobante; // Assuming this is already in the desired format from the API
-            document.getElementById("fechaEmision").value = formatearFechaDDMMYYYY(data.data[0].fecha_retencion); // YYYY-MM-DD
-            document.getElementById("fecha_operacion").value = formatearFechaUsa(data.data[0].fecha_creacion); // DD/MM/YYYY
-            document.getElementById("tipoRetencion").value = data.data[0].tipo;
-            document.getElementById("documentoRetencion").value = data.data[0].id_tipo_documento;
-            document.getElementById("numeroDocumento").value = data.data[0].numero_documento;
-            document.getElementById("numeroControl").value = data.data[0].numero_control;
-            document.getElementById("numeroDocumentoAf").value = data.data[0].numero_afectado;
-            document.getElementById("numeroExpediente").value = data.data[0].numero_expediente;
-            document.getElementById("totalBaseImponible").value = data.data[0].base_imponible;
-            document.getElementById("totalExento").value = data.data[0].total_exento;
-            document.getElementById("totalIva").value = data.data[0].total_iva;
-            document.getElementById("totalDocumento").value = data.data[0].total_documento;
-            document.getElementById("alicuota").value = data.data[0].alicuota;
-            document.getElementById("porcentajeRetener").value = data.data[0].porcent_retencion;
-            document.getElementById("totalIvaRetenido").value = data.data[0].total_iva_retenido;
-            retencionIva = data.data[0].id;
-            document.getElementById('btn_sav_iva').classList.add('pe-none');
-            document.getElementById("num_comprobante").classList.add("is-valid");
-            setTimeout(() => {
-                document.getElementById("fecha_operacion").focus();    
-            }, 500);
+            document.getElementById("num_comprobante").value = data.data[0].numero_comprobante; 
+            document.getElementById("fechaEmision").value = formatearFechaDDMMYYYY(data.data[0].fecha_creacion); // YYYY-MM-DD
+            document.getElementById("fecha_operacion").value = formatearFechaUsa(data.data[0].fecha_operacion); // DD/MM/YYYY
             
+            document.getElementById('conceptoIslr').dataset.bsToggle="tooltip"; 
+            document.getElementById('conceptoIslr').dataset.bsPlacement="top";
+            document.getElementById('conceptoIslr').dataset.bsCustomClass="custom-tooltip";
+            document.getElementById('conceptoIslr').dataset.bsTitle="Despues de guardar, no se puede actualizar este campo";
+            if(data.data[0].tipo_retencion==1){
+                document.getElementById("retencionSalario").checked = true;
+            }else{
+                document.getElementById("retencionDiv").checked = true;
+            }                        
+            document.getElementById("numeroDocumento").value = data.data[0].doc_num;
+            document.getElementById("numeroControl").value = data.data[0].control_num;
+            document.getElementById("totalBaseImponible").value = data.data[0].monto_sujeto;
+            document.getElementById('totalBaseImponible').dataset.bsToggle="tooltip"; 
+            document.getElementById('totalBaseImponible').dataset.bsPlacement="top";
+            document.getElementById('totalBaseImponible').dataset.bsCustomClass="custom-tooltip";
+            document.getElementById('totalBaseImponible').dataset.bsTitle="Despues de guardar, no se puede actualizar este campo";
+            document.getElementById("porcentajeBaseImponible").value = data.data[0].porcent_imponible;
+            document.getElementById("totalUT").value = data.data[0].total_ut;
+            document.getElementById("porcentAplicable").value = data.data[0].porcent_aplicable;
+            document.getElementById("menosSustraendo").value = data.data[0].sustraendo;
+            document.getElementById("totalRetener").value = data.data[0].total_retener;
+            document.getElementById("totalPagado").value = data.data[0].total_pagar;
+            retencionIslr = data.data[0].id;
+            document.getElementById('btn_savIslr').classList.add('pe-none');
+            document.getElementById("num_comprobante").classList.add("is-valid");
+            setTimeout(() => {               
+                document.getElementById("fecha_operacion").focus();                   
+            }, 500);
+            setTimeout(() => {
+                cargarSelect()                
+                document.getElementById('conceptoIslr').value = data.data[0].id_concepto;
+            }, 1000);
+            tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
         } else {
             Swal.fire({

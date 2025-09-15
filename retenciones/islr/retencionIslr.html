@@ -155,8 +155,8 @@ aside div.botonera {
                 <div class="col-4">
                     <div class="form-check">
                         <input id="retencionSalario" 
-                            class="form-check-input " 
-                            data-campo="tipo_retencion_islr"
+                            class="form-check-input input_modif" 
+                            data-campo="tipo_retencion"
                             type="radio" name="tipoRetencion" value="1" checked >
                         <label class="form-check-label" for="retencionSalario">
                             Salarios y otras retenciones
@@ -164,8 +164,8 @@ aside div.botonera {
                     </div>
                     <div class="form-check">
                         <input id="retencionDiv"
-                            class="form-check-input " 
-                            data-campo="tipo_retencion_islr"
+                            class="form-check-input input_modif" 
+                            data-campo="tipo_retencion"
                             type="radio" name="tipoRetencion"  value="0" >
                         <label class="form-check-label" for="retencionDiv">
                             Dividendos y Acciones
@@ -202,7 +202,7 @@ aside div.botonera {
                         data-campo="is_residente"
                         type="checkbox" role="switch" id="contribuyenteResidente" checked>
                     <label class="form-check-label" for="contribuyenteResidente">
-                        Residente
+                        Residente/Domiciliado
                     </label>
                 </div>
                 
@@ -220,8 +220,8 @@ aside div.botonera {
                 <div class="col">
                     <div class="form-floating">                                                         
                             <input type="date" name="fecha_operacion" id="fecha_operacion"
-                                class=" form_actu_admi form-date form-control retencionInput"
-                                data-campo='fecha_retencion' required />
+                                class=" form_actu_admi form-date form-control input_modif"
+                                data-campo='fecha_operacion' required />
                             <label for="fecha_operacion">F. operacion: </label>
                         </div>
                         <script> 
@@ -238,16 +238,16 @@ aside div.botonera {
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroDocumento"
-                            data-campo='numero_documento'
-                            class=" form-control retencionInput" required placeholder="Numero Doc." />
+                            data-campo='doc_num'
+                            class=" form-control input_modif" required placeholder="Numero Doc." />
                         <label for="numeroDocumento">Numero Documento:</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">                                                         
                         <input type="text" id="numeroControl"
-                            data-campo='numero_control'
-                            class=" form-control retencionInput" required placeholder="Numero Cont." />
+                            data-campo='control_num'
+                            class=" form-control input_modif" required placeholder="Numero Cont." />
                         <label >Numero Control:</label>
                     </div>
                 </div>
@@ -259,7 +259,7 @@ aside div.botonera {
                             class="form-control valores" required placeholder="Exento." 
                             data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
-                            data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
+                            data-bs-title="Monto de la factura SIN iva"/>
                         <label >Monto Sujeto a retención Bs:</label>
                     </div>
                 </div>
@@ -278,7 +278,7 @@ aside div.botonera {
                             disabled
                             data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
-                            data-bs-title="Total de UT acumuladas, incluyendo el pago actual, en caso de que la retencion sea acumulativa (Artículo 9, Parágrafo Primero)"/>
+                            data-bs-title="Total de UT segun el valor actual"/>
                         <label>Total en U.T.:</label>
                     </div>
                 </div>
@@ -481,7 +481,7 @@ aside div.botonera {
                             data-campo="is_residente"
                             type="checkbox" role="switch" id="proveedorResidente" checked>
                         <label class="form-check-label" for="proveedorResidente">
-                            Residente
+                            Residente/Domiciliado
                         </label>
                     </div>
                     <div class="form-check col form-switch align-content-center">
@@ -504,7 +504,7 @@ aside div.botonera {
                         <div class="form-floating">
                             <input type="text" 
                                 class="form-control contribuyenteInput" 
-                                id="retencionIslrProveedor" 
+                                id="retencion_ivaProveedor" 
                                 data-campo="porcentaje_retencion"
                                 placeholder="porcentaje" 
                                 value="100">
@@ -629,17 +629,19 @@ aside div.botonera {
 </body>
 
 <script>
-var id_cli = 3
+var id_cli = 3;
+var id_usuario = 1;
 let contribuyente = 0;
 let retencionIslr =0;
 let minimoIslr =0;
 let is_acumulable =0;
-const UT =[{"valor":43}];
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+const UT =[{"valor":43, "id":1}];
+let tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 </script>
 <script src="retencionesIslr.js"></script>
 <script src="calculosIslr.js"></script>
+<script src="buscar.js"></script>
 <script src="../auxiliares.js"></script>   
 <script src="../iva/proveedores.js"></script>   
