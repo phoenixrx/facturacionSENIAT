@@ -99,6 +99,45 @@
 </html>
 <script>    
 
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    window.configs_token = [];
+    
+    if (token) {
+        
+      localStorage.setItem("token", token);
+      
+      get_config_token()
+      
+    }
+
+    function get_config_token () {
+        const token = localStorage.getItem("token");
+
+        fetch(`https://pruebas.siac.historiaclinica.org/decodifica`, {
+          method: "GET",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => response.json())
+        .then((data) => {            
+            configs_token = data;
+            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+            const expirationTime = configs_token.exp; // Expiration time in seconds
+            const timeRemaining = expirationTime - currentTime;
+      
+            if (timeRemaining <= 0) {
+                console.log("Token has already expired.");
+                window.location.href = 'https://siac.empresas.historiaclinica.org/login.php'
+                return;
+              }
+        })        
+            return configs_token;
+    }
+
+
+
     document.addEventListener('DOMContentLoaded', function() {
         cargar_header()
         cargar_proveedores()
@@ -235,7 +274,7 @@ document.getElementById('filtrar').addEventListener('click', function (){
 })
 
 async function realizarBusqueda(tipo, paginaActual=1) {    
-    var id_cli=configs_token.configs_token
+    var id_cli=configs_token.id_cli
     try {
         // Construir parámetros de búsqueda
         const params = new URLSearchParams();

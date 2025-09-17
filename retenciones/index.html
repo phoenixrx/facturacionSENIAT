@@ -115,7 +115,7 @@
 <script>    
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
-    let configs_token = [];
+    window.configs_token = [];
     
     if (token) {
         
@@ -182,7 +182,14 @@ document.getElementById("ficha_islr").addEventListener("click",function (){
 })
 
 document.getElementById("ficha_relaciones").addEventListener("click",function (){
-    window.open("https://facturacion.siac.historiaclinica.org/reportes/reporte.html", "_blank");
+     const token = localStorage.getItem("token");
+            if (token) {
+                const url = `https://facturacion.siac.historiaclinica.org/retenciones/reportes/reporte.html?token=${encodeURIComponent(token)}`;
+                window.open(url, "_blank");
+            } else {
+                activar_modal("Token no encontrado, vuelva a iniciar session", "err");
+            }
+    
 })
 
 

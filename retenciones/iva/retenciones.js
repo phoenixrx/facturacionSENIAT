@@ -107,9 +107,9 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         porcent_retencion: porcentajeRetener,
         base_imponible: baseImponible,
         alicuota: alicuota,
-        id_usuario:  configs_token.id_usuario,        
+        id_usuario:  parent.configs_token.id_usuario,        
         total_pagado: totalDocumento, // Asumiendo que el total pagado es igual al total del documento
-        id_cli:  configs_token.id_cli
+        id_cli:  parent.configs_token.id_cli
     };
     this.classList.add('pe-none')
     Swal.fire({

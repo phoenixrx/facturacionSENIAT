@@ -34,9 +34,9 @@ async function buscarProveedor(rif) {
     });
     
     contribuyente=0;
-
+console.log(parent.configs_token)
     const response = await fetch(
-        `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${rif}?id_cli=${ configs_token. configs_token.id_cli}`,
+        `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${rif}?id_cli=${parent.configs_token.id_cli}`,
         {
             method: "GET",
             headers: { 
@@ -204,7 +204,7 @@ document.getElementById("btnGuardarProveedor").addEventListener("click", async f
                 telefono,
                 correo,
                 direccion,
-                id_cli:  configs_token.id_cli,
+                id_cli:  parent.configs_token.id_cli,
                 contacto,
                 telefcontact,
                 porcentaje_retencion,

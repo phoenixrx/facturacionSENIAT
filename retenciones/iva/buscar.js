@@ -164,6 +164,8 @@ async function realizarBusqueda() {
         params.append(filtroActual, terminoActual);
         params.append('page', paginaActual);
         params.append('limit', 5);
+        params.append('id_cli', parent.configs_token.id_cli);
+        
 
         const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/iva?${params}`, {
             method: 'GET',

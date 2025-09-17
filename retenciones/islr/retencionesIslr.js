@@ -198,8 +198,8 @@ async function guardarRetencionISLR() {
             sustraendo: parseFloat(sustraendo),
             total_retener: parseFloat(totalRetener),
             total_pagar: parseFloat(totalPagar),
-            id_cli:  configs_token.id_cli,
-            id_usuario:  configs_token.id_usuario,
+            id_cli:  parent.configs_token.id_cli,
+            id_usuario:  parent.configs_token.id_usuario,
             tipo_retencion:tipoRetencion
         };
         Swal.fire({
