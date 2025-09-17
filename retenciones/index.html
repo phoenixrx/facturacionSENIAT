@@ -7,17 +7,17 @@
     <link href="../facturacion/css/sweetalert2.min.css" rel="stylesheet" />
     <script src="../facturacion/js/bootstrap.bundle.min.js"></script>
     <link href="../facturacion/css/bootstrap.min.css" rel="stylesheet" />
-     <script src="../facturacion/js/lordicon.js"></script>
+    <script src="../facturacion/js/lordicon.js"></script>     
      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">     
      <link rel="icon" type="image/x-icon" href="https://siac.empresas.historiaclinica.org/images/Imagen1.ico">
     <title>SIAC-Retenciones</title>
 </head>
 <style>
 
-body{
-    background-image: url("https://siacmedica.com/images/696/5902357/Honeycombshapebackgroundimage.png");    
-}
-.icon_ficha{
+    body{
+        background-image: url("https://siacmedica.com/images/696/5902357/Honeycombshapebackgroundimage.png");    
+    }
+    .icon_ficha{
     margin-right: 5px;
     background: rgba( 0, 139, 139, 0.25 );
     box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
@@ -81,26 +81,26 @@ body{
                         src="https://cdn.lordicon.com/adeleafr.json"
                         trigger="hover"
                         target='#ficha_islr'
-                        colors="primary:#121331,secondary:#ffc738,tertiary:#66ee78"
-                        style="width:50px;height:50px;">
+                        colors="primary:#121331,secondary:#66ee78,tertiary:#ffc738"
+                        style="width:50px;height:50px;transform: rotate(180deg);">
                     </lord-icon>
                 </div>
                 <div class=icon_text>
                     ISLR
                 </div>
             </div>
-            <div class="fichas" id=ficha_proveedores>
+            <div class="fichas" id=ficha_relaciones>
                 <div class="icon_ficha">
                     <lord-icon
-                        src="https://cdn.lordicon.com/xjkryxnf.json"
+                        src="https://cdn.lordicon.com/tbabdzcy.json"
                         trigger="hover"
-                        target='#ficha_proveedores'
+                        target='#ficha_relaciones'
                         style="width:50px;height:50px;">
                     </lord-icon>
 
                 </div>
                 <div class=icon_text>
-                    Proveedores
+                    Reportes
                 </div>
             </div>
         </div>
@@ -113,7 +113,64 @@ body{
 </body>
 </html>
 <script>    
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    let configs_token = [];
+    
+    if (token) {
+        
+      localStorage.setItem("token", token);
+      
+      get_config_token()
+      
+    }
+
+    function get_config_token () {
+        const token = localStorage.getItem("token");
+
+        fetch(`https://pruebas.siac.historiaclinica.org/decodifica`, {
+          method: "GET",
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => response.json())
+        .then((data) => {            
+            configs_token = data;
+            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+            const expirationTime = configs_token.exp; // Expiration time in seconds
+            const timeRemaining = expirationTime - currentTime;
+      
+            if (timeRemaining <= 0) {
+                console.log("Token has already expired.");
+                window.location.href = 'https://siac.empresas.historiaclinica.org/login.php'
+                return;
+              }
+              /*
+              if(buscarPermisoFacturar("abrir")!="1"){
+                const botonera = document.querySelector('.botonera');
+                if (botonera) {
+                    botonera.remove();
+                }
+                Swal.fire({
+                    title: "Permisos",
+                    text: "No tienes permisos para facturar",
+                    icon: "info",
+                    confirmButtonColor: "#008b8b",
+                    allowOutsideClick: false
+                }).then(() => {
+                    window.location.href = "https://siac.empresas.historiaclinica.org/index.php";
+                })
+                return;
+              }
+            primera_carga();*/
+        })
+        
+            return configs_token;
+    }
+
 document.getElementById("ficha_iva").addEventListener("click",function (){
+    
     document.getElementById("sub_panel_1").style.display="none";
     document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - IVA <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
     document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="iva/retencionIva.html" style="width:100%;height:665px;"></object>';
@@ -123,4 +180,10 @@ document.getElementById("ficha_islr").addEventListener("click",function (){
     document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - ISLR <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
     document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="islr/retencionIslr.html" style="width:100%;height:665px;"></object>';
 })
+
+document.getElementById("ficha_relaciones").addEventListener("click",function (){
+    window.open("https://facturacion.siac.historiaclinica.org/reportes/reporte.html", "_blank");
+})
+
+
 </script>

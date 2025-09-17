@@ -231,14 +231,15 @@ router.get('/iva', async (req, res) => {
             numero_comprobante,
             proveedor_nombre,
             proveedor_rif,
+            proveedor_id,
             id,
+            id_cli,
             fecha_desde,
             fecha_hasta,
             page = 1,
             limit = 5
         } = req.query;
 
-        // Validar que al menos un parámetro de búsqueda esté presente
         if (!numero_comprobante && !proveedor_nombre && !proveedor_rif && !fecha_desde && !fecha_hasta && !id) {
             return res.status(400).json({
                 success: false,
@@ -246,7 +247,6 @@ router.get('/iva', async (req, res) => {
             });
         }
 
-        // Validar formato de fechas
         if (fecha_desde && !isValidDate(fecha_desde)) {
             return res.status(400).json({
                 success: false,
@@ -261,7 +261,6 @@ router.get('/iva', async (req, res) => {
             });
         }
 
-        // Validar que fecha_desde no sea mayor a fecha_hasta
         if (fecha_desde && fecha_hasta && new Date(fecha_desde) > new Date(fecha_hasta)) {
             return res.status(400).json({
                 success: false,
@@ -275,7 +274,8 @@ router.get('/iva', async (req, res) => {
                 ri.*,
                 p.nombre as proveedor_nombre,
                 p.RIF as proveedor_rif,
-                p.telefono as proveedor_telefono
+                p.telefono as proveedor_telefono,
+                p.id_proveedor as proveedor_id
             FROM retenciones_iva ri
             INNER JOIN proveedores p ON ri.id_proveedor = p.id_proveedor
             WHERE ri.activo IN (0,1)
@@ -290,9 +290,19 @@ router.get('/iva', async (req, res) => {
             params.push(`%${numero_comprobante}%`);
         }
 
+        if (id_cli) {
+            query += ` AND ri.id_cli = ?`;
+            params.push(`${id_cli}`);
+        }
+
         if (id) {
             query += ` AND ri.id = ?`;
             params.push(`${id}`);
+        }
+
+        if(proveedor_id){
+            query += ` AND p.id_proveedor = ?`;
+            params.push(`${proveedor_id}`);
         }
 
         if (proveedor_nombre) {
@@ -337,6 +347,7 @@ router.get('/iva', async (req, res) => {
             return res.json({
                 success: true,
                 data: [],
+                query,
                 pagination: {
                     page: parseInt(page),
                     limit: parseInt(limit),
@@ -696,7 +707,9 @@ router.get('/islr', async (req, res) => {
             numero_comprobante,
             proveedor_nombre,
             proveedor_rif,
+            proveedor_id,
             id,
+            id_cli,
             fecha_desde,
             fecha_hasta,
             page = 1,
@@ -740,7 +753,8 @@ router.get('/islr', async (req, res) => {
                 ri.*,
                 p.nombre as proveedor_nombre,
                 p.RIF as proveedor_rif,
-                p.telefono as proveedor_telefono
+                p.telefono as proveedor_telefono,
+                p.id_proveedor as proveedor_id
             FROM retenciones_islr ri
             INNER JOIN proveedores p ON ri.id_proveedor = p.id_proveedor
             WHERE ri.activo IN (0,1)
@@ -758,6 +772,16 @@ router.get('/islr', async (req, res) => {
         if (id) {
             query += ` AND ri.id = ?`;
             params.push(`${id}`);
+        }
+
+        if (id_cli) {
+            query += ` AND ri.id_cli = ?`;
+            params.push(`${id_cli}`);
+        }
+
+        if(proveedor_id){
+            query += ` AND p.id_proveedor = ?`;
+            params.push(`${proveedor_id}`);
         }
 
         if (proveedor_nombre) {
@@ -802,6 +826,7 @@ router.get('/islr', async (req, res) => {
             return res.json({
                 success: true,
                 data: [],
+                query,
                 pagination: {
                     page: parseInt(page),
                     limit: parseInt(limit),
@@ -857,6 +882,59 @@ router.get('/islr', async (req, res) => {
     } catch (error) {
         console.error('Error en búsqueda de comprobantes:', error);
        
+        return res.status(500).json({
+            success: false,
+            error: 'Error interno del servidor al buscar comprobantes'
+        });
+    }
+});
+
+router.get('/comprobante-islr/:id', async (req, res) => {
+    const {id} = req.params;       
+    if(isNaN(id)){
+        return res.status(400).json({
+            success: false,
+            error: 'Faltan datos para procesar la solicitud'
+        });
+    }
+    try {       
+
+        let query = `
+            SELECT 
+                ri.*,
+                CONCAT(icr.codigo_seniat_isrl, ' ', icr.descripcion) as concepto,
+                p.nombre as proveedor_nombre,
+                p.RIF as proveedor_rif,
+                p.telefono as proveedor_telefono,
+                p.direccion as proveedor_direccion,
+                a.logo_empresa as logo,
+                CONCAT(ab.tipo_cedula, ab.cedula) as agente_rif,
+                ab.direccion as agente_direccion,
+                ab.nombre as agente_nombre
+            FROM retenciones_islr ri
+            INNER JOIN proveedores p ON ri.id_proveedor = p.id_proveedor
+            INNER JOIN perfil_usuario_empresa a ON ri.id_cli = a.id_usuario
+            INNER JOIN perfil_usuario_basico ab ON ri.id_cli = ab.id_usuario
+            INNER JOIN retenciones_codigos_isrl icr ON ri.id_concepto = icr.id
+            WHERE ri.id =?
+        `;
+        
+        let resultados;
+        try {
+            resultados = await retornar_query(query, [id]);
+        } catch (error) {
+            return res.json({
+            success: false,
+            data: error
+        });
+        }
+
+        return res.json({
+            success: true,
+            data: resultados
+        });
+
+    } catch (error) {
         return res.status(500).json({
             success: false,
             error: 'Error interno del servidor al buscar comprobantes'

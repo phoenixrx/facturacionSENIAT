@@ -54,3 +54,49 @@ function validar_monto_bs(objeto) {
     recalcular();
     return true;
 }
+
+function tabletoExcel(tableID, filename = 'SIAC-comprobante') {
+    // Obtener la tabla
+    var table = document.getElementById(tableID);
+    
+    // Crear documento HTML con codificación UTF-8
+    var html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+          xmlns:x="urn:schemas-microsoft-com:office:excel" 
+          xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!--[if gte mso 9]>
+        <xml>
+            <x:ExcelWorkbook>
+                <x:ExcelWorksheets>
+                    <x:ExcelWorksheet>
+                        <x:Name>${filename || 'Datos'}</x:Name>
+                        <x:WorksheetOptions>
+                            <x:DisplayGridlines/>
+                        </x:WorksheetOptions>
+                    </x:ExcelWorksheet>
+                </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+    </head>
+    <body>
+        ${table.outerHTML}
+    </body>
+    </html>`;
+
+    var blob = new Blob([html], {
+        type: 'application/vnd.ms-excel;charset=UTF-8'
+    });
+
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = (filename || 'datos') + '.xls';
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+

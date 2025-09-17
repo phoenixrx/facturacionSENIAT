@@ -166,5 +166,4 @@ router.post('/proveedores',  async (req, res) => {
     }
 });
 
-
 module.exports = router;

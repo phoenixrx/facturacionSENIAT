@@ -198,8 +198,8 @@ async function guardarRetencionISLR() {
             sustraendo: parseFloat(sustraendo),
             total_retener: parseFloat(totalRetener),
             total_pagar: parseFloat(totalPagar),
-            id_cli: id_cli,
-            id_usuario: id_usuario,
+            id_cli:  configs_token.id_cli,
+            id_usuario:  configs_token.id_usuario,
             tipo_retencion:tipoRetencion
         };
         Swal.fire({
@@ -234,7 +234,6 @@ async function guardarRetencionISLR() {
                     allowOutsideClick: false,
                 });
             retencionIslr= resultado.data.insertId;
-            console.log(retencionIslr)
             document.getElementById('btn_savIslr').classList.add('pe-none');
         } else {
             
@@ -439,3 +438,15 @@ document.getElementById('btn_deleteIslr').addEventListener('click', async functi
         }
     });
 })
+
+document.getElementById('btn_printIslr').addEventListener('click', function() {
+    if(retencionIslr == 0){
+        Swal.fire({
+            title: 'Debe seleccionar una retención',
+            icon: 'info',
+            confirmButtonText: 'Ok'
+        });
+        return;
+    }
+    window.open(`https://facturacion.siac.historiaclinica.org/retenciones/islr/comprobanteIslr.html?id=${retencionIslr}`, '_blank');
+});

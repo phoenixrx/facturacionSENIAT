@@ -6,7 +6,7 @@ document.getElementById('btn_new_iva').addEventListener('click', function() {
 })
 
 document.getElementById('btn_sav_iva').addEventListener('click', function() {
-    var id_usuario = 1
+    
     if(contribuyente == 0){
         Swal.fire({
             title: 'Debe seleccionar un proveedor',
@@ -107,9 +107,9 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         porcent_retencion: porcentajeRetener,
         base_imponible: baseImponible,
         alicuota: alicuota,
-        id_usuario: id_usuario,        
+        id_usuario:  configs_token.id_usuario,        
         total_pagado: totalDocumento, // Asumiendo que el total pagado es igual al total del documento
-        id_cli: id_cli
+        id_cli:  configs_token.id_cli
     };
     this.classList.add('pe-none')
     Swal.fire({
