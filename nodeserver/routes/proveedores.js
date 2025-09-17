@@ -58,7 +58,7 @@ router.get('/proveedores/:rif',  async (req, res) => {
     }
 });
 
-router.put('/proveedores/:id',  async (req, res) => {
+router.put('/proveedores/:id', authenticateToken, async (req, res) => {
     const {id} = req.params;    
     const {c,v} = req.body;
 
@@ -97,7 +97,7 @@ router.put('/proveedores/:id',  async (req, res) => {
     }
 });
 
-router.post('/proveedores',  async (req, res) => {    
+router.post('/proveedores', authenticateToken, async (req, res) => {    
     const {rif, razonsocial, telefono, correo, direccion, id_cli, 
         contacto, telefcontact, porcentaje_retencion, is_residente, 
         is_agente, is_contribuyente, is_juridico} = req.body;

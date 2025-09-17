@@ -12,7 +12,7 @@ function isValidDate(dateString) {
 }
 
 // GET /api/retenciones 
-router.post('/iva', async (req, res) => {    
+router.post('/iva', authenticateToken, async (req, res) => {    
     const {
         id_proveedor, fecha_retencion, tipo, id_tipo_documento, numero_documento,
         numero_control, numero_afectado, numero_expediente, total_exento,
@@ -158,7 +158,7 @@ router.post('/iva', async (req, res) => {
     }
 });
 
-router.put('/iva/:id', async (req, res) => {    
+router.put('/iva/:id', authenticateToken,async (req, res) => {    
     const {id} = req.params;    
     const {c,v} = req.body;
     
@@ -197,7 +197,7 @@ router.put('/iva/:id', async (req, res) => {
     }
 });
 
-router.delete('/iva/:id', async (req, res) => {    
+router.delete('/iva/:id', authenticateToken, async (req, res) => {    
     const {id} = req.params;    
     
     if(isNaN(id)){
@@ -491,7 +491,7 @@ router.get('/codigos-islr', async (req, res) => {
     }
 });
 
-router.post('/islr', async (req, res) => {    
+router.post('/islr', authenticateToken, async (req, res) => {    
     const {
         id_retenciones_ut, id_retenciones_decretos, id_proveedor, id_concepto,
         doc_num, control_num, fecha_operacion, monto_sujeto, porcent_imponible,
@@ -634,7 +634,7 @@ router.post('/islr', async (req, res) => {
     }
 });
 
-router.put('/islr/:id', async (req, res) => {    
+router.put('/islr/:id', authenticateToken, async (req, res) => {    
     const {id} = req.params;    
     const {c,v} = req.body;
     
@@ -673,7 +673,7 @@ router.put('/islr/:id', async (req, res) => {
     }
 });
 
-router.delete('/islr/:id', async (req, res) => {    
+router.delete('/islr/:id', authenticateToken, async (req, res) => {    
     const {id} = req.params;    
     
     if(isNaN(id)){
