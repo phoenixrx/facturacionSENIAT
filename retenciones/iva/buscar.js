@@ -204,7 +204,6 @@ async function realizarBusqueda() {
     }
 }
 
-
 function renderizarResultados(resultados, pagination) {
     const tbody = document.getElementById('cuerpoTablaResultados');
     tbody.innerHTML = '';
@@ -427,6 +426,10 @@ async function devolverComprobanteSeleccionado(comprobante) {
             document.getElementById("alicuota").value = data.data[0].alicuota;
             document.getElementById("porcentajeRetener").value = data.data[0].porcent_retencion;
             document.getElementById("totalIvaRetenido").value = data.data[0].total_iva_retenido;
+            document.getElementById("totalPagado").value = Number(data.data[0].base_imponible)+Number(data.data[0].total_exento);
+            document.getElementById("totalRetener").value = data.data[0].total_iva_retenido;
+
+               
             retencionIva = data.data[0].id;
             document.getElementById('btn_sav_iva').classList.add('pe-none');
             document.getElementById("num_comprobante").classList.add("is-valid");

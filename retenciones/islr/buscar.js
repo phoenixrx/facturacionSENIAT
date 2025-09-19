@@ -166,8 +166,6 @@ async function realizarBusqueda() {
         params.append('limit', 5);
         params.append('id_cli', parent.configs_token.id_cli);
         
-
-
         const response = await fetch(`https://facturacion.siac.historiaclinica.org/api/retenciones/islr?${params}`, {
             method: 'GET',
             headers: {
@@ -285,7 +283,6 @@ function actualizarBotonSeleccion() {
         }
     }
 }
-
 
 function actualizarSeleccion(idComprobante) {
     comprobanteSeleccionado = idComprobante;
@@ -441,11 +438,12 @@ async function devolverComprobanteSeleccionado(comprobante) {
             retencionIslr = data.data[0].id;
             document.getElementById('btn_savIslr').classList.add('pe-none');
             document.getElementById("num_comprobante").classList.add("is-valid");
+                cargarSelect()
             setTimeout(() => {               
                 document.getElementById("fecha_operacion").focus();                   
             }, 500);
             setTimeout(() => {
-                cargarSelect()                
+                 
                 document.getElementById('conceptoIslr').value = data.data[0].id_concepto;
             }, 1000);
             tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')

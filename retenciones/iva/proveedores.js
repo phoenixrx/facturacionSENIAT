@@ -113,7 +113,6 @@ async function actualizarProveedor(c,v) {
     if (contribuyente==0) {
         return;
     }
-    console.log(contribuyente)
     Swal.fire({
         title: 'Actualizando...',
         icon:'info',

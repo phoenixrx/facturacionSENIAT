@@ -49,16 +49,7 @@ function recalcular(){
     if(contribuyente==0){
         return;
     }
-    if(totalBaseImponible<minimoIslr){
-        Swal.fire({
-            title: 'No supera el minimo',
-            text: 'La cantidad no supera el minimo necesario para aplicar el ISLR ('+minimoIslr+')',
-            icon: 'info',
-            allowOutsideClick: false,
-        })
-        return;
-    }
-
+    
     document.getElementById('btn_savIslr').classList.remove('pe-none');
 
     if(is_acumulable!=1){
@@ -66,8 +57,16 @@ function recalcular(){
         total_retener = totalBaseImponible*(porcentajeBaseImponible/100);
 
         total_retener = total_retener *(porcentAplicable/100)
+        if(totalBaseImponible<minimoIslr){
+            document.getElementById('totalRetener').value = total_retener.toFixed(2);
+            document.querySelector('.invalid-feedback').classList.add('d-flex')
+        }else{
+            document.querySelector('.invalid-feedback').classList.remove('d-flex')
+            total_retener=total_retener-menosSustraendo
+            document.getElementById('totalRetener').value = total_retener.toFixed(2);
+        }
 
-        document.getElementById('totalRetener').value = total_retener.toFixed(2);
+        
 
     }else{
         let total_retener = 0;
