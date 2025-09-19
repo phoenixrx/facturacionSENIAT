@@ -34,7 +34,7 @@ async function buscarProveedor(rif) {
     });
     
     contribuyente=0;
-console.log(parent.configs_token)
+
     const response = await fetch(
         `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${rif}?id_cli=${parent.configs_token.id_cli}`,
         {
