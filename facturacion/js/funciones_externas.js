@@ -21,6 +21,7 @@ async function tasa(){
                             
         } else {
             var tasa =(opciones[0].USD_EUR=='USD') ? tasas.data.tasas.USD: tasas.data.tasas.EUR
+            tasa = tasa.substring(0, tasa.indexOf('.') + 3);
             document.getElementById('chk_tasa_actual').dataset.tasa = Number(tasa).toFixed(2);
             document.getElementById('tasa_actual').textContent = Number(tasa).toFixed(2);
         }
