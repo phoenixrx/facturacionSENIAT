@@ -166,4 +166,31 @@ router.post('/proveedores', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/lista-proveedores/:id_cli',  async (req, res) => {
+    const {id_cli} = req.params;
+
+    if(isNaN(id_cli)){
+        return res.status(400).json({
+            success: false,
+            error: 'Faltan datos para procesar la solicitud'
+        });
+    }
+
+    try {
+        const query = `SELECT * FROM proveedores WHERE id_cli=?;`
+        
+        const resultado = await retornar_query(query,[id_cli]);
+
+        return res.json({
+            success: true,
+            data: resultado,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
