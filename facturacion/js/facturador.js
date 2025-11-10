@@ -4,6 +4,7 @@
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
     let STATUS_FACTURA =1
+    let IDFACT=0;
     /*const HOST = "http://localhost:3000";
     const HOST2 = "http://localhost:3001";
     const BASE_FORMATO = "http://localhost/historiaclinica/empresas/"
@@ -609,7 +610,10 @@ function imprimirFactura (){
           let form = document.createElement("form");
           form.target = "_blank";
           form.method = "POST";
-          form.action = BASE_FORMATO + url;
+          let fact_num = document.getElementById('factura_modal').value;    
+                fact_num = fact_num.padStart(8, '0');
+
+          form.action = BASE_FORMATO + url +`?idfact=${IDFACT}`;
           form.style.display = "none";
           for (let key in data) {
             let input = document.createElement("input");

@@ -292,7 +292,7 @@ async function fetchDetalles(admisiones) {
                 id_detalle: detalle.id_admidet,
                 grupo: detalle.grupo_estudio,
                 tipo: detalle.tipo_estudio,
-                direccion: detalle.direccion,
+                direccion: detalle.direccion || detalle.zona,
                 fecha_admision: detalle.fecha_admision,
                 direccion_join: detalle.empresa_direccion || detalle.seguro_direccion,
                 precio: detalle.precio,
@@ -323,12 +323,19 @@ async function fetchDetalles(admisiones) {
             if (idA > idB) return -1;
             return 0; 
         });
+        
         const Titulares = detalles.map(detalle => detalle.nombre_titular.trim());
          
-        let titular=obtenerPrimerValorNoVacio(Titulares)
+        let titular=obtenerPrimerValorNoVacio(Titulares)   
+
         if (titular =='Vacio'){
             titular="";
         }
+
+        console.log(detalles)
+        
+        document.getElementById("titular").value=titular;
+        
         document.getElementById("dir_fiscal").value = detalles[0].direccion_join || detalles[0].direccion;
         document.getElementById("rif").value = detalles[0].rif.trim() || detalles[0].cedula_titular.trim() ||detalles[0].cedula_paciente.trim();
         document.getElementById("razon_social").value = detalles[0].seguro_empresa || titular || detalles[0].nombre_paciente.trim();
@@ -435,15 +442,15 @@ async function fetchFormaPago() {
     );     
     let formas_pago = await response.json();
     formas_pago.sort((a, b) => a.credito - b.credito);
-
-    if(id_moneda == 1){
+    //permitir pagos a credito en USD
+    /*if(id_moneda == 1){
         formas_pago = formas_pago.filter(fp => fp.credito !== 1);
-    }
+    }*/
 
     var opciones = `<option value="">...</option>`;
     
     formas_pago.forEach(fp=>{
-        opciones += `<option value=${fp.id_forma_pago}>${fp.descripcion}</option>`
+        opciones += `<option value=${fp.id_forma_pago} data-credito=${fp.credito}>${fp.descripcion}</option>`
     })
     document.getElementById('forma_de_pago').innerHTML = opciones;
     

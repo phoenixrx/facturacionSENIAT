@@ -884,7 +884,8 @@ let result_detalles =[];
   }
 
   res.json({ 
-    success: true
+    success: true,
+    id_factura: id_factura,
   });
 
 })
@@ -1146,11 +1147,14 @@ app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
   let query = `
     SELECT 
       f.*,
-      fd.*
+      fd.*,
+      u.usuario
     FROM 
       facturas f
     INNER JOIN
       factura_detalle fd ON f.id_factura = fd.id_factura
+    INNER JOIN
+      usuarios u ON f.id_usuario = u.id
     WHERE 
       f.id_factura = ?`;
 

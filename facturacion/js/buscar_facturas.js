@@ -289,6 +289,7 @@ document.getElementById('buscar_modal').addEventListener('click', async () => {
 
     if (data.success) {
       mostrarFacturaSeleccionada(data.result);
+      IDFACT=id_factura
     } else {
        Swal.fire({
           icon: 'error',

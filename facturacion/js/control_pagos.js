@@ -94,7 +94,7 @@ let IGFT  = 0.03
   var quitar =`<lord-icon src="../images/minus-circle.json" data-toggle="tooltip" data-placement="left" title="Quitar" id='quitar_${listaN}' trigger="hover" style="width:20px;height:20px" class="svg disk_save botonera" id=agregar_descuento>
                               </lord-icon>`;
   
-    let row = `<tr class="rowdesg control row${tipo_moneda} ${clase}" id="rowidesg${listaN}"><td><span>${
+    let row = `<tr class="rowdesg control row${tipo_moneda} ${clase} data-credito="${moneda_desg.dataset.credito}" id="rowidesg${listaN}"><td><span>${
       moneda_desg.options[moneda_desg.selectedIndex].text
     }</span> <span class="${tipo_moneda} ${clase_igtf}" >${valor_desglose}</span><span id="id_moneda_pago_${listaN}" class="d-none">${
       moneda_desg.value
@@ -266,7 +266,7 @@ function json_formas_pago(tabla, tipo) {
     } else {
       id_moneda = "1";
     }
-    if(element.children[2].innerText=='Por cobrar' || element.children[2].innerText=='Cashea'){
+    if(element.dataset.credito=='1'){
       por_pagar=true;
       var monto_cred = element.children[0].children[1].innerText;
       var moneda_cred = id_moneda;
@@ -669,6 +669,8 @@ async function facturar(desglose_pago,json_cuotas,json_factura,json_detalle) {
     }
     
     if(factura.success==true){
+      IDFACT=factura.id_factura
+      
       STATUS_FACTURA = 2
       document.getElementById('agregar_admi').remove()
       document.getElementById('nueva_factura').classList.remove('d-none')
