@@ -12,7 +12,7 @@ function authenticateToken(req, res, next) {
     '/',
     '/php'
   ];
- 
+
   if (req.method === 'OPTIONS') {
     return next();
   }
@@ -44,37 +44,39 @@ function authenticateToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
-     
-const requestId = Date.now() + Math.random();
-const requestQuery = Object.keys(req.query).length > 0 
-  ? JSON.stringify(req.query) 
-  : null;
-    
-    req.requestId = requestId;
-    req.logData = {
-      id_usuario: decoded.id_usuario,
-      ip_origen: decoded.ip_internet,
-      metodo: req.method,
-      ruta: req.path,
-      user_agent: req.headers['user-agent'],
-      request_body: req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE' 
-        ? JSON.stringify(req.body) 
-        : null,
-      requestQuery:requestQuery || '{}'
-    };
-    setTimeout(() => {
-      // ✅ Registrar inicio de petición
-      registrarInicioPeticion(req.logData)
-      .then(logId => {
-        req.logId = logId; // opcional: guardarlo para después
-      })
-      .catch(err => {
-        console.error('[LOG] Error al registrar inicio (no bloquea):', err.message);
-      });
-    }, 10);
-    
 
-    
+    const requestId = Date.now() + Math.random();
+    const requestQuery = Object.keys(req.query).length > 0
+      ? JSON.stringify(req.query)
+      : null;
+
+    req.requestId = requestId;
+    req.id_cli = decoded.id_cli,
+      req.logData = {
+        id_log_acceso: requestId,
+        id_usuario: decoded.id_usuario,
+        ip_origen: decoded.ip_internet || req.ip || req.headers['x-forwarded-for'] || decoded.ip_internet,
+        metodo: req.method,
+        ruta: req.path,
+        user_agent: req.headers['user-agent'],
+        request_body: req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE' || req.method === 'PUT'
+          ? JSON.stringify(req.body)
+          : null,
+        requestQuery: requestQuery || '{}'
+      };
+    setTimeout(() => {
+
+      registrarInicioPeticion(req.logData)
+        .then(logId => {
+          req.logId = logId; // opcional: guardarlo para después
+        })
+        .catch(err => {
+          console.error('[LOG] Error al registrar inicio (no bloquea):', err.message);
+        });
+    }, 10);
+
+
+
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
@@ -82,36 +84,55 @@ const requestQuery = Object.keys(req.query).length > 0
     }
     return res.status(401).json({ error: 'Token inválido', redirectTo: '/login' });
   }
-} 
+}
 
 async function registrarInicioPeticion(logData) {
   const query = `
     INSERT INTO logs_peticiones 
-    (id_usuario, ip_origen, metodo, ruta, request_body, user_agent, request_query)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    (id_log_acceso, id_usuario, ip_origen, metodo, ruta, request_body, user_agent, request_query)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
   try {
-    const [result] = await retornar_query(query, [
+    const result = await retornar_query(query, [
+      logData.id_log_acceso,
       logData.id_usuario,
       logData.ip_origen,
       logData.metodo,
       logData.ruta,
       logData.request_body,
-      logData.user_agent, 
+      logData.user_agent,
       logData.requestQuery
     ]);
     return result.insertId; // Devuelve el ID para usarlo después
   } catch (error) {
     console.error('[LOG] No se pudo insertar en logs_peticiones:', error.message);
+
     return null; // No detiene nada
   }
 }
-async function registrarErrorPeticion(logId, mensaje) {
-   await retornar_query(`
-    UPDATE logs_peticiones 
-    SET status = 'fallido', error = ?, fecha_fin = NOW(), duracion_ms = TIMESTAMPDIFF(MICROSECOND, fecha_inicio, NOW()) / 1000
-    WHERE id = ?
-  `, [mensaje, logId]);
+async function registrarErrorPeticion(req, error) {
+
+  let errorApi = error.message ? error.message : error;
+
+  if (errorApi == 'TokenExpiredError') {
+    return;
+  }
+  const requestQuery = Object.keys(req.query).length > 0
+    ? JSON.stringify(req.query)
+    : null;
+  const request_body = req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE' || req.method === 'PUT'
+    ? JSON.stringify(req.body)
+    : null
+
+  try {
+    await retornar_query(`
+          INSERT INTO logs_errores
+            (error,origen, body, query, ip_origen) VALUES (?,?,?,?,?)`, [errorApi, req.path, request_body, requestQuery, req.ip]);
+
+  } catch (error) {
+
+  }
+
 }
 
 async function registrarFinPeticion(logId) {
@@ -122,4 +143,4 @@ async function registrarFinPeticion(logId) {
   `, [logId]);
 }
 
-module.exports =  {authenticateToken, registrarInicioPeticion, registrarErrorPeticion, registrarFinPeticion};
+module.exports = { authenticateToken, registrarInicioPeticion, registrarErrorPeticion, registrarFinPeticion };

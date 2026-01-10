@@ -1,25 +1,25 @@
-function mostrarResultados(data, tipos){
-    
+function mostrarResultados(data, tipos) {
+
     const tabla = document.getElementById("tabla-admisiones");
     tabla.classList.add("table")
     tabla.classList.add("table-striped")
     tabla.classList.add("table-hover")
-        tabla.innerHTML = ""; // Limpiar tabla
+    tabla.innerHTML = ""; // Limpiar tabla
 
-        if (
-          !data.resultados ||
-          data.resultados.error ||
-          data.resultados.length === 0
-        ) {
-          const fila = document.createElement("tr");
-          fila.innerHTML =
+    if (
+        !data.resultados ||
+        data.resultados.error ||
+        data.resultados.length === 0
+    ) {
+        const fila = document.createElement("tr");
+        fila.innerHTML =
             '<td colspan="10" class="text-center">No hay registros que mostrar</td>';
-          tabla.appendChild(fila);
-            return;
-        }
+        tabla.appendChild(fila);
+        return;
+    }
 
-          const thead = document.createElement("thead");
-        thead.innerHTML = `           
+    const thead = document.createElement("thead");
+    thead.innerHTML = `           
                 <th>Selec.</th>
                 <th>Ced.Pac.</th>
                 <th>Paciente</th>
@@ -28,58 +28,57 @@ function mostrarResultados(data, tipos){
                 <th class="text-end text-nowrap">Precio Bs</th>
                 <th>Fecha</th>
         `;
-        
-        tabla.appendChild(thead);
-        thead.classList.add("table-dark");
-        const tbody = document.createElement("tbody");
-        
-        switch (tipos) {
-            case 'S':
-                data.resultados = data.resultados.filter(admision => admision.id_seguro == document.getElementById('empre-seg').value);
-                break;
-            case 'E':
-                data.resultados = data.resultados.filter(admision => admision.id_empresa == document.getElementById('empre-seg').value);
-                break;
-            case 'I':
-                data.resultados = data.resultados.filter(admision => admision.id_tipo_interno == document.getElementById('empre-seg').value);
-                break;
-            case 'sub':
-                data.resultados = data.resultados.filter(admision => admision.id_subempresa == document.getElementById('sub_empresa').value);
-                break;
-            default:
-                break;
-        }
 
-        if (data.resultados.length ===0){
-          const fila = document.createElement("tr");
-          fila.innerHTML =
+    tabla.appendChild(thead);
+    thead.classList.add("table-dark");
+    const tbody = document.createElement("tbody");
+
+    switch (tipos) {
+        case 'S':
+            data.resultados = data.resultados.filter(admision => admision.id_seguro == document.getElementById('empre-seg').value);
+            break;
+        case 'E':
+            data.resultados = data.resultados.filter(admision => admision.id_empresa == document.getElementById('empre-seg').value);
+            break;
+        case 'I':
+            data.resultados = data.resultados.filter(admision => admision.id_tipo_interno == document.getElementById('empre-seg').value);
+            break;
+        case 'sub':
+            data.resultados = data.resultados.filter(admision => admision.id_subempresa == document.getElementById('sub_empresa').value);
+            break;
+        default:
+            break;
+    }
+
+    if (data.resultados.length === 0) {
+        const fila = document.createElement("tr");
+        fila.innerHTML =
             '<td></td><td></td><td></td><td class="text-center">No hay registros que mostrar</td><td></td><td></td><td></td>';
-          tabla.appendChild(fila);
-          
-            return;
-        }        
+        tabla.appendChild(fila);
 
-        data.resultados.forEach((admision) => {
+        return;
+    }
 
-            const fila = document.createElement("tr");
+    data.resultados.forEach((admision) => {
 
-            // Oculta las admisiones que son presupuestos
-            fila.className = `${
-                admision.solo_ppto == 1 ? "d-none" : ""
+        const fila = document.createElement("tr");
+
+        // Oculta las admisiones que son presupuestos
+        fila.className = `${admision.solo_ppto == 1 ? "d-none" : ""
             }`;
 
-            // Formatear fecha dd/mm/yyyy
-            const fechaAdmision = new Date(admision.fecha_admision);
-            const fechaFormateada = `${fechaAdmision
+        // Formatear fecha dd/mm/yyyy
+        const fechaAdmision = new Date(admision.fecha_admision);
+        const fechaFormateada = `${fechaAdmision
             .getDate()
             .toString()
             .padStart(2, "0")}/${(fechaAdmision.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}/${fechaAdmision.getFullYear()}`;
-            // Formatear montos
-            const precioBs = parseFloat(admision.precio || 0).toFixed(2);
+                .toString()
+                .padStart(2, "0")}/${fechaAdmision.getFullYear()}`;
+        // Formatear montos
+        const precioBs = parseFloat(admision.precio || 0).toFixed(2);
 
-            let switch_admision =`<div class='form-check form-switch'>
+        let switch_admision = `<div class='form-check form-switch'>
                                     <input class='form-check-input admisiones admisiones_switch'
                                     data-paciente='${admision.nombre_completo_paciente}'
                                     data-cedula='${admision.cedula_paciente}'
@@ -89,8 +88,8 @@ function mostrarResultados(data, tipos){
                                     data-monto='${precioBs}'
                                     type='checkbox' role='switch' id='admision${admision.id_admision}'  
                                 value='${admision.id_admision}'></div>`;
-            
-            fila.innerHTML = `
+
+        fila.innerHTML = `
                 <td>${switch_admision}</td>
                 <td class="text-nowrap">${admision.cedula_paciente}</td>
                 <td>${admision.nombre_completo_paciente}</td>
@@ -98,28 +97,28 @@ function mostrarResultados(data, tipos){
                 <td>${admision.clave || ""}</td>
                 <td class="text-nowrap text-end">Bs ${precioBs}</td>                
                 <td>${fechaFormateada}</td>`;
-            tbody.appendChild(fila);
-            });
-        
-        tabla.appendChild(tbody);
+        tbody.appendChild(fila);
+    });
 
-        var switches = document.querySelectorAll('.admisiones_switch')
-        var monto_total = 0;
-        switches.forEach(switch_inp=>{            
-            switch_inp.addEventListener('click', function(){
-                const totalSum = Array.from(document.querySelectorAll('.admisiones_switch:checked'))
+    tabla.appendChild(tbody);
+
+    var switches = document.querySelectorAll('.admisiones_switch')
+    var monto_total = 0;
+    switches.forEach(switch_inp => {
+        switch_inp.addEventListener('click', function () {
+            const totalSum = Array.from(document.querySelectorAll('.admisiones_switch:checked'))
                 .reduce((sum, switchElement) => sum + parseFloat(switchElement.getAttribute('data-monto')), 0);
-                document.querySelector(".sumatoria").innerText = totalSum.toFixed(2)
+            document.querySelector(".sumatoria").innerText = totalSum.toFixed(2)
             // document.getElementById('row_'+switch_inp.id).remove()
-            })
         })
-    
+    })
+
 }
 
 function detalles_fatura(data) {
     const table = document.getElementById("table_detalle");
     const tbody = document.createElement("tbody");
-    table.innerHTML="";
+    table.innerHTML = "";
     const thead = document.createElement("thead");
     thead.innerHTML = `
         <tr>
@@ -131,47 +130,47 @@ function detalles_fatura(data) {
         </tr>
     `;
     table.appendChild(thead);
-    if(document.getElementById('chk_ocultar_ceros').checked==true){
-            data = data.filter(detalle => detalle.precio_bs_cant !== 0);
-        }
+    if (document.getElementById('chk_ocultar_ceros').checked == true) {
+        data = data.filter(detalle => detalle.precio_bs_cant !== 0);
+    }
     data.forEach(detalle => {
         const row = document.createElement("tr");
         row.innerHTML = `
         <td>${detalle.estudio}</td>
         <td class="text-center">${detalle.cantidad}</td>
-        <td class="text-end">${Number(Number(detalle.precio).toFixed(2)*Number(detalle.cantidad).toFixed(2)).toFixed(2)}</td>
-        <td class="text-end">${Number(Number(detalle.precio_usd).toFixed(2)*Number(detalle.cantidad).toFixed(2)).toFixed(2)}</td>
-        <td class="text-center">${(Number(detalle.impuesto).toFixed(2)==0.00)?"E":Number(detalle.impuesto).toFixed(2)}</td>
+        <td class="text-end">${Number(Number(detalle.precio).toFixed(2) * Number(detalle.cantidad).toFixed(2)).toFixed(2)}</td>
+        <td class="text-end">${Number(Number(detalle.precio_usd).toFixed(2) * Number(detalle.cantidad).toFixed(2)).toFixed(2)}</td>
+        <td class="text-center">${(Number(detalle.impuesto).toFixed(2) == 0.00) ? "E" : Number(detalle.impuesto).toFixed(2)}</td>
         `;
         tbody.appendChild(row);
     });
-        
-        table.appendChild(tbody);
+
+    table.appendChild(tbody);
     const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
     const admisiones = selectedAdmisiones.map(admision => admision.value);
-    if(admisiones.length==0){
+    if (admisiones.length == 0) {
         const urlParams = new URLSearchParams(window.location.search);
         const admision = urlParams.get('admision');
         if (admision && !isNaN(admision)) {
             fetchDescuentos([admision]);
         }
-    }else{
+    } else {
         fetchDescuentos(admisiones);
     }
-    
-    
-        marcar_max_lines()
+
+
+    marcar_max_lines()
 }
 
-function agruparPorTipo(data, formato ="tipo") {
+function agruparPorTipo(data, formato = "tipo") {
     const resultado = {};
-        if(document.getElementById('chk_ocultar_ceros').checked==true){
-            data = data.filter(detalle => detalle.precio_bs_cant !== 0);
-        }
+    if (document.getElementById('chk_ocultar_ceros').checked == true) {
+        data = data.filter(detalle => detalle.precio_bs_cant !== 0);
+    }
 
     data.forEach(item => {
-        
-        const tipo = (formato=="tipo") ? item.tipo: item.grupo;
+
+        const tipo = (formato == "tipo") ? item.tipo : item.grupo;
 
         // Si el tipo no existe en el resultado, inicializamos su estructura
         if (!resultado[tipo]) {
@@ -187,8 +186,8 @@ function agruparPorTipo(data, formato ="tipo") {
 
         // Sumamos los valores correspondientes
         resultado[tipo].cantidad_total += item.cantidad;
-        resultado[tipo].precio_total += parseFloat(item.precio)*parseFloat(item.cantidad);
-        resultado[tipo].precio_usd_total += parseFloat(item.precio_usd)*parseFloat(item.cantidad);
+        resultado[tipo].precio_total += parseFloat(item.precio) * parseFloat(item.cantidad);
+        resultado[tipo].precio_usd_total += parseFloat(item.precio_usd) * parseFloat(item.cantidad);
         resultado[tipo].impuesto_total = parseFloat(item.impuesto);
 
         // Agregamos el detalle del registro al grupo
@@ -208,7 +207,7 @@ function agruparPorTipo(data, formato ="tipo") {
 
     const table = document.getElementById("table_detalle");
     const tbody = document.createElement("tbody");
-    table.innerHTML="";
+    table.innerHTML = "";
     const thead = document.createElement("thead");
     thead.innerHTML = `
         <tr>
@@ -228,16 +227,16 @@ function agruparPorTipo(data, formato ="tipo") {
             <td class="text-center">${detalle.cantidad_total}</td>
             <td class="text-end">${Number(detalle.precio_total).toFixed(2)}</td>
             <td class="text-end">${Number(detalle.precio_usd_total).toFixed(2)}</td>
-            <td class="text-center">${(Number(detalle.impuesto_total).toFixed(2)==0.00)?"E":Number(detalle.impuesto).toFixed(2)}</td>`;
-        row.addEventListener('click', function(){
+            <td class="text-center">${(Number(detalle.impuesto_total).toFixed(2) == 0.00) ? "E" : Number(detalle.impuesto).toFixed(2)}</td>`;
+        row.addEventListener('click', function () {
             const detallesEstudio = detalle.detalles.map(det => {
                 return `
                 <tr>
                     <td>${det.estudio}</td>
                     <td class="text-center">${det.cantidad}</td>
-                    <td class="text-end">${Number(det.precio*det.cantidad).toFixed(2)}</td>
-                    <td class="text-end">${Number(det.precio_usd*det.cantidad).toFixed(2)}</td>
-                    <td class="text-center">${(Number(det.impuesto).toFixed(2)==0.00)?"E":Number(det.impuesto).toFixed(2)}</td>
+                    <td class="text-end">${Number(det.precio * det.cantidad).toFixed(2)}</td>
+                    <td class="text-end">${Number(det.precio_usd * det.cantidad).toFixed(2)}</td>
+                    <td class="text-center">${(Number(det.impuesto).toFixed(2) == 0.00) ? "E" : Number(det.impuesto).toFixed(2)}</td>
                 </tr>`;
             }).join('');
             const detallesModal = document.querySelector(".card_detalle-table");
@@ -251,31 +250,31 @@ function agruparPorTipo(data, formato ="tipo") {
                 <th class="text-end text-nowrap">Precio USD</th>
                 <th class="text-center">Impuesto</th>
                 </tr></thead>`;
-            detallesModal.innerHTML = thead + detallesEstudio;            
+            detallesModal.innerHTML = thead + detallesEstudio;
         })
         tbody.appendChild(row);
     });
-        
+
     table.appendChild(tbody);
-        const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
+    const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
     const admisiones = selectedAdmisiones.map(admision => admision.value);
     fetchDescuentos(admisiones);
     marcar_max_lines()
 }
-document.getElementById('chk_ocultar_ceros').addEventListener('change', function(){
-    
-    let tipoAgrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value; 
-    
+document.getElementById('chk_ocultar_ceros').addEventListener('change', function () {
+
+    let tipoAgrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value;
+
     switch (tipoAgrupamiento) {
         case "tipo":
             agruparPorTipo(detalles)
-            break;            
+            break;
         case "agrupada":
             agruparPorTipo(detalles, "agrupada")
-            break;     
+            break;
         case "porcentual":
-                agruparPorcentual(detalles)
-                break;   
+            agruparPorcentual(detalles)
+            break;
         default:
             detalles_fatura(detalles)
             break;
@@ -284,17 +283,17 @@ document.getElementById('chk_ocultar_ceros').addEventListener('change', function
 
 async function agruparPorcentual(data) {
     const resultado = {};
-    if(document.getElementById('chk_ocultar_ceros').checked==true){
+    if (document.getElementById('chk_ocultar_ceros').checked == true) {
         data = data.filter(detalle => detalle.precio_bs_cant !== 0);
     }
     const admisiones = data.map(item => item.id_detalle);
 
-    try {                        
+    try {
         Swal.fire({
             title: "Generando la data",
             allowOutsideClick: () => false,
         });
-        
+
         Swal.showLoading();
         const response = await fetch(`${HOST}/api/detalle_porcentual`, {
             method: "POST",
@@ -307,11 +306,11 @@ async function agruparPorcentual(data) {
         });
         Swal.close();
         if (!response.ok) {
-        throw new Error("Error al obtener admisiones");
+            throw new Error("Error al obtener admisiones");
         }
 
         const data = await response.json();
-        if (data.success == false){
+        if (data.success == false) {
             Swal.fire({
                 title: "La admision no ha sido encontrada",
                 allowOutsideClick: () => false,
@@ -320,13 +319,13 @@ async function agruparPorcentual(data) {
             alert("La admision no ha sido encontrada")
             return;
         }
-        
+
 
         const table = document.getElementById("table_detalle");
-            const tbody = document.createElement("tbody");
-            table.innerHTML="";
-            const thead = document.createElement("thead");
-            thead.innerHTML = `
+        const tbody = document.createElement("tbody");
+        table.innerHTML = "";
+        const thead = document.createElement("thead");
+        thead.innerHTML = `
                 <tr>
                 <th>Descripcion</th>
                 <th class="text-center">Cantidad</th>
@@ -335,31 +334,31 @@ async function agruparPorcentual(data) {
                 <th class="text-center">Impuesto</th>
                 </tr>
             `;
-            table.appendChild(thead);
+        table.appendChild(thead);
 
-            tbody.innerHTML =generarTabla(data.resultados)
-            table.appendChild(tbody);
-                const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
-    const admisionesid = selectedAdmisiones.map(admision => admision.value);
-    fetchDescuentos(admisionesid);
-            marcar_max_lines()
+        tbody.innerHTML = generarTabla(data.resultados)
+        table.appendChild(tbody);
+        const selectedAdmisiones = Array.from(document.querySelectorAll('.admisiones_switch:checked'));
+        const admisionesid = selectedAdmisiones.map(admision => admision.value);
+        fetchDescuentos(admisionesid);
+        marcar_max_lines()
 
     } catch (error) {
         Swal.fire({
-        title: "Error",
-        text: error,
-        icon: "error",
-               confirmButtonColor: "#008b8b",
-        allowOutsideClick: () => false,
+            title: "Error",
+            text: error,
+            icon: "error",
+            confirmButtonColor: "#008b8b",
+            allowOutsideClick: () => false,
         });
         Swal.hideLoading();
-    }     
+    }
 }
 
 function generarTabla(json_data) {
 
     // Paso 1: Filtrar los datos donde estudio_activo sea null o "1"
-    const datosFiltrados = json_data.filter(item => 
+    const datosFiltrados = json_data.filter(item =>
         item.estudio_activo === null || item.estudio_activo === "1" || item.estudio_activo === "0"
     );
 
@@ -387,7 +386,7 @@ function generarTabla(json_data) {
 
             const precioCalculado = (precio * cantidad) * valPorcent;
             const precioUSDCalculado = (precioUSD * cantidad) * valPorcent;
-            let impuesto = (item.impuesto==0.00)?"E":item.impuesto;
+            let impuesto = (item.impuesto == 0.00) ? "E" : item.impuesto;
             tablaHTML += `
                 <tr>
                     <td>${estudioDescripcion}</td>
@@ -410,7 +409,7 @@ function generarTabla(json_data) {
 
                 const precioCalculado = (precio * cantidad) * valPorcent;
                 const precioUSDCalculado = (precioUSD * cantidad) * valPorcent;
-                let impuesto = (detalle.impuesto==0.00)?"E":item.impuesto;
+                let impuesto = (detalle.impuesto == 0.00) ? "E" : item.impuesto;
                 tablaHTML += `
                     <tr>
                         <td class='text-end fw-bold' style="font-size:small">${detalle.detalle_descripcion || "N/A"}</td>
@@ -430,7 +429,7 @@ function generarTabla(json_data) {
 function clasificarMontosImpuestos(data) {
     // Creamos un objeto para almacenar los resultados agrupados por impuesto
     const resultados = {};
-
+    console.log(data)
     // Iteramos sobre cada elemento del JSON
     data.forEach(item => {
         const impuesto = item.impuesto; // Obtenemos el valor de impuesto
@@ -449,7 +448,7 @@ function clasificarMontosImpuestos(data) {
         resultados[impuesto].total_precio_bs_cant += precioBsCant;
         resultados[impuesto].total_precio_usd_cant += precioUsdCant;
     });
-
+    console.log(resultados)
     // Convertimos el objeto de resultados a un array para facilitar su uso
     return Object.keys(resultados).map(impuesto => ({
         impuesto: impuesto,

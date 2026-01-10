@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,8 @@
     <script src="js/lordicon.js"></script>
     <script>
         document.write('<script src="js/funciones_externas.js?t=' + Date.now() + '" ><\/script>');
+        document.write('<script src="js/funcionalidades.js?t=' + Date.now() + '" ><\/script>');
     </script>
-    <script src="js/funcionalidades.js"></script>
     <script src="js/manejo_data.js?v1.0.4" defer></script>
     <script src="js/cuotas.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -23,74 +24,94 @@
     #tabla-buscar td {
         vertical-align: middle;
     }
-    h2{
-        color:#204b5e;
+
+    h2 {
+        color: #204b5e;
     }
+
     .form-check-input:checked {
-            background-color: #008b8b;
-            border-color: #008b8b;
-        }
+        background-color: #008b8b;
+        border-color: #008b8b;
+    }
+
     .mascara-gris {
         background: rgba(128, 128, 128, 0.6);
         pointer-events: none;
     }
-    #tasa_pers{
-        width: 7ch;    
-        border-radius: 4px; 
-        display: inline-block;   
+
+    #tasa_pers {
+        width: 7ch;
+        border-radius: 4px;
+        display: inline-block;
     }
-    #nota{
+
+    #nota {
         height: auto;
     }
-    input[type="date"], #sel_formato {
+
+    input[type="date"],
+    #sel_formato {
         height: 30px;
         border-radius: 4px;
     }
-    .row_puntero{
+
+    .row_puntero {
         cursor: pointer;
     }
-    .card_detalle{
-        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;        
+
+    .card_detalle {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     }
-  
-    .botonera{
-        gap:10px;
+
+    .botonera {
+        gap: 10px;
     }
-   .svg.disk_save.botonera{
+
+    .svg.disk_save.botonera {
         outline: gray 1px solid;
         border-radius: 3px;
     }
-    #pacientes, #sel_formato{
+
+    #pacientes,
+    #sel_formato {
         height: 33px;
     }
-    .svg.disk_save.botonera:hover{
+
+    .svg.disk_save.botonera:hover {
         outline-color: aliceblue;
         outline-width: 3px;
         outline-style: ridge;
         border-radius: 3px;
         background-color: aliceblue;
     }
-    .svg.disk_save.botonera{
+
+    .svg.disk_save.botonera {
         cursor: pointer;
     }
-    .tabla-admisiones{
+
+    .tabla-admisiones {
         max-height: 300px;
         overflow-y: scroll;
     }
-    .table_detalle{
+
+    .table_detalle {
         max-height: 330px;
         overflow-y: scroll;
     }
-    #table_detalle{
+
+    #table_detalle {
         line-height: 1;
+
         & td {
             padding: 3px;
         }
     }
+
     thead {
         position: sticky;
         top: 0;
     }
+
     .div1 {
         grid-area: 1 / 1 / 2 / 2;
     }
@@ -98,6 +119,7 @@
     .div2 {
         grid-area: 1 / 2 / 2 / 4;
     }
+
     .filtros_div {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -105,23 +127,26 @@
         grid-column-gap: 0px;
         grid-row-gap: 0px;
     }
- 
+
     input[readonly] {
-        background-color: #f0f0f0!important;
-        border: 1px solid #ccc!important;
-        color: #333!important;
+        background-color: #f0f0f0 !important;
+        border: 1px solid #ccc !important;
+        color: #333 !important;
     }
+
     textarea[readonly] {
         background-color: #f0f0f0;
         border: 1px solid #ccc;
         color: #333;
     }
+
     input[type="text"].encabezados {
         width: 100%;
         padding: 2px;
         border-radius: 4px;
         border: 1px solid #ccc;
     }
+
     textarea {
         width: 100%;
         padding: 2px;
@@ -129,7 +154,7 @@
         border-radius: 4px;
         border: 1px solid #ccc;
     }
-    
+
     @media (min-width: 576px) {
         .modal-dialog {
             max-width: 800px !important;
@@ -137,48 +162,55 @@
         }
     }
 </style>
+
 <body>
-    <div class="container">        
+    <div class="container">
         <h2>Facturación SIAC<small>medica</small></h2>
         <div class="row">
             <div class="col-8 rounded-1 border border-1 border-info-subtle limpiar_tipo">
                 <div class="row mb-1 mt-1">
                     <div class="col-2"><span class="text-nowrap">Razon Social</span></div>
-                    <div class="col-10"><input type="text" class="encabezados" id="razon_social" readonly/> </div>
+                    <div class="col-10"><input type="text" class="encabezados" id="razon_social" readonly /> </div>
                 </div>
                 <div class="row mb-1 ">
                     <div class="col-2"><span>RIF</span></div>
-                    <div class="col-4"><input id="rif" type="text" class="encabezados" readonly/> </div>
+                    <div class="col-4"><input id="rif" type="text" class="encabezados" readonly /> </div>
                     <div class="col-2 text-end"><span class="">Titular</span></div>
-                    <div class="col-4"><input id="titular" type="text" class="encabezados encabezado_modif" readonly/> </div>
+                    <div class="col-4"><input id="titular" type="text" class="encabezados encabezado_modif" readonly />
+                    </div>
                 </div>
                 <div class="row ">
                     <div class="col-2"><span>Dirección Fiscal</span></div>
                     <div class="col-10"><textarea id="dir_fiscal" class=encabezado_modif readonly></textarea> </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-2"><span>Paciente(s)</span></div>
-                    <div class="col-10"><textarea type="text" id="pacientes" class="encabezado_modif" readonly></textarea></div>
+                    <div class="col-10"><textarea type="text" id="pacientes" class="encabezado_modif"
+                            readonly></textarea></div>
                 </div>
-                
+
             </div>
             <div class="col-4 rounded-1 border border-1 border-info-subtle">
                 <div class="row mb-1 mt-1">
                     <div class="col-5 text-end"><span>Control</span></div>
-                    <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text" id="num_control" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text"
+                            id="num_control" readonly /> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end"><span>Factura</span></div>
-                    <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text" id="num_factura" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text"
+                            id="num_factura" readonly /> </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end text-nowrap"><span>F. Atención</span></div>
-                    <div class="col-7"><input class="text-end fw-bold w-100" id="fecha_atencion" type="date" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold w-100" id="fecha_atencion" type="date" readonly />
+                    </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end text-nowrap"><span>F. Emisión</span></div>
-                    <div class="col-7"><input class="text-end fw-bold w-100" id="fecha_emision" type="date" readonly/> </div>
+                    <div class="col-7"><input class="text-end fw-bold w-100" id="fecha_emision" type="date" readonly />
+                    </div>
                 </div>
                 <div class="row mb-1">
                     <div class="col-5 text-end"><span>Formato</span></div>
@@ -187,16 +219,19 @@
             </div>
         </div>
         <div class="row table_detalle">
-            <div class="mt-1 mb-1">   
+            <div class="mt-1 mb-1">
                 <div class="btn-group w-100 " role="group" aria-label="Tipo de factura" data-bs-toggle="tooltip"
                     data-bs-placement="top" title="Formato de agrupacion">
-                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_detallado" value="detallada" checked>
+                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_detallado"
+                        value="detallada" checked>
                     <label class="btn btn-outline-success" for="btn_detalle_detallado">Detallada</label>
-                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_agrupado"  value="agrupada">
+                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_agrupado"
+                        value="agrupada">
                     <label class="btn btn-outline-success" for="btn_detalle_agrupado">Por grupo</label>
-                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_tipo"  value="tipo">
+                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_tipo" value="tipo">
                     <label class="btn btn-outline-success" for="btn_detalle_tipo">Por tipo</label>
-                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_porcentual" value="porcentual">
+                    <input type="radio" class="btn-check" name=rad_tipo_agrupamiento id="btn_detalle_porcentual"
+                        value="porcentual">
                     <label class="btn btn-outline-success" for="btn_detalle_porcentual">Porcentual</label>
                 </div>
             </div>
@@ -212,18 +247,23 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-check form-switch">
-                            <input class="form-check-input tasa_chk" type="radio" id="chk_tasa_admision" name='tasa_chk' data-tasa="0.00" checked>
-                            <label class="form-check-label" for="chk_tasa_admision">Tasa Admision (<span id="tasa_admi" class="tasa_admi"></span>)</label>
+                            <input class="form-check-input tasa_chk" type="radio" id="chk_tasa_admision" name='tasa_chk'
+                                data-tasa="0.00" checked>
+                            <label class="form-check-label" for="chk_tasa_admision">Tasa Admision (<span id="tasa_admi"
+                                    class="tasa_admi"></span>)</label>
                         </div>
                         <div class="form-check form-switch tasa_chk">
-                            <input class="form-check-input " type="radio" id="chk_tasa_actual" name='tasa_chk' >
-                            <label class="form-check-label" for="chk_tasa_actual">Tasa Actual (<span id="tasa_actual" >0.00</span>)</label>
+                            <input class="form-check-input " type="radio" id="chk_tasa_actual" name='tasa_chk'>
+                            <label class="form-check-label" for="chk_tasa_actual">Tasa Actual (<span
+                                    id="tasa_actual">0.00</span>)</label>
                         </div>
                     </div>
                     <div class="col">
-                        <div  class="form-check form-switch tasa_chk d-flex align-items-center ">
-                            <input class="form-check-input me-1" type="radio" id="chk_tasa_perso" name='tasa_chk' data-tasa="0.00">
-                            <label class="form-check-label" for="chk_tasa_perso">Tasa Personal (<input id="tasa_pers" class="form-control text-center" type="text" value="0.00">)</label>
+                        <div class="form-check form-switch tasa_chk d-flex align-items-center ">
+                            <input class="form-check-input me-1" type="radio" id="chk_tasa_perso" name='tasa_chk'
+                                data-tasa="0.00">
+                            <label class="form-check-label" for="chk_tasa_perso">Tasa Personal (<input id="tasa_pers"
+                                    class="form-control text-center" type="text" value="0.00">)</label>
                             <script>
                                 $('#tasa_pers').on('input', function () {
                                     this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
@@ -233,14 +273,15 @@
                                     //console.log(validar_monto_bs(document.getElementById("tasa_pers")))
                                 });
                             </script>
-                        </div >
-                        <div  class="form-check form-switch tasa_chk d-flex align-items-center ">
-                            <input class="form-check-input me-1" type="checkbox" id="chk_ocultar_ceros" name='cero_chk' checked >
-                            <label class="form-check-label" for="chk_ocultar_ceros">Ocultar montos en 0.00</label>                            
-                        </div >
+                        </div>
+                        <div class="form-check form-switch tasa_chk d-flex align-items-center ">
+                            <input class="form-check-input me-1" type="checkbox" id="chk_ocultar_ceros" name='cero_chk'
+                                checked>
+                            <label class="form-check-label" for="chk_ocultar_ceros">Ocultar montos en 0.00</label>
+                        </div>
                     </div>
-                    
-                </div> 
+
+                </div>
                 <div class="row">
                     <div class="col-12">
                         <div class="form-check form-switch  tasa_chk ">
@@ -252,16 +293,15 @@
                             <input type="hidden" id=monto_credito>
                             <div class="form-floating col-8">
                                 <input type="date" name="fecha_vencimiento" id="fecha_vencimiento"
-                                class="fecha_vencimiento form-control form-date border border-primary-subtle" 
-                                value='' min='2024-11-01'/>
+                                    class="fecha_vencimiento form-control form-date border border-primary-subtle"
+                                    value='' min='2024-11-01' />
                                 <label for="fecha_vencimiento">Fecha Vencimiento</label>
                             </div>
                             <div class="form-floating col-4 ">
-                                <input type="text" class="form-control text-center border border-primary-subtle" 
-                                id=cuotas
-                                value="" maxlength="2">
+                                <input type="text" class="form-control text-center border border-primary-subtle"
+                                    id=cuotas value="" maxlength="2">
                                 <label for="cuotas">Cuotas</label>
-                                <script>                                               
+                                <script>
                                     $("#cuotas").on("input", function () {
                                         this.value = this.value.replace(/[^0-9]/g, "").replace(/,/g, ".");
                                     });
@@ -269,58 +309,76 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
             <div class="col-6 limpiar_tipo">
                 <div class="row">
                     <div class="col-4 text-end"><span>Exento: </span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="exento"readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="exento"
+                            readonly /></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>BI 16:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="base_imponible"  readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal"
+                            id="base_imponible" readonly /></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>IGTF:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="igtf"  readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="igtf"
+                            readonly /></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>IVA(16):</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="iva" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="iva"
+                            readonly /></div>
+                </div>
+                <div class="row iva_8_div d-none">
+                    <div class="col-4 text-end"><span>BI 8:</span></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal"
+                            id="base_imponible_8" readonly /></div>
+                </div>
+                <div class="row iva_8_div d-none">
+                    <div class="col-4 text-end"><span>IVA(8):</span></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="iva_8"
+                            readonly /></div>
                 </div>
                 <div class="row descuento_div d-none">
                     <div class="col-4 text-end"><span>Descuentos:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="descuentos" readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal"
+                            id="descuentos" readonly /></div>
                 </div>
                 <div class="row">
                     <div class="col-4 text-end"><span>Total:</span></div>
-                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal" id="total_factura"  readonly/></div>
+                    <div class="col-8"><input type="text" class="encabezados text-end totalizables_modal"
+                            id="total_factura" readonly /></div>
                 </div>
                 <div class="botonera d-flex justify-content-center align-items-center flex-row mt-1">
-            
+
                     <div data-bs-toggle="modal" data-bs-target="#modal_admisiones" id="agregar_admi">
-                        <lord-icon src="../images/wired-lineal-48-plus-to-square-rotation.json"
-                            trigger="hover" style="width:70px;height:70px" class="svg disk_save  botonera" data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Agregar admisiones" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        <lord-icon src="../images/wired-lineal-48-plus-to-square-rotation.json" trigger="hover"
+                            style="width:70px;height:70px" class="svg disk_save  botonera" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Agregar admisiones" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">
                         </lord-icon>
-            
+
                     </div>
                     <div id="nueva_factura" class="d-none">
-                        <lord-icon src="../images/wired-lineal-48-plus-to-square-rotation.json"
-                            trigger="hover" style="width:70px;height:70px" class="svg disk_save  botonera" data-bs-toggle="tooltip"
+                        <lord-icon src="../images/wired-lineal-48-plus-to-square-rotation.json" trigger="hover"
+                            style="width:70px;height:70px" class="svg disk_save  botonera" data-bs-toggle="tooltip"
                             data-bs-placement="top" title="Nueva Factura">
                         </lord-icon>
-            
+
                     </div>
-            
+
                     <div id="div_fact_factura">
                         <lord-icon id="btn_fact_factura" src="../images/wired-lineal-1374-cash-register-messenger.json"
-                            trigger="hover" style="width:70px;height:70px" class="svg disk_save botonera" data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Factura" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                            trigger="hover" style="width:70px;height:70px" class="svg disk_save botonera"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Factura" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">
                         </lord-icon>
                     </div>
-                    
+
                     <div id="div_imprimir">
                         <lord-icon id="btn_print_factura" src="../images/wired-lineal-732-printer.json" trigger="hover"
                             style="width:70px;height:70px" class="svg disk_save botonera " data-bs-toggle="tooltip"
@@ -328,48 +386,51 @@
                         </lord-icon>
                     </div>
                     <div id="div_anular">
-                        <lord-icon id="btn_anular_factura" src="../images/wired-lineal-38-error-cross-simple.json" trigger="hover"
-                            style="width:70px;height:70px" class="svg disk_save botonera " data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Anular">
+                        <lord-icon id="btn_anular_factura" src="../images/wired-lineal-38-error-cross-simple.json"
+                            trigger="hover" style="width:70px;height:70px" class="svg disk_save botonera "
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Anular">
                         </lord-icon>
-                    </div> 
+                    </div>
                     <div id="div_buscar" data-bs-toggle="modal" data-bs-target="#modal_busqueda">
                         <lord-icon id="btn_buscar" src="https://cdn.lordicon.com/iuvnsegf.json" trigger="hover"
                             style="width:70px;height:70px;" class="svg disk_save botonera " data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Buscar factura" >
+                            data-bs-placement="top" title="Buscar factura">
                         </lord-icon>
                     </div>
                     <div id="div_regresar">
                         <lord-icon id="btn_regresar" src="../images/wired-lineal-31-chevron-right.json" trigger="hover"
-                            style="width:70px;height:70px;transform: rotate(180deg);" class="svg disk_save botonera " data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Volver">
+                            style="width:70px;height:70px;transform: rotate(180deg);" class="svg disk_save botonera "
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Volver">
                         </lord-icon>
                     </div>
                 </div>
             </div>
         </div>
-        
+
     </div>
 
-    <div class="modal fade" id="modal_admisiones" tabindex="-1" aria-labelledby="exampleModalLabel" >
+    <div class="modal fade" id="modal_admisiones" tabindex="-1" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Seleccione Pacientes</h1>
-                    <button type="button" class="btn-close cerrar_list" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close cerrar_list" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="filtros_div">
                         <div class="div1 row">
                             <div class="col">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_part" value="P" >
+                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_part"
+                                        value="P">
                                     <label class="form-check-label" for="inp_part">
                                         Particulares
                                     </label>
                                 </div>
-                                <div class="form-check"id=div_inp_inter>
-                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_inter" value="I">
+                                <div class="form-check" id=div_inp_inter>
+                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_inter"
+                                        value="I">
                                     <label class="form-check-label" for="inp_inter">
                                         Internos
                                     </label>
@@ -377,13 +438,15 @@
                             </div>
                             <div class="col">
                                 <div class="form-check" id=div_inp_seg>
-                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_seg" value="S">
+                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_seg"
+                                        value="S">
                                     <label class="form-check-label" for="inp_seg">
                                         Seguros
                                     </label>
                                 </div>
                                 <div class="form-check" id=div_inp_emp>
-                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_emp" value="E">
+                                    <input class="form-check-input" type="radio" name="tipo_admision" id="inp_emp"
+                                        value="E">
                                     <label class="form-check-label" for="inp_emp">
                                         Empresas
                                     </label>
@@ -391,16 +454,18 @@
                             </div>
                         </div>
                         <div class="div2">
-                            <select class="form-select form-select-lg mb-3" aria-label="empresas o seguros" id="empre-seg" disabled>
+                            <select class="form-select form-select-lg mb-3" aria-label="empresas o seguros"
+                                id="empre-seg" disabled>
                             </select>
-                            <select class="form-select form-select-lg mb-3 d-none" aria-label="sub-empresa" id="sub_empresa">
+                            <select class="form-select form-select-lg mb-3 d-none" aria-label="sub-empresa"
+                                id="sub_empresa">
                             </select>
                         </div>
                     </div>
                     <div class="tabla-admisiones">
                         <table id="tabla-admisiones"></table>
                     </div>
-                    
+
                 </div>
 
                 <div class="modal-footer ">
@@ -409,11 +474,13 @@
                             <h4>Monto a facturar Bs. <span class=sumatoria>0,00</span></h4>
                         </div>
                         <div class="col text-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cerrar_lista">Cerrar</button>
-                            <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="aceptar_lista">Aceptar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                id="cerrar_lista">Cerrar</button>
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                                id="aceptar_lista">Aceptar</button>
                         </div>
                     </div>
-                    
+
 
                 </div>
             </div>
@@ -425,7 +492,7 @@
             <button type="button" class="btn-close card_detalle-close" aria-label="Close"></button>
         </div>
         <div class="card-body card_detalle-body">
-          <table class="table table-hover card_detalle-table"></table>
+            <table class="table table-hover card_detalle-table"></table>
         </div>
     </div>
     <div class="modal fade" id="modal_pagos" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -439,7 +506,8 @@
                 <div class="modal-body">
                     <div class='col-12 d-flex mb-1' style="align-items: center;">
                         <div class="form-floating fac_num col-auto me-auto d-flex datos">
-                            <input type="text" id="factura_modal" class='form-control numeros_p' maxlength="8" value="" placeholder="00000000" readonly>
+                            <input type="text" id="factura_modal" class='form-control numeros_p' maxlength="8" value=""
+                                placeholder="00000000" readonly>
                             <label for="factura_modal" class="" style="text-align: end;">No. Factura</label>
                             <script>
                                 $("#num_factura").on("input", function () {
@@ -451,8 +519,9 @@
                             </script>
                         </div>
                         <div class="col-2 form-floating ">
-                            <input type="text" id="tasa_modal" class='form-control' maxlength="8" value="" placeholder="00.00" disabled>
-                            <label for="tasa_modal" class="" >Tasa</label>
+                            <input type="text" id="tasa_modal" class='form-control' maxlength="8" value=""
+                                placeholder="00.00" disabled>
+                            <label for="tasa_modal" class="">Tasa</label>
                             <script>
                                 $("#tasa_modal").on("input", function () {
                                     this.value = this.value.replace(/[^0-9.]/g, "");
@@ -471,24 +540,24 @@
                                         this.value = this.value.replace(/[^0-9.-]/g, '').replace(/,/g, '.');
                                     });
                                     $('#desglose_valor').on('blur', function () {
-                                        if(this.value==""){
+                                        if (this.value == "") {
                                             return
                                         }
                                         validar_monto_bs(document.getElementById("desglose_valor"));
                                     });
                                 </script>
-                                <select id="moneda_desglose" name=moneda_forma_de_pago class="form-control form-select desgloses"
-                                    style="width:auto;">
+                                <select id="moneda_desglose" name=moneda_forma_de_pago
+                                    class="form-control form-select desgloses" style="width:auto;">
                                     <option value="">...</option>
                                 </select>
                                 <select id="forma_de_pago" name=forma_de_pago class="form-control form-select desgloses"
                                     style="width:auto;">
                                     <option value="">Seleccione</option>
                                 </select>
-                                
+
                                 <input type="text" placeholder="nota" style="width:250px;" maxlength=50
                                     class="form-control desgloses" id=desglose_nota>
-                            
+
                                 <div class="">
                                     <div id="div_agregar">
                                         <lord-icon id="btn_agregar_fp" src="../images/plus-circle.json" trigger="hover"
@@ -521,9 +590,7 @@
                         <div class="sub_total col-4  datos">
                             <div class="d-flex">
                                 <label for="total_modal" class="col-4">FACTURA BS:</label>
-                                <input type="text" id="total_modal" class=" col-8" readonly
-                                    data-ph-valor=""
-                                    value="">
+                                <input type="text" id="total_modal" class=" col-8" readonly data-ph-valor="" value="">
                             </div>
                             <div class="d-flex">
                                 <label for="total_usd_modal" class="col-4">FACTURA USD:</label>
@@ -533,21 +600,25 @@
                         <div class="sub_total col-4  datos">
                             <div class="d-flex">
                                 <label for="total_modal_pago_bs" class="col-4">SUMA EN BS:</label>
-                                <input type="text" id="total_modal_pago_bs" class="totalizables_modal col-8" readonly value="">
+                                <input type="text" id="total_modal_pago_bs" class="totalizables_modal col-8" readonly
+                                    value="">
                             </div>
                             <div class="d-flex">
                                 <label for="total_usd_modal_pago" class="col-4">SUMA EN USD:</label>
-                                <input type="text" id="total_usd_modal_pago" class="totalizables_modal col-8" readonly value="">
+                                <input type="text" id="total_usd_modal_pago" class="totalizables_modal col-8" readonly
+                                    value="">
                             </div>
                         </div>
                         <div class="sub_total col-4  datos">
                             <div class="d-flex">
                                 <label for="resto_pago_bs" class="col-4">RESTO EN BS:</label>
-                                <input type="text" id="resto_pago_bs" class="totalizables_modal col-8" readonly value="">
+                                <input type="text" id="resto_pago_bs" class="totalizables_modal col-8" readonly
+                                    value="">
                             </div>
                             <div class="d-flex">
                                 <label for="resto_pago_us" class="col-4">RESTO EN USD:</label>
-                                <input type="text" id="resto_pago_us" class="totalizables_modal col-8" readonly value="">
+                                <input type="text" id="resto_pago_us" class="totalizables_modal col-8" readonly
+                                    value="">
                             </div>
                         </div>
                     </div>
@@ -572,26 +643,29 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" >Buscar Factura</h5>
+                    <h5 class="modal-title">Buscar Factura</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col">
                             <div class="form-floating">
-                                <input type="text" id="factura_buscar" class='form-control' maxlength="8" value="" placeholder="00000000" >
+                                <input type="text" id="factura_buscar" class='form-control' maxlength="8" value=""
+                                    placeholder="00000000">
                                 <label for="factura_buscar" class="" style="text-align: end;">No. Factura</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating">
-                                <input type="text" id="razon_buscar" class='form-control' maxlength="50" value="" placeholder="Razon social">
+                                <input type="text" id="razon_buscar" class='form-control' maxlength="50" value=""
+                                    placeholder="Razon social">
                                 <label for="razon_buscar" class="" style="text-align: end;">Razon Social</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating">
-                                <input type="text" id="rif_buscar" class='form-control' maxlength="50" value="" placeholder="RIF">
+                                <input type="text" id="rif_buscar" class='form-control' maxlength="50" value=""
+                                    placeholder="RIF">
                                 <label for="rif_buscar" class="" style="text-align: end;">RIF</label>
                             </div>
                         </div>
@@ -600,21 +674,23 @@
                         <table id="tabla-buscar" class="table table-striped table-hover"></table>
                     </div>
                     <div id="paginacion" class="d-flex justify-content-center mt-3">
-                    
+
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-success" id="buscar_modal" data-bs-dismiss="modal">Aceptar</button>
+                    <button type="button" class="btn btn-success" id="buscar_modal"
+                        data-bs-dismiss="modal">Aceptar</button>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
 
 <script src="js/facturador.js?v=1.0.3"></script>
 <script src="js/cargar_selects.js"></script>
-<script src="js/control_pagos.js?v=1.0.3"></script>
+<script src="js/control_pagos.js?v=1.0.8"></script>
 <script src="js/anulacion.js"></script>
 <script src="js/buscar_facturas.js?v=1.0.0"></script>

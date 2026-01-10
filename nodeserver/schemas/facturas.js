@@ -13,6 +13,8 @@ const facturaSchema = z.object({
   exento: z.coerce.number().nonnegative({ message: "El campo exento debe ser un número no negativo" }),
   bi16: z.coerce.number().nonnegative({ message: "El campo base imponible debe ser un número no negativo" }),
   iva16: z.coerce.number().nonnegative({ message: "El campo iva debe ser un número no negativo" }),
+  bi8: z.coerce.number().nonnegative({ message: "El campo base imponible debe ser un número no negativo" }),
+  iva8: z.coerce.number().nonnegative({ message: "El campo iva debe ser un número no negativo" }),
   igtf: z.coerce.number().nonnegative({ message: "El campo IGTF debe ser un número no negativo" }),
   total: z.coerce.number().nonnegative({ message: "El campo total debe ser un número no negativo" }),
   base_igtf: z.coerce.number().nonnegative({ message: "El campo base IGTF debe ser un número no negativo" }),
@@ -27,8 +29,8 @@ const facturaSchema = z.object({
   tipo_agrupamiento: z.string().min(3, { message: "El tipo de agrupamiento debe tener al menos 3 caracteres" }),
 })
 
-    function validateFactura(object){
-        return facturaSchema.safeParseAsync(object)  
-    }
+function validateFactura(object) {
+  return facturaSchema.safeParseAsync(object)
+}
 
-  module.exports = {validateFactura}
+module.exports = { validateFactura }

@@ -4,9 +4,9 @@ const cors = require('cors');
 const path = require('path');
 const { retornar_query } = require('./middlewares/retornarQuery');
 const { validateFactura } = require('./schemas/facturas');
-const  { authenticateToken, registrarInicioPeticion, registrarErrorPeticion, registrarFinPeticion} = require('./middlewares/autenticarToken');
-const retencionesRoutes = require('./routes/retenciones');  
-const proveedoresRoutes = require('./routes/proveedores');  
+const { authenticateToken, registrarInicioPeticion, registrarErrorPeticion, registrarFinPeticion } = require('./middlewares/autenticarToken');
+const retencionesRoutes = require('./routes/retenciones');
+const proveedoresRoutes = require('./routes/proveedores');
 const app = express();
 
 exports.app = app;
@@ -14,20 +14,20 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, '..')));
 app.get('/facturacion/', (req, res) => {
-    res.redirect('/facturacion/facturador.html');
+  res.redirect('/facturacion/facturador.html');
 });
 
 app.use('/api/retenciones', retencionesRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
 
 app.get('/api/tipo_admision', async (req, res) => {
-    
-  const { tipo,clinic_id, subemp } = req.query;
-  
+
+  const { tipo, clinic_id, subemp } = req.query;
+
   if (!clinic_id) {
     return res.status(400).json({ error: 'Se requiere el parámetro clinic_id' });
   }
@@ -50,17 +50,17 @@ app.get('/api/tipo_admision', async (req, res) => {
     case 'sub':
       ident = 'id_subempresa';
       tipo_str = 'subempresas';
-        if (subemp) {
-            subempresa = ` and id_empresa = ${subemp}`;
-        } else {
-            return res.status(400).json({ error: 'Se requiere el parámetro subemp' });
-        }
-      break;  
+      if (subemp) {
+        subempresa = ` and id_empresa = ${subemp}`;
+      } else {
+        return res.status(400).json({ error: 'Se requiere el parámetro subemp' });
+      }
+      break;
     default:
       res.status(400).json({ error: 'tipo incorrecto' });
       break;
   }
-  let subquery = (isNaN(clinic_id)) ?  `(SELECT id_usuario_empresa FROM perfil_usuario_basico WHERE apellidos = '${clinic_id}')` : clinic_id
+  let subquery = (isNaN(clinic_id)) ? `(SELECT id_usuario_empresa FROM perfil_usuario_basico WHERE apellidos = '${clinic_id}')` : clinic_id
 
   let query = `SELECT ${ident},
                       descripcion, 
@@ -68,32 +68,32 @@ app.get('/api/tipo_admision', async (req, res) => {
                   FROM ${tipo_str} 
                   WHERE activo=1 and id_cli = ${subquery}${subempresa}
                   ORDER BY descripcion`;
-    
-    try {
-        let listado = await retornar_query(query, [clinic_id]);
-        res.json(listado);
-    } catch (error) {
-        res.json({ error: 'No data', details: error.message });
-    }
+
+  try {
+    let listado = await retornar_query(query, [clinic_id]);
+    res.json(listado);
+  } catch (error) {
+    res.json({ error: 'No data', details: error.message });
+  }
 });
 
 app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
-    try {
-      const { id_cli, fecha_inicio, fecha_fin, tipos_consulta = [], status_cierre=null , activos = [], page = 1, perPage = 50, agrupado='s' } = req.body;
-      const offset = (page - 1) * perPage;
-      
-      const tipoPlaceholders = tipos_consulta.map(() => '?').join(',');
-      const activoPlaceholders = activos.map(() => '?').join(',');
-      let status_cierre_simbol = null
-      if(status_cierre){
-        if(status_cierre=='cerrado'){
-          status_cierre_simbol='AND admisiones.id_status_cierre > 1 '
-        }else{
-          status_cierre_simbol='AND admisiones.id_status_cierre = 1 '
-        }
+  try {
+    const { id_cli, fecha_inicio, fecha_fin, tipos_consulta = [], status_cierre = null, activos = [], page = 1, perPage = 50, agrupado = 's' } = req.body;
+    const offset = (page - 1) * perPage;
+
+    const tipoPlaceholders = tipos_consulta.map(() => '?').join(',');
+    const activoPlaceholders = activos.map(() => '?').join(',');
+    let status_cierre_simbol = null
+    if (status_cierre) {
+      if (status_cierre == 'cerrado') {
+        status_cierre_simbol = 'AND admisiones.id_status_cierre > 1 '
+      } else {
+        status_cierre_simbol = 'AND admisiones.id_status_cierre = 1 '
       }
-          
-      let sql_agrupado =`SELECT 
+    }
+
+    let sql_agrupado = `SELECT 
       admisiones.*,
       SUM(admisiones_det.precio * admisiones_det.cantidad) AS precio,
       SUM(admisiones_det.precio_usd * admisiones_det.cantidad) AS precio_usd,
@@ -135,8 +135,8 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
       pacientes AS titular ON admisiones.id_representante = titular.id_paciente
   LEFT JOIN 
       zonas ON admisiones.id_zona = zonas.id_zona  `
-        // Construir consulta
-        let sql =`SELECT admisiones.*,
+    // Construir consulta
+    let sql = `SELECT admisiones.*,
             admisiones_det.id_admidet,
             admisiones_det.precio,
             admisiones_det.precio_usd,
@@ -186,8 +186,8 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
             pacientes AS titular ON admisiones.id_representante = titular.id_paciente
         LEFT JOIN 
             zonas ON admisiones.id_zona = zonas.id_zona  `
-        
-    let wheres =   ` WHERE 
+
+    let wheres = ` WHERE 
             admisiones.id_cli = ? 
             AND admisiones_det.activo=1 
             ${status_cierre_simbol}
@@ -195,36 +195,36 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
             ${activos.length ? `AND admisiones.activo IN (${activoPlaceholders})` : ''}
             AND admisiones.fecha_admision BETWEEN ? AND CONCAT(?, ' 23:59:59') 
             `;
-  
-        const params = [
-        id_cli,
-        ...tipos_consulta,
-        ...activos,
-        fecha_inicio,
-        fecha_fin,
-        perPage,
-        offset
-      ].filter(p => p !== undefined);
-        
-        // Ejecutar consulta de forma más segura
-        if(agrupado=='n'){
-          sql=sql+wheres+ " ORDER BY admisiones.id_admision DESC LIMIT ? OFFSET ?"
-        }else{
-          sql=sql_agrupado+ wheres + " GROUP BY admisiones.id_admision  ORDER BY admisiones.id_admision DESC  LIMIT ? OFFSET ?"
-        }
 
-        const result = await retornar_query(sql, params);        
-        if(status_cierre){
-          if(status_cierre=='cerrado'){
-            status_cierre_simbol='AND adm.id_status_cierre != 1 '
-          }else{
-            status_cierre_simbol='AND adm.id_status_cierre = 1 '
-          }
-        }
-        
-        // Consulta de conteo
-        const countResult = await retornar_query(
-          `SELECT COUNT(adm.id_admision) as total,
+    const params = [
+      id_cli,
+      ...tipos_consulta,
+      ...activos,
+      fecha_inicio,
+      fecha_fin,
+      perPage,
+      offset
+    ].filter(p => p !== undefined);
+
+    // Ejecutar consulta de forma más segura
+    if (agrupado == 'n') {
+      sql = sql + wheres + " ORDER BY admisiones.id_admision DESC LIMIT ? OFFSET ?"
+    } else {
+      sql = sql_agrupado + wheres + " GROUP BY admisiones.id_admision  ORDER BY admisiones.id_admision DESC  LIMIT ? OFFSET ?"
+    }
+
+    const result = await retornar_query(sql, params);
+    if (status_cierre) {
+      if (status_cierre == 'cerrado') {
+        status_cierre_simbol = 'AND adm.id_status_cierre != 1 '
+      } else {
+        status_cierre_simbol = 'AND adm.id_status_cierre = 1 '
+      }
+    }
+
+    // Consulta de conteo
+    const countResult = await retornar_query(
+      `SELECT COUNT(adm.id_admision) as total,
                   COUNT(DISTINCT adm.id_admision) as total_admisiones,
                   count(admisiones_det.id_admision) as admidet,
                   COUNT(DISTINCT adm.id_paciente) AS total_pacientes,
@@ -238,51 +238,51 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
               AND adm.fecha_admision BETWEEN ? AND CONCAT(?, ' 23:59:59')
               ${tipos_consulta.length ? `AND adm.tipo_consulta IN (${tipoPlaceholders})` : ''}
               ${activos.length ? `AND adm.activo IN (${activoPlaceholders})` : ''} `,
-          [id_cli, fecha_inicio, fecha_fin, ...tipos_consulta, ...activos]
-        );
-        
-        const pacientes = countResult[0]?.total_pacientes || 0;
-        const precio = countResult[0]?.precio || 0;
-        const precio_usd = countResult[0]?.precio_usd || 0;
-        const total = countResult[0]?.total || 0;
-        const total_admisiones = countResult[0]?.total_admisiones || 0;
-        const totalPages=(agrupado=='n') ? Math.ceil(total / perPage):  Math.ceil(total_admisiones / perPage)
-        res.json({ 
-          success: true,
-          resultados: result,
-          pagination: {
-            page,
-            perPage,
-            total,
-            totalPages,
-            pacientes,
-            precio,
-            precio_usd,total_admisiones
-          }
-        });
-       
-    } catch (error) {
-      
-      res.json({
+      [id_cli, fecha_inicio, fecha_fin, ...tipos_consulta, ...activos]
+    );
+
+    const pacientes = countResult[0]?.total_pacientes || 0;
+    const precio = countResult[0]?.precio || 0;
+    const precio_usd = countResult[0]?.precio_usd || 0;
+    const total = countResult[0]?.total || 0;
+    const total_admisiones = countResult[0]?.total_admisiones || 0;
+    const totalPages = (agrupado == 'n') ? Math.ceil(total / perPage) : Math.ceil(total_admisiones / perPage)
+    res.json({
+      success: true,
+      resultados: result,
+      pagination: {
+        page,
+        perPage,
+        total,
+        totalPages,
+        pacientes,
+        precio,
+        precio_usd, total_admisiones
+      }
+    });
+
+  } catch (error) {
+
+    res.json({
+      success: false,
+      message: 'Error al procesar la solicitud',
+      error: error.message
+    });
+  }
+});
+
+app.post('/detalles_admision', authenticateToken, async (req, res) => {
+  try {
+    const { admisiones } = req.body;
+    if (!admisiones || admisiones.length === 0) {
+      return res.status(400).json({
         success: false,
-        message: 'Error al procesar la solicitud',
-        error: error.message
+        message: 'El array admisiones debe contener al menos un elemento'
       });
     }
-  });
+    const admisionesPlaceholders = admisiones.map(() => '?').join(',');
 
-  app.post('/detalles_admision', authenticateToken, async (req, res) => {
-    try {
-        const {admisiones} = req.body;
-        if (!admisiones || admisiones.length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'El array admisiones debe contener al menos un elemento' 
-            });
-        }
-        const admisionesPlaceholders = admisiones.map(() => '?').join(',');
-        
-        let sql =`SELECT admisiones.*,
+    let sql = `SELECT admisiones.*,
             admisiones_det.id_admidet,
             admisiones_det.precio,
             admisiones_det.precio_usd,
@@ -345,141 +345,141 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
             ${admisiones.length ? `AND admisiones.id_admision IN (${admisionesPlaceholders})` : ''}
             AND admisiones.activo =1 
         ORDER BY admisiones.id_admision`;
-        
-        const result = await retornar_query(sql, admisiones);
-            
-        res.json({ 
-            success: true,
-            resultados: result          
-        });
-       
-    } catch (error) {      
-      res.json({
-        success: false,
-        message: 'Error al procesar la solicitud',
-        error: error.message
-      });
-    }
-  });  
 
-  app.get('/api/opciones_factura', async (req, res) => {
-    
-      const { id_cli } = req.query;
-      
-      if (!id_cli){
-        return res.status(400).json({
-            success:false,
-            message: 'Error OF02'
-        })
-      }
-      if (isNaN(id_cli)){
-        return res.status(400).json({
-            success:false,
-            message: 'Error OF03'
-        })
-      }
-      let opciones = "";
-      let formatos = "";
-        let sql =`SELECT *
+    const result = await retornar_query(sql, admisiones);
+
+    res.json({
+      success: true,
+      resultados: result
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Error al procesar la solicitud',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/opciones_factura', async (req, res) => {
+
+  const { id_cli } = req.query;
+
+  if (!id_cli) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error OF02'
+    })
+  }
+  if (isNaN(id_cli)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error OF03'
+    })
+  }
+  let opciones = "";
+  let formatos = "";
+  let sql = `SELECT *
         FROM 
             facturas_formatos
         WHERE 
             id_cli = ? 
             AND activo=1 `;
-  
-        const params = [id_cli]
-        try {
-            formatos = await retornar_query(sql, params);
-        } catch (error) {
-            res.json({
-                success: false,
-                message: 'Error OF01',
-                error: error.message
-            });
-        }
-        try{     
-        // Consulta de conteo
-        opciones = await retornar_query(
-          `SELECT *
+
+  const params = [id_cli]
+  try {
+    formatos = await retornar_query(sql, params);
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Error OF01',
+      error: error.message
+    });
+  }
+  try {
+    // Consulta de conteo
+    opciones = await retornar_query(
+      `SELECT *
             FROM 
                 opt_factura
             WHERE   
                 id_cli = ?`,
-          params
-        );       
-               
-    } catch (error) {
-      
-      res.json({
-        success: false,
-        message: 'Error OF05',
-        error: error.message
-      });
-    }
-    res.json({ 
-        success: true,
-        opciones: opciones,
-        formatos: formatos
-      });
+      params
+    );
+
+  } catch (error) {
+
+    res.json({
+      success: false,
+      message: 'Error OF05',
+      error: error.message
+    });
+  }
+  res.json({
+    success: true,
+    opciones: opciones,
+    formatos: formatos
   });
-    app.get('/api/factura_admision', async (req, res) => {
-    
-      const { id_admision } = req.query;
-      
-      if (!id_admision){
-        return res.status(400).json({
-            success:false,
-            message: 'Error FA02'
-        })
-      }
-      if (isNaN(id_admision)){
-        return res.status(400).json({
-            success:false,
-            message: `Admision mal formateada ${id_admision}`
-        })
-      }
-      let datos_factura = "";
-        let sql =`SELECT factura, activo, motivo_cierre, consec_recibo, fecha_cierre
+});
+app.get('/api/factura_admision', async (req, res) => {
+
+  const { id_admision } = req.query;
+
+  if (!id_admision) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error FA02'
+    })
+  }
+  if (isNaN(id_admision)) {
+    return res.status(400).json({
+      success: false,
+      message: `Admision mal formateada ${id_admision}`
+    })
+  }
+  let datos_factura = "";
+  let sql = `SELECT factura, activo, motivo_cierre, consec_recibo, fecha_cierre
         FROM 
             admisiones
         WHERE 
             id_admision=?`;
-  
-        const params = [id_admision]
-        try {
-            datos_factura = await retornar_query(sql, params);
-        } catch (error) {
-            return res.json({
-                success: false,
-                message: `Admision invalida ${id_admision}`,
-                error: error.message
-            });
-        }
-      res.json({ 
-        success: true,
-        results: datos_factura
-      });
-  });
 
-  app.get('/api/consecutivos', async (req, res) => {
-    
-    const { id_cli } = req.query;
-    
-    if (!id_cli){
-      return res.status(400).json({
-          success:false,
-          message: 'Error CON01'
-      })
-    }
-    if (isNaN(id_cli)){
-      return res.status(400).json({
-          success:false,
-          message: 'Error CON03'
-      })
-    }
-    let consecutivos = "";
-    
-      let sql =`
+  const params = [id_admision]
+  try {
+    datos_factura = await retornar_query(sql, params);
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: `Admision invalida ${id_admision}`,
+      error: error.message
+    });
+  }
+  res.json({
+    success: true,
+    results: datos_factura
+  });
+});
+
+app.get('/api/consecutivos', async (req, res) => {
+
+  const { id_cli } = req.query;
+
+  if (!id_cli) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error CON01'
+    })
+  }
+  if (isNaN(id_cli)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error CON03'
+    })
+  }
+  let consecutivos = "";
+
+  let sql = `
         SELECT 
             fc.*,
             c.descripcion as caja
@@ -490,39 +490,39 @@ app.post('/admisiones_admidet', authenticateToken, async (req, res) => {
         WHERE 
             fc.id_cli = ?`;
 
-      const params = [id_cli]
-      try {
-        consecutivos = await retornar_query(sql, params);
-      } catch (error) {
-          res.json({
-              success: false,
-              message: 'Error CON01',
-              error: error.message
-          });
-      }
-     res.json({ 
-      success: true,
-      consecutivos: consecutivos
+  const params = [id_cli]
+  try {
+    consecutivos = await retornar_query(sql, params);
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Error CON01',
+      error: error.message
     });
+  }
+  res.json({
+    success: true,
+    consecutivos: consecutivos
+  });
 });
 
-  app.post('/api/detalle_porcentual', async (req, res)=>{
+app.post('/api/detalle_porcentual', async (req, res) => {
 
-    const { admisiones } = req.body;
-    
-    // Validate that all admisiones are numeric
-    if (!admisiones || !Array.isArray(admisiones) || admisiones.some(isNaN)) {
-        return res.status(400).json({ 
-            success: false, 
-            message: 'Error DP02' 
-        });
-    }
-    
-    const admisionesPlaceholders = admisiones.map(() => '?').join(',');
+  const { admisiones } = req.body;
+
+  // Validate that all admisiones are numeric
+  if (!admisiones || !Array.isArray(admisiones) || admisiones.some(isNaN)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Error DP02'
+    });
+  }
+
+  const admisionesPlaceholders = admisiones.map(() => '?').join(',');
 
 
 
-    let query = `SELECT
+  let query = `SELECT
     ad.id_admidet,
     ad.precio,
     ad.precio_usd,
@@ -554,15 +554,15 @@ WHERE
     ad.activo = 1
     AND ad.id_admidet IN (${admisionesPlaceholders});    `
 
-    const params = [
-      ...admisiones
-    ].filter(p => p !== undefined);
+  const params = [
+    ...admisiones
+  ].filter(p => p !== undefined);
 
 
-  try{
+  try {
     const result = await retornar_query(query, params);
 
-    res.json({ 
+    res.json({
       success: true,
       resultados: result
     });
@@ -574,26 +574,25 @@ WHERE
       error: error.message
     });
   }
-  })
+})
 
-  app.post('/api/facturar', authenticateToken, async (req, res)=>{
-              
+app.post('/api/facturar', authenticateToken, async (req, res) => {
 
-    const { desglose_pago, json_cuotas, json_factura, json_detalle, items_inventario, caja } = req.body;
-    
-    let admisiones = desglose_pago[0].id_externa
-    admisiones = admisiones.replace(/\s+/g, '');
-    if (typeof admisiones !== 'string' || !/^\d+(,\d+)*$/.test(admisiones)) {
-      return res.status(400).json({
-        success: false,
-        message: 'El campo admisiones esta mal formateado'
-      });
-    }
-    
+  const { desglose_pago, json_cuotas, json_factura, json_detalle, items_inventario, caja } = req.body;
+
+  let admisiones = desglose_pago[0].id_externa
+  admisiones = admisiones.replace(/\s+/g, '');
+  if (typeof admisiones !== 'string' || !/^\d+(,\d+)*$/.test(admisiones)) {
+    return res.status(400).json({
+      success: false,
+      message: 'El campo admisiones esta mal formateado'
+    });
+  }
+
   const result_factura = await validateFactura(json_factura);
-  
-  if (result_factura.error ){
-    return res.status(422).json({error: JSON.parse(result_factura.error.message)})
+
+  if (result_factura.error) {
+    return res.status(422).json({ error: JSON.parse(result_factura.error.message) })
   }
 
   let data = result_factura.data;
@@ -604,42 +603,61 @@ WHERE
                                   AND id_cli=?
                                   AND activo=1
                             limit 1`
-  let params_compr = [data.factura, data.id_cli]                                 
+  let params_compr = [data.factura, data.id_cli]
 
   try {
     let json_compr = await retornar_query(query_comprobacion, params_compr);
-  
-    if(json_compr[0].id_factura){
-      return res.json({ 
+
+    if (json_compr[0].id_factura) {
+      return res.json({
         success: false,
         resultados: "Ya existe esta factura"
       });
     }
   } catch (error) {
-    
+
   }
-  
+  let errorImpuesto = false;
+  let errorImpuestoDetalle = false;
+  const valoresPermitidosImpuesto = ["Exento", "0.16", "0.08"];
+  for (const detalleCI of json_detalle) {
+
+    const impuestoValueCI = detalleCI.impuesto === "E" ? "Exento" : detalleCI.impuesto;
+
+    if (!valoresPermitidosImpuesto.includes(impuestoValueCI)) {
+      errorImpuesto = true;
+      errorImpuestoDetalle = { descripcion: detalleCI.descripcion, impuesto: detalleCI.impuesto };
+    }
+  }
+
+  if (errorImpuesto) {
+    return res.json({
+      success: false,
+      resultados: "Error IP01FA  " + JSON.stringify(errorImpuestoDetalle)
+    });
+  }
+
   try {
     let query_comprobacion = `SELECT id_factura 
                               FROM facturas
                               WHERE num_control=?
                                     AND id_cli=?
                               limit 1`
-    let params_compr = [data.num_control, data.id_cli]                                 
+    let params_compr = [data.num_control, data.id_cli]
 
     let json_compr = await retornar_query(query_comprobacion, params_compr);
-    
-    if(json_compr[0].id_factura){
-      return res.json({ 
+
+    if (json_compr[0].id_factura) {
+      return res.json({
         success: false,
         resultados: "Ya existe este numero de control"
       });
     }
   } catch (error) {
-    
+
   }
 
-    let query = `INSERT INTO
+  let query = `INSERT INTO
                     facturas
                       (paciente, 
                       titular, 
@@ -665,51 +683,53 @@ WHERE
                       cuotas,
                       formato_factura,
                       tipo_agrupamiento,
-                      descuentos) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                      descuentos, bi8, iva8) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
-    const params = [
-                      data.paciente, 
-                      data.titular, 
-                      data.razon_social, 
-                      data.rif, 
-                      data.direccion_f, 
-                      data.factura, 
-                      data.fecha_atencion, 
-                      data.fecha_emision, 
-                      data.nota, 
-                      data.exento, 
-                      data.bi16, 
-                      data.iva16, 
-                      data.igtf, 
-                      data.total, 
-                      data.id_usuario, 
-                      data.id_admision,    
-                      data.id_cli, 
-                      data.base_igtf, 
-                      data.num_control, 
-                      data.contado, 
-                      data.fecha_vencimiento, 
-                      data.cuotas,
-                      data.formato_factura,
-                      data.tipo_agrupamiento,
-                      data.descuentos
-    ];
+  const params = [
+    data.paciente,
+    data.titular,
+    data.razon_social,
+    data.rif,
+    data.direccion_f,
+    data.factura,
+    data.fecha_atencion,
+    data.fecha_emision,
+    data.nota,
+    data.exento,
+    data.bi16,
+    data.iva16,
+    data.igtf,
+    data.total,
+    data.id_usuario,
+    data.id_admision,
+    data.id_cli,
+    data.base_igtf,
+    data.num_control,
+    data.contado,
+    data.fecha_vencimiento,
+    data.cuotas,
+    data.formato_factura,
+    data.tipo_agrupamiento,
+    data.descuentos,
+    data.bi8,
+    data.iva8
+  ];
 
-let result=""
-  try{
+  let result = ""
+  try {
     result = await retornar_query(query, params);
-    
+
     let query_actualizar_controles = `UPDATE facturas_controles 
                                       SET 
                                         num_factura=?,
                                         num_control=?
                                       WHERE id_caja=?`
-    let params_compr = [data.factura, data.num_control, caja]                                 
+    let params_compr = [data.factura, data.num_control, caja]
 
     let controles_act = await retornar_query(query_actualizar_controles, params_compr);
-   
+
   } catch (error) {
-    
+
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA01',
@@ -718,10 +738,10 @@ let result=""
   }
   const id_factura = result.insertId;
 
-let result_detalles =[];
+  let result_detalles = [];
   try {
 
-    query =`
+    query = `
     INSERT INTO
       factura_detalle 
       (id_factura, 
@@ -732,20 +752,20 @@ let result_detalles =[];
       clase, 
       cantidad) VALUES (${id_factura}, ?,?,?,?,'none',?)
     ;`
-    
 
-  for (const detalle of json_detalle) {
-    
-    const impuestoValue = detalle.impuesto === "E" ? "Exento" : detalle.impuesto;
-    const detalleParams = [
-      detalle.descripcion,
-      detalle.precio,
-      detalle.precio_usd_tasa,
-      impuestoValue,
-      detalle.cantidad
-    ];
-    result_detalles.push(await retornar_query(query, detalleParams))    
-  }
+
+    for (const detalle of json_detalle) {
+
+      const impuestoValue = detalle.impuesto === "E" ? "Exento" : detalle.impuesto;
+      const detalleParams = [
+        detalle.descripcion,
+        detalle.precio,
+        detalle.precio_usd_tasa,
+        impuestoValue,
+        detalle.cantidad
+      ];
+      result_detalles.push(await retornar_query(query, detalleParams))
+    }
 
   } catch (error) {
     eliminar_factura(id_factura)
@@ -758,11 +778,11 @@ let result_detalles =[];
 
 
 
-  const factura= data.factura;
-  let admisiones_res ='';
+  const factura = data.factura;
+  let admisiones_res = '';
 
   try {
-    query =`
+    query = `
     UPDATE 
       admisiones
     SET
@@ -770,20 +790,20 @@ let result_detalles =[];
     WHERE
       id_admision in (${admisiones});
     `
-  admisiones_res = await retornar_query(query, [factura])
+    admisiones_res = await retornar_query(query, [factura])
   } catch (error) {
     eliminar_factura(id_factura)
-     return res.json({
+    return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA02',
       error: error.message
     });
   }
   let id_admision = data.id_admision;
-  let result_pagos =[];
+  let result_pagos = [];
   try {
 
-    query =`
+    query = `
     INSERT INTO
       control_pagos 
       (id_externa, 
@@ -798,24 +818,24 @@ let result_detalles =[];
       id_usuario, 
       base_igtf) VALUES (${id_admision}, "Factura ${factura}",?,?,0,?,?,1,?,?,?)
     ;`
-    
 
-  for (const pago of desglose_pago) {
-    const pagoParams = [
-      pago.id_forma_pago,
-      pago.monto,
-      pago.id_moneda,
-      pago.nota,
-      pago.id_cli,
-      pago.id_usuario,
-      pago.base_igtf_bs || 0
-    ];
-    result_pagos.push(await retornar_query(query, pagoParams))    
-  }
+
+    for (const pago of desglose_pago) {
+      const pagoParams = [
+        pago.id_forma_pago,
+        pago.monto,
+        pago.id_moneda,
+        pago.nota,
+        pago.id_cli,
+        pago.id_usuario,
+        pago.base_igtf_bs || 0
+      ];
+      result_pagos.push(await retornar_query(query, pagoParams))
+    }
   } catch (error) {
     eliminar_factura(id_factura)
     eliminar_factura_admision(factura, data.id_cli)
-     return res.json({
+    return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA02',
       error: error.message
@@ -823,19 +843,19 @@ let result_detalles =[];
   }
 
   //trabajar los inventarios
-    const query_almacenes =`SELECT 
+  const query_almacenes = `SELECT 
                           consultorios.id_consultorio
                           FROM consultorios
                           WHERE consultorios.descripcion = 'RESERVA'
                               and consultorios.id_cli=?`
-    
-      if(items_inventario.trim()!=""){
-        try {
-          let almacen_reserva ='';     
-          let almacen_reserva_query = await retornar_query(query_almacenes, data.id_cli);
-          almacen_reserva=almacen_reserva_query[0].id_consultorio;
-          
-          query = `INSERT INTO 
+
+  if (items_inventario.trim() != "") {
+    try {
+      let almacen_reserva = '';
+      let almacen_reserva_query = await retornar_query(query_almacenes, data.id_cli);
+      almacen_reserva = almacen_reserva_query[0].id_consultorio;
+
+      query = `INSERT INTO 
                       almacen_movimientos 
                       (id_almacen,id_insumo,id_entrega,id_responsable,cantidad,descripcion,id_admidet)
               SELECT 
@@ -844,18 +864,18 @@ let result_detalles =[];
                       almacen_movimientos 
               WHERE id_almacen =? and id_admidet in (?)`;
 
-          let mover_inventario =  await retornar_query(query, [data.id_usuario, almacen_reserva, items_inventario] );
-          
-        } catch (error) {
-          console.log(error)
-        }
-      }                
-  
-//manejo de las cuotas
+      let mover_inventario = await retornar_query(query, [data.id_usuario, almacen_reserva, items_inventario]);
 
-  if(data.contado==0){
-      let result_cuotas = [];
-    query =`
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  //manejo de las cuotas
+
+  if (data.contado == 0) {
+    let result_cuotas = [];
+    query = `
       INSERT INTO
         cuotas_pagar 
         (id_admision, 
@@ -866,33 +886,34 @@ let result_detalles =[];
         factura, 
         fecha_vencimiento, id_cli) VALUES (?,?,?,?,?,?,?,${data.id_cli})
       ;`
-      
+
 
     for (const cuotas of json_cuotas) {
       const pagoParams = [
-      cuotas.id_admision, 
-      cuotas.numero_cuota, 
-      cuotas.id_moneda, 
-      cuotas.monto_pago, 
-      cuotas.estado, 
-      cuotas.factura, 
-      cuotas.fecha_vencimiento
+        cuotas.id_admision,
+        cuotas.numero_cuota,
+        cuotas.id_moneda,
+        cuotas.monto_pago,
+        cuotas.estado,
+        cuotas.factura,
+        cuotas.fecha_vencimiento
       ];
-      
-      result_cuotas.push(await retornar_query(query, pagoParams))    
+
+      result_cuotas.push(await retornar_query(query, pagoParams))
     }
   }
 
-  res.json({ 
+  res.json({
     success: true,
     id_factura: id_factura,
+    data
   });
 
 })
 
-  async function eliminar_factura_admision(factura, id_cli) {
-     try { 
-      let query =`
+async function eliminar_factura_admision(factura, id_cli) {
+  try {
+    let query = `
       UPDATE 
         admisiones
       SET
@@ -900,16 +921,16 @@ let result_detalles =[];
       WHERE
         factura =? AND id_cli=?;
     `
-    let factura_elim = await retornar_query(query, [factura, id_cli])
-    
+    let factura_elim = await retornar_query(query, [factura.toString().padStart(8, '0'), id_cli])
+
     return factura_elim;
   } catch (error) {
     return error;
   }
-  }
-  async function eliminar_factura(id_factura) {
-  try { 
-    let query =`
+}
+async function eliminar_factura(id_factura) {
+  try {
+    let query = `
     DELETE FROM
       facturas
     WHERE
@@ -922,47 +943,47 @@ let result_detalles =[];
     console.log(factura_elim)
     return error;
   }
+}
+
+app.post('/api/anular_factura', authenticateToken, async (req, res) => {
+
+  const { factura, usuario, id_cli, id_usuario, id_admision } = req.query;
+
+  if (isNaN(factura)) {
+    return res.json({
+      success: false,
+      message: 'Error AnF01'
+    });
   }
 
-  app.post('/api/anular_factura', authenticateToken, async (req, res)=>{
-
-    const { factura, usuario, id_cli, id_usuario, id_admision } = req.query;
-    
-    if (isNaN(factura)) {
-        return res.json({ 
-            success: false, 
-            message: 'Error AnF01' 
-        });
-    }
-    
-    let query = `UPDATE
+  let query = `UPDATE
       facturas
     SET
       activo='0', nota = CONCAT(nota, ' ANULADA por ${usuario}'), fecha_anulada=NOW()
     WHERE
       factura =? AND activo=1 AND id_cli=?;`;
 
-    const params = [ factura, id_cli];
+  const params = [factura.toString().padStart(8, '0'), id_cli];
 
-    let result ="";
-    try{
-      result = await retornar_query(query, params);
-    } catch (error) {
-      res.json({
-        success: false,
-        message: 'Error al procesar la solicitud AnF02',
-        error: error.message
-      });
-    }
+  let result = "";
+  try {
+    result = await retornar_query(query, params);
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Error al procesar la solicitud AnF02',
+      error: error.message
+    });
+  }
 
-    if (result.affectedRows === 0) {
-        return res.json({ 
-            success: false, 
-            message: 'La factura no existe o ya ha sido anulada' 
-        });
-    }
+  if (result.affectedRows === 0) {
+    return res.json({
+      success: false,
+      message: 'La factura no existe o ya ha sido anulada'
+    });
+  }
 
-    query = `
+  query = `
     UPDATE 
       control_pagos
     SET
@@ -970,11 +991,11 @@ let result_detalles =[];
     WHERE 
       id_externa=? AND tipo=? AND id_cli=?`
 
-    let params_control = [ id_usuario, id_admision, `Factura ${factura}`, id_cli]
+  let params_control = [id_usuario, id_admision, `Factura ${factura.toString().padStart(8, '0')}`, id_cli]
 
-    result = await retornar_query(query, params_control);
+  result = await retornar_query(query, params_control);
 
-    query = `
+  query = `
     SELECT 
       id_admision
     FROM
@@ -982,19 +1003,19 @@ let result_detalles =[];
     WHERE 
       factura=?`;
 
-    let params_admidet =[factura];
-    let id_admisiones = "";
-    try {
+  let params_admidet = [factura.toString().padStart(8, '0')];
+  let id_admisiones = "";
+  try {
 
-      let admisiones = await retornar_query(query, params_admidet);
+    let admisiones = await retornar_query(query, params_admidet);
 
-      id_admisiones = admisiones.map(admision => admision.id_admision).join(',');
-    
-    } catch (error) {
-      
-    }
-    
-    query = `
+    id_admisiones = admisiones.map(admision => admision.id_admision).join(',');
+
+  } catch (error) {
+
+  }
+
+  query = `
     SELECT 
       id_admidet
     FROM
@@ -1002,40 +1023,40 @@ let result_detalles =[];
     WHERE 
       id_admision in (?)`;
 
-    params_admidet =[id_admisiones];
+  params_admidet = [id_admisiones];
 
-    let admidets = await retornar_query(query, params_admidet);
+  let admidets = await retornar_query(query, params_admidet);
 
-    let id_admidet = admidets.map(admidet => admidet.id_admidet).join(',');
+  let id_admidet = admidets.map(admidet => admidet.id_admidet).join(',');
 
-    query = `
+  query = `
     UPDATE 
       cuotas_pagar
     SET  
       activo='0'
     WHERE id_admision=?`;
 
-    let params_cuotas =[id_admision];
+  let params_cuotas = [id_admision];
 
-    result = await retornar_query(query, params_cuotas);
- 
-    query =`
+  result = await retornar_query(query, params_cuotas);
+
+  query = `
     UPDATE
       almacen_movimientos
     SET
       cantidad=0,  descripcion='Venta anulada'
-    WHERE id_admidet=? and descripcion='Venta'`;    
-    
-    let params_almacen = [id_admision];
+    WHERE id_admidet=? and descripcion='Venta'`;
 
-    result = await retornar_query(query, params_almacen);
-    eliminar_factura_admision(factura, id_cli);
+  let params_almacen = [id_admision];
 
-    return res.json({ 
-      success: true,
-      resultados: result
-    });
-  })
+  result = await retornar_query(query, params_almacen);
+  eliminar_factura_admision(factura, id_cli);
+
+  return res.json({
+    success: true,
+    resultados: result
+  });
+})
 
 app.post('/api/examinar-facturas', authenticateToken, async (req, res) => {
   const { id_cli, razon_social, rif, factura, pagina = 1, limite = 5 } = req.query;
