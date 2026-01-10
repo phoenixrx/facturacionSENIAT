@@ -583,6 +583,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   let admisiones = desglose_pago[0].id_externa
   admisiones = admisiones.replace(/\s+/g, '');
   if (typeof admisiones !== 'string' || !/^\d+(,\d+)*$/.test(admisiones)) {
+    registrarErrorPeticion(req, 'El campo admisiones esta mal formateado')
     return res.status(400).json({
       success: false,
       message: 'El campo admisiones esta mal formateado'
@@ -592,6 +593,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   const result_factura = await validateFactura(json_factura);
 
   if (result_factura.error) {
+    registrarErrorPeticion(req, result_factura.error.message)
     return res.status(422).json({ error: JSON.parse(result_factura.error.message) })
   }
 
@@ -609,6 +611,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     let json_compr = await retornar_query(query_comprobacion, params_compr);
 
     if (json_compr[0].id_factura) {
+      registrarErrorPeticion(req, 'Ya existe esta factura')
       return res.json({
         success: false,
         resultados: "Ya existe esta factura"
@@ -619,9 +622,11 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   }
   let errorImpuesto = false;
   let errorImpuestoDetalle = false;
+  let tasa = 0;
+  let id_usuarioF = req.logData.id_usuario;
   const valoresPermitidosImpuesto = ["Exento", "0.16", "0.08"];
   for (const detalleCI of json_detalle) {
-
+    tasa = Number(detalleCI.precio) / Number(detalleCI.precio_usd_tasa);
     const impuestoValueCI = detalleCI.impuesto === "E" ? "Exento" : detalleCI.impuesto;
 
     if (!valoresPermitidosImpuesto.includes(impuestoValueCI)) {
@@ -631,9 +636,18 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   }
 
   if (errorImpuesto) {
+    registrarErrorPeticion(req, 'Error IP01FA  ' + JSON.stringify(errorImpuestoDetalle))
     return res.json({
       success: false,
       resultados: "Error IP01FA  " + JSON.stringify(errorImpuestoDetalle)
+    });
+  }
+
+  if (Number(tasa) == 0) {
+    registrarErrorPeticion(req, 'Error IP02FA  ' + JSON.stringify(errorImpuestoDetalle))
+    return res.json({
+      success: false,
+      resultados: `Error IP02FA (${tasa})`
     });
   }
 
@@ -648,6 +662,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     let json_compr = await retornar_query(query_comprobacion, params_compr);
 
     if (json_compr[0].id_factura) {
+      registrarErrorPeticion(req, 'Ya existe este numero de control')
       return res.json({
         success: false,
         resultados: "Ya existe este numero de control"
@@ -729,7 +744,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     let controles_act = await retornar_query(query_actualizar_controles, params_compr);
 
   } catch (error) {
-
+    registrarErrorPeticion(req, 'Error al procesar la solicitud FA01')
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA01',
@@ -769,6 +784,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
 
   } catch (error) {
     eliminar_factura(id_factura)
+    registrarErrorPeticion(req, 'Error al procesar la solicitud FA03')
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA03',
@@ -793,6 +809,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     admisiones_res = await retornar_query(query, [factura])
   } catch (error) {
     eliminar_factura(id_factura)
+    registrarErrorPeticion(req, error.message)
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA02',
@@ -835,6 +852,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   } catch (error) {
     eliminar_factura(id_factura)
     eliminar_factura_admision(factura, data.id_cli)
+    registrarErrorPeticion(req, error.message)
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA02',
@@ -901,6 +919,14 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
 
       result_cuotas.push(await retornar_query(query, pagoParams))
     }
+  }
+
+  try {
+    let query = `INSERT INTO historico_tasa(valor, id_usuario, origen, fuente) VALUES (?, ?, 'Factura', ?);`
+    let factura_elim = await retornar_query(query, [tasa, id_usuarioF, `Factura: ${id_factura}`])
+  } catch (error) {
+    registrarErrorPeticion(req, error.message)
+
   }
 
   res.json({
