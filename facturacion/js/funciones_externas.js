@@ -1,3 +1,39 @@
+let formasPagoObj_usd = [];
+let formasPagoObj_bs = [];
+let monedasObj = [];
+
+async function fetchFormaPagoMonedas() {
+    const response = await fetch(
+        `${HOST2}/cargar_query`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filtros: [configs_token.id_cli], id_query: 14 }),
+        }
+    );
+    monedasObj = await response.json();
+    let formasPago = await fetch(
+        `${HOST2}/cargar_query`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filtros: [configs_token.id_cli, '1'], id_query: 15 }),
+        }
+    );
+    formasPagoObj_usd = await formasPago.json();
+    formasPago = await fetch(
+        `${HOST2}/cargar_query`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filtros: [configs_token.id_cli, '2'], id_query: 15 }),
+        }
+    );
+    formasPagoObj_bs = await formasPago.json();
+
+    fetchMoneda();
+}
+
 async function tasa() {
     Swal.fire({
         title: `Consultando tasa...`,
@@ -406,18 +442,10 @@ async function fetchDetalles(admisiones) {
 
 async function fetchMoneda() {
     document.getElementById('moneda_desglose').innerHTML = '<option value="">Cargando...</option>';
-    const response = await fetch(
-        `${HOST2}/cargar_query`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filtros: [configs_token.id_cli], id_query: 14 }),
-        }
-    );
-    const monedas = await response.json();
+
     var opciones = `<option value="">...</option>`;
 
-    monedas.forEach(moneda => {
+    monedasObj.forEach(moneda => {
         opciones += `<option value=${moneda.id_moneda}>${moneda.simbolo}</option>`
     })
     document.getElementById('moneda_desglose').innerHTML = opciones;
@@ -430,16 +458,15 @@ async function fetchFormaPago() {
         document.getElementById('forma_de_pago').innerHTML = '<option value="">Seleccione moneda...</option>';
         return;
     }
-    const response = await fetch(
-        `${HOST2}/cargar_query`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ filtros: [configs_token.id_cli, id_moneda], id_query: 15 }),
-        }
-    );
-    let formas_pago = await response.json();
+
+    let formas_pago;
+    if (id_moneda == 1) {
+        formas_pago = formasPagoObj_usd;
+    } else {
+        formas_pago = formasPagoObj_bs;
+    }
     formas_pago.sort((a, b) => a.credito - b.credito);
+
     //permitir pagos a credito en USD
     /*if(id_moneda == 1){
         formas_pago = formas_pago.filter(fp => fp.credito !== 1);

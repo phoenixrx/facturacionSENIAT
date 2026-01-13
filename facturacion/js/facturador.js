@@ -99,7 +99,7 @@ var myModal = new bootstrap.Modal(document.getElementById('modal_pagos'), { keyb
 function primera_carga() {
     opciones();
     tasa();
-    fetchMoneda();
+    fetchFormaPagoMonedas()
 
     function getLocalDateWithoutTime() {
         const now = new Date();

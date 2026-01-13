@@ -427,16 +427,15 @@ function generarTabla(json_data) {
     return tablaHTML;
 }
 function clasificarMontosImpuestos(data) {
-    // Creamos un objeto para almacenar los resultados agrupados por impuesto
+
     const resultados = {};
-    console.log(data)
-    // Iteramos sobre cada elemento del JSON
+
     data.forEach(item => {
         const impuesto = item.impuesto; // Obtenemos el valor de impuesto
         const precioBsCant = parseFloat(item.precio_bs_cant); // Convertimos a número
         const precioUsdCant = parseFloat(item.precio_usd_cant); // Convertimos a número
 
-        // Si el impuesto no existe en el objeto de resultados, lo inicializamos
+
         if (!resultados[impuesto]) {
             resultados[impuesto] = {
                 total_precio_bs_cant: 0,
@@ -444,12 +443,11 @@ function clasificarMontosImpuestos(data) {
             };
         }
 
-        // Sumamos los valores al grupo correspondiente
+
         resultados[impuesto].total_precio_bs_cant += precioBsCant;
         resultados[impuesto].total_precio_usd_cant += precioUsdCant;
     });
-    console.log(resultados)
-    // Convertimos el objeto de resultados a un array para facilitar su uso
+
     return Object.keys(resultados).map(impuesto => ({
         impuesto: impuesto,
         total_precio_bs_cant: resultados[impuesto].total_precio_bs_cant,
