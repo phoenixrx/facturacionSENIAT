@@ -12,7 +12,7 @@ function add_desgl() {
   let lista = document.getElementById("tabla_desglose");
   let listaN = lista.childElementCount;
 
-  if (valor_desglose == "" || valor_desglose == "0") {
+  if (valor_desglose == "" || valor_desglose == "0" || Number(valor_desglose) === 0 || isNaN(Number(valor_desglose))) {
     document.getElementById("desglose_valor").focus()
     Swal.fire({
       text: "Indique el valor",
