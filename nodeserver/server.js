@@ -923,7 +923,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
 
   try {
     let query = `INSERT INTO historico_tasa(valor, id_usuario, origen, fuente) VALUES (?, ?, 'Factura', ?);`
-    let factura_elim = await retornar_query(query, [tasa, id_usuarioF, `Factura: ${id_factura}`])
+    let factura_elim = await retornar_query(query, [tasa, id_usuarioF, `Factura: [${id_factura}] ${factura}`])
   } catch (error) {
     registrarErrorPeticion(req, error.message)
 
