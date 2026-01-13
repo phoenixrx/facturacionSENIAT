@@ -643,9 +643,9 @@ document.getElementById('tasa_pers').addEventListener('change', function () {
 });
 
 document.querySelectorAll('.desgloses').forEach((element) => {
-    element.addEventListener('keypress', function (e) {
+    element.addEventListener('keydown', function (e) {
         if (e.key === "Enter" || e.key === "Intro") {
-            e.preventDefault;
+            e.preventDefault();
             add_desgl();
         }
     });
@@ -655,3 +655,9 @@ document.getElementById('btn_regresar').addEventListener('click', function () {
 })
 
 
+document.getElementById('forma_de_pago').addEventListener('keypress', function (e) {
+    if (e.key === "Enter" || e.key === "Intro") {
+        e.preventDefault;
+
+    }
+})

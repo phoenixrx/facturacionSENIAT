@@ -76,6 +76,7 @@ function add_desgl() {
   var igtf_val = (Number(valor_desglose) * Number(IGFT)) * tasa;
   var base_igtf_bs = Number(valor_desglose) * tasa;
   var id_igtf = Math.floor(Math.random() * 100000) + 1;
+  var idRow = Math.floor(Math.random() * 100000) + 1;
   var igtf_chk = `<div class="form-check form-switch">
     <input class="form-check-input chk-igtf" type="checkbox" id="igtf_${id_igtf}"  data-toggle="tooltip" 
     data-placement="left" title="Calcular IGTF" value='${igtf_val}' data-base_igtf_bs='${base_igtf_bs}'  data-valorusd="${valor_desglose}" >
@@ -91,11 +92,11 @@ function add_desgl() {
             <input class="form-check-input chk-igtf d-none" type="checkbox" id="igtf_${id_igtf}"  value='0' >`;
   }
 
-  var quitar = `<lord-icon src="../images/minus-circle.json" data-toggle="tooltip" data-placement="left" title="Quitar" id='quitar_${listaN}' trigger="hover" style="width:20px;height:20px" class="svg disk_save botonera" id=agregar_descuento>
+  var quitar = `<lord-icon src="../images/minus-circle.json" onclick="quitar_row(${idRow})" data-toggle="tooltip" data-placement="left" title="Quitar" id='quitar_${idRow}' trigger="hover" style="width:20px;height:20px" class="svg disk_save botonera" >
                               </lord-icon>`;
 
   let row = `<tr class="rowdesg control row${tipo_moneda} ${clase}" 
-  data-credito="${forma_pag.options[forma_pag.selectedIndex].dataset.credito}" id="rowidesg${listaN}"><td><span>${moneda_desg.options[moneda_desg.selectedIndex].text}</span> <span class="${tipo_moneda} ${clase_igtf}" >${valor_desglose}</span><span id="id_moneda_pago_${listaN}" class="d-none">${moneda_desg.value
+  data-credito="${forma_pag.options[forma_pag.selectedIndex].dataset.credito}" id="rowidesg${idRow}" data-id="${idRow}"><td><span>${moneda_desg.options[moneda_desg.selectedIndex].text}</span> <span class="${tipo_moneda} ${clase_igtf}" >${valor_desglose}</span><span id="id_moneda_pago_${listaN}" class="d-none">${moneda_desg.value
     }</span></td><td>${igtf_chk}</td><td>${forma_pag.options[forma_pag.selectedIndex].text
     }<span  class="d-none id_forma_pago_row">${forma_pag.value
     }</span></td><td><div class='d-flex' style="justify-content: space-between;"><span id="nota_${listaN}">${nota}</span>${quitar}</div></td></tr>`;
@@ -105,18 +106,12 @@ function add_desgl() {
 
   lista.insertAdjacentHTML("beforeend", row);
 
-  var quitar_row = document.getElementById(`quitar_${listaN}`)
+
   document.getElementById('igtf_' + id_igtf).addEventListener('click', function () {
     calcular_igtf()
   })
 
-  quitar_row.addEventListener('click', function () {
-    document.getElementById(`rowidesg${listaN}`).remove()
-    calcular_desglose();
-    calcular_igtf();
-    document.getElementById('desglose_nota').value = '';
-    document.getElementById('desglose_nota').disabled = false;
-  })
+
   calcular_desglose();
   document.getElementById('desglose_nota').value = '';
   document.getElementById('desglose_valor').value = '';
@@ -726,4 +721,12 @@ async function facturar(desglose_pago, json_cuotas, json_factura, json_detalle) 
     });
 
   }
+}
+
+function quitar_row(idRow) {
+  document.getElementById(`rowidesg${idRow}`).remove()
+  calcular_desglose();
+  calcular_igtf();
+  document.getElementById('desglose_nota').value = '';
+  document.getElementById('desglose_nota').disabled = false;
 }
