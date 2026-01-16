@@ -6,7 +6,7 @@ const token = params.get("token");
 let STATUS_FACTURA = 1
 let IDFACT = 0;
 let IDUUID = '';
-
+let tipo_consulta = '';
 let detalles = [];
 let opciones_formatos = [];
 let generada = false;
@@ -586,7 +586,9 @@ function imprimirFactura() {
         return;
     }
 
+
     let admisiones = detalles.map(item => item.id_admision).join(',');
+
     var data = { 'id_admision': admisiones, 'fact_num': document.getElementById('factura_modal').value };
     let formatos = document.getElementById('sel_formato');
     if (formatos.value == "") {
@@ -600,6 +602,8 @@ function imprimirFactura() {
         formatos.focus();
         return;
     }
+
+
     let selectedOption = formatos.options[formatos.selectedIndex];
     let url = selectedOption.getAttribute('data-path_formato');
     if (url.startsWith("../")) {

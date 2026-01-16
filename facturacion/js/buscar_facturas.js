@@ -328,6 +328,7 @@ function mostrarFacturaSeleccionada(factura) {
     id_admision: factura[0].id_admision,
     factura: factura[0].factura
   }]
+  tipo_consulta = factura[0].tipo_consulta;
   document.querySelector('.btn-group').classList.add('d-none');
   document.getElementById('factura_modal').value = factura[0].factura;
   document.getElementById('num_factura').value = factura[0].factura;

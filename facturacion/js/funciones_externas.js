@@ -321,6 +321,7 @@ async function fetchDetalles(admisiones) {
             return error;
         }
 
+        tipo_consulta = data.resultados[0].tipo_consulta;
 
         detalles = data.resultados.map((detalle) => {
             return {

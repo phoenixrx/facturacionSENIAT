@@ -1204,11 +1204,14 @@ app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
     SELECT 
       f.*,
       fd.*,
-      u.usuario
+      u.usuario,
+      a.tipo_consulta
     FROM 
       facturas f
     INNER JOIN
       factura_detalle fd ON f.id_factura = fd.id_factura
+    INNER JOIN
+      admisiones a ON f.id_admision = a.id_admision
     INNER JOIN
       usuarios u ON f.id_usuario = u.id
     WHERE `;
