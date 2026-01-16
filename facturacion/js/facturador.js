@@ -602,31 +602,25 @@ function imprimirFactura() {
         formatos.focus();
         return;
     }
-
-
-    let selectedOption = formatos.options[formatos.selectedIndex];
-    let url = selectedOption.getAttribute('data-path_formato');
-    if (url.startsWith("../")) {
-        url = url.replace(/^(\.\.\/)+/, "");
+    let urlNew = "";
+    switch (tipo_consulta) {
+        case "P":
+            urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].path;
+            break;
+        case "S":
+            urlNew = opciones_formatos.formatos[1].base_url + opciones_formatos.formatos[0].factura_seguros;
+            break;
+        case "E":
+            urlNew = opciones_formatos.formatos[2].base_url + opciones_formatos.formatos[0].factura_empresas;
+            break;
+        case "I":
+            urlNew = opciones_formatos.formatos[2].base_url + opciones_formatos.formatos[0].factura_internos;
+            break;
+        default:
+            urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].path;
+            break;
     }
-    let form = document.createElement("form");
-    form.target = "_blank";
-    form.method = "POST";
-    let fact_num = document.getElementById('factura_modal').value;
-    fact_num = fact_num.padStart(8, '0');
 
-    form.action = BASE_FORMATO + url + `?idfact=${IDFACT}`;
-    form.style.display = "none";
-    for (let key in data) {
-        let input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = data[key];
-        form.appendChild(input);
-    }
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
 
 
     url = opciones_formatos.opciones[0].detalle_factura + "?id_admision=" + admisiones + "&fact_num=" + document.getElementById('factura_modal').value;
@@ -634,6 +628,7 @@ function imprimirFactura() {
         url = url.replace(/^(\.\.\/)+/, "");
     }
     window.open(BASE_FORMATO + url, "_blank");
+    window.open(urlNew + "?id=" + IDUUID, "_blank");
 }
 
 document.getElementById('moneda_desglose').addEventListener('change', fetchFormaPago)
