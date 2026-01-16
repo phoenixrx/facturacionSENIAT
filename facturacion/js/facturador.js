@@ -621,8 +621,6 @@ function imprimirFactura() {
             break;
     }
 
-
-
     url = opciones_formatos.opciones[0].detalle_factura + "?id_admision=" + admisiones + "&fact_num=" + document.getElementById('factura_modal').value;
     if (url.startsWith("../")) {
         url = url.replace(/^(\.\.\/)+/, "");
