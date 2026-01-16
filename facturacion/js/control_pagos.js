@@ -1,7 +1,8 @@
 $("#modal_pagos").on("shown.bs.modal", function () {
   $(this).find("#desglose_valor").focus();
 });
-let IGFT = 0.03
+
+let IGTF = 0.03
 
 function add_desgl() {
   let moneda_desg = document.getElementById("moneda_desglose");
@@ -71,15 +72,21 @@ function add_desgl() {
     });
     return;
   }
-
+  if (opciones_formatos.opciones[0].cobra_igtf == 0) {
+    IGTF = 0;
+    document.querySelector('.cobrarIgtfDiv').classList.add('d-none');
+  }
   var tasa = document.getElementById('tasa_modal').value;
-  var igtf_val = (Number(valor_desglose) * Number(IGFT)) * tasa;
+  var igtf_val = (Number(valor_desglose) * Number(IGTF)) * tasa;
   var base_igtf_bs = Number(valor_desglose) * tasa;
   var id_igtf = Math.floor(Math.random() * 100000) + 1;
   var idRow = Math.floor(Math.random() * 100000) + 1;
-  var igtf_chk = `<div class="form-check form-switch">
-    <input class="form-check-input chk-igtf" type="checkbox" id="igtf_${id_igtf}"  data-toggle="tooltip" 
-    data-placement="left" title="Calcular IGTF" value='${igtf_val}' data-base_igtf_bs='${base_igtf_bs}'  data-valorusd="${valor_desglose}" >
+  var igtf_chk = `<div>Bs. ${Number(igtf_val).toFixed(2)}
+    <input class="form-check-input chk-igtf d-none"  
+    type="checkbox" id="igtf_${id_igtf}" 
+    value='${Number(igtf_val).toFixed(2)}' 
+    data-base_igtf_bs='${base_igtf_bs}' 
+    data-valorusd="${valor_desglose}" checked>
   </div>`;
   let clase = "";
   if (tipo_moneda != "Bs") {
@@ -88,7 +95,7 @@ function add_desgl() {
   } else {
     tipo_moneda = 'pago-en-bolivares';
     clase = 'table-info';
-    igtf_chk = `<div class="form-check form-switch">
+    igtf_chk = `<div >
             <input class="form-check-input chk-igtf d-none" type="checkbox" id="igtf_${id_igtf}"  value='0' >`;
   }
 
@@ -122,6 +129,17 @@ document.getElementById('btn_agregar_fp').addEventListener('click', function () 
 })
 
 function calcular_desglose() {
+  var chkigtf = document.querySelectorAll('.chk-igtf')
+  var valor_igtf = 0
+  var valor_neto = 0
+  chkigtf.forEach(element => {
+    if (element.dataset.valorusd) {
+      valor_igtf += Number(element.value)
+      valor_neto += Number(element.dataset.valorusd)
+    }
+  });
+  document.getElementById('factura_igtf').value = Number(valor_igtf).toFixed(2);
+  document.getElementById('igtf').value = Number(valor_igtf).toFixed(2);
   var lista_bolivares = document.querySelectorAll('.pago-en-bolivares');
   var lista_dolares = document.querySelectorAll('.pago-en-dolares');
   var total_bs_acum = 0;
@@ -142,6 +160,23 @@ function calcular_desglose() {
   document.getElementById('total_modal_pago_bs').value = Number(Number(total_us_acum_2) + Number(total_bs_acum)).toFixed(2)
 
   document.getElementById('total_usd_modal_pago').value = Number(Number(total_bs_acum_2) + Number(total_us_acum)).toFixed(2)
+
+
+  let descuentos = Number(document.getElementById('descuentos').value)
+  let valor_total_sindescuento = Number(Number(document.getElementById('exento').value) +
+    Number(document.getElementById('base_imponible').value) +
+    Number(document.getElementById('iva').value) +
+    Number(document.getElementById('base_imponible_8').value) +
+    Number(document.getElementById('iva_8').value))
+  let total_menos_descuento = valor_total_sindescuento - descuentos;
+
+  var tasa = document.getElementById('tasa_modal').value;
+
+  document.getElementById('total_modal').value = Number(Number(total_menos_descuento) + Number(valor_igtf)).toFixed(2)
+  document.getElementById('total_factura').value = Number(Number(total_menos_descuento) + Number(valor_igtf)).toFixed(2)
+
+  document.getElementById('total_usd_modal').value = Number((Number(document.getElementById('total_modal').value)) / Number(tasa)).toFixed(2)
+  document.getElementById('desglose_valor').value = Number(valor_igtf).toFixed(2);
 
   document.getElementById('resto_pago_us').value = Number(Number(document.getElementById('total_usd_modal').value) - Number(document.getElementById('total_usd_modal_pago').value)).toFixed(2)
 
@@ -172,7 +207,7 @@ function calcular_igtf() {
   var valor_igtf = 0
   var valor_neto = 0
   chkigtf.forEach(element => {
-    if (element.checked == true) {
+    if (element.dataset.valorusd) {
       valor_igtf += Number(element.value)
       valor_neto += Number(element.dataset.valorusd)
     }
@@ -342,12 +377,9 @@ aceptar_modal.addEventListener('click', function () {
     }
   })
   if (total_cant_igtf_chk >= 1 && total_cant_igtf_row == 0) {
-    Swal.fire({
-      text: "No se a cobrando el IGTF",
-      icon: "error",
-      allowOutsideClick: () => false,
-    });
-
+    const myTooltipEl = document.getElementById('cobrarIgtf')
+    const tooltip = bootstrap.Tooltip.getOrCreateInstance(myTooltipEl)
+    tooltip.show()
     return;
   }
 
@@ -645,7 +677,7 @@ async function facturar(desglose_pago, json_cuotas, json_factura, json_detalle) 
   }
   let factura = await response.json();
   if (factura.error) {
-    console.log(factura)
+
     Swal.update({
       text: factura.error[0].message,
       icon: "error",
@@ -667,7 +699,7 @@ async function facturar(desglose_pago, json_cuotas, json_factura, json_detalle) 
 
   if (factura.success == true) {
     IDFACT = factura.id_factura
-
+    IDUUID = factura.idUuid
     STATUS_FACTURA = 2
     document.getElementById('agregar_admi').remove()
     document.getElementById('nueva_factura').classList.remove('d-none')
@@ -726,7 +758,23 @@ async function facturar(desglose_pago, json_cuotas, json_factura, json_detalle) 
 function quitar_row(idRow) {
   document.getElementById(`rowidesg${idRow}`).remove()
   calcular_desglose();
-  calcular_igtf();
   document.getElementById('desglose_nota').value = '';
   document.getElementById('desglose_nota').disabled = false;
 }
+
+document.getElementById('cobrarIgtf').addEventListener('click', function () {
+  document.getElementById('moneda_desglose').value = 2 // BS
+  fetchFormaPago() //carga forma de pago de Bs
+  var chkigtf = document.querySelectorAll('.chk-igtf')
+  var valor_igtf = 0
+  var valor_neto = 0
+  chkigtf.forEach(element => {
+    if (element.dataset.valorusd) {
+      valor_igtf += Number(element.value)
+      valor_neto += Number(element.dataset.valorusd)
+    }
+  });
+  document.getElementById('desglose_valor').value = document.getElementById('factura_igtf').value
+  document.getElementById('desglose_nota').value = "IGTF aplica sobre $" + Number(valor_neto).toFixed(2);
+  document.getElementById('desglose_nota').disabled = true;
+})

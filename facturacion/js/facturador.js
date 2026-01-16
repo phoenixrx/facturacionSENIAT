@@ -5,10 +5,8 @@ const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
 let STATUS_FACTURA = 1
 let IDFACT = 0;
-/*const HOST = "http://localhost:3000";
-const HOST2 = "http://localhost:3001";
-const BASE_FORMATO = "http://localhost/historiaclinica/empresas/"
-let token = "eyJhbGciOiJI"*/
+let IDUUID = '';
+
 let detalles = [];
 let opciones_formatos = [];
 let generada = false;

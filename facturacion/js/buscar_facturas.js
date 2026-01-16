@@ -1,54 +1,54 @@
 let debounceTimer;
 
 async function buscarFacturas() {
-    
-    const factura = document.getElementById('factura_buscar').value.trim();
-    const razon_social = document.getElementById('razon_buscar').value.trim() + "%";
-    const rif = document.getElementById('rif_buscar').value.trim() + "%";
-    if (
-      (factura == "") &&
-      (razon_social=="%") && 
-      (rif=="%") 
-    ) {
-      document.getElementById('tabla-buscar').innerHTML='';
-      document.getElementById('paginacion').innerHTML='';
-      
-    }
-    if (
-      (factura.length < 5) &&
-      (razon_social.length < 6) && // +1 por el %
-      (rif.length < 6) // +1 por el %
-    ) {
-      return;
-    }
 
-    // Construir la URL con parámetros
-    let url = `/api/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}`;
-    if (factura) url += `&factura=${encodeURIComponent(factura)}`;
-    if (razon_social) url += `&razon_social=${encodeURIComponent(razon_social)}`;
-    if (rif) url += `&rif=${encodeURIComponent(rif)}`;
-    Swal.fire({
-          
-          title: 'Buscando...',
-          text: 'Espere mientras buscamos.',
-        });
-      Swal.showLoading();
-    // Hacer la petición fetch
-   try{
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }        
-        });
-        const data = await response.json();
-        Swal.close();
-      mostrarResultadosBusqueda(data);
-    }
-    catch(error) {
-      console.error('Error al obtener facturas:', error);
-    };
+  const factura = document.getElementById('factura_buscar').value.trim();
+  const razon_social = document.getElementById('razon_buscar').value.trim() + "%";
+  const rif = document.getElementById('rif_buscar').value.trim() + "%";
+  if (
+    (factura == "") &&
+    (razon_social == "%") &&
+    (rif == "%")
+  ) {
+    document.getElementById('tabla-buscar').innerHTML = '';
+    document.getElementById('paginacion').innerHTML = '';
+
+  }
+  if (
+    (factura.length < 5) &&
+    (razon_social.length < 6) && // +1 por el %
+    (rif.length < 6) // +1 por el %
+  ) {
+    return;
+  }
+
+  // Construir la URL con parámetros
+  let url = `/api/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}`;
+  if (factura) url += `&factura=${encodeURIComponent(factura)}`;
+  if (razon_social) url += `&razon_social=${encodeURIComponent(razon_social)}`;
+  if (rif) url += `&rif=${encodeURIComponent(rif)}`;
+  Swal.fire({
+
+    title: 'Buscando...',
+    text: 'Espere mientras buscamos.',
+  });
+  Swal.showLoading();
+  // Hacer la petición fetch
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    });
+    const data = await response.json();
+    Swal.close();
+    mostrarResultadosBusqueda(data);
+  }
+  catch (error) {
+    console.error('Error al obtener facturas:', error);
+  };
 }
 
 
@@ -152,8 +152,8 @@ document.getElementById('rif_buscar').addEventListener('input', () => {
 
 // Función que reinicia el temporizador
 function reiniciarDebounce() {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(buscarFacturas, 2000); // 2 segundos
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(buscarFacturas, 2000); // 2 segundos
 }
 
 // Función para generar la paginación con Bootstrap
@@ -218,40 +218,40 @@ function generarPaginacionBusqueda(pagination) {
 
 // Función para recargar una página específica
 async function cargarPagina(numeroPagina) {
-  
+
   const factura = document.getElementById('factura_buscar').value.trim();
-  const razon_social = document.getElementById('razon_buscar').value.trim() +"%";
-  const rif = document.getElementById('rif_buscar').value.trim() +"%";
+  const razon_social = document.getElementById('razon_buscar').value.trim() + "%";
+  const rif = document.getElementById('rif_buscar').value.trim() + "%";
 
   let url = `/api/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}&pagina=${numeroPagina}`;
   if (factura) url += `&factura=${encodeURIComponent(factura)}`;
   if (razon_social) url += `&razon_social=${encodeURIComponent(razon_social)}`;
   if (rif) url += `&rif=${encodeURIComponent(rif)}`;
-    try{
-      Swal.fire({
-          
-          title: 'Buscando...',
-          text: 'Espere mientras buscamos.',
-        });
-      Swal.showLoading();
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }        
-        });
-        const data = await response.json();
-      Swal.close();
-      mostrarResultadosBusqueda(data);
-    }
-    catch(error) {
-      console.error('Error al obtener facturas:', error);
-    };
+  try {
+    Swal.fire({
+
+      title: 'Buscando...',
+      text: 'Espere mientras buscamos.',
+    });
+    Swal.showLoading();
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    });
+    const data = await response.json();
+    Swal.close();
+    mostrarResultadosBusqueda(data);
+  }
+  catch (error) {
+    console.error('Error al obtener facturas:', error);
+  };
 }
 
 document.getElementById('buscar_modal').addEventListener('click', async () => {
-  
+
   const radioSeleccionado = document.querySelector('input[name="seleccion_factura"]:checked');
 
   if (!radioSeleccionado) {
@@ -266,20 +266,20 @@ document.getElementById('buscar_modal').addEventListener('click', async () => {
   }
 
   const id_factura = radioSeleccionado.value;
-        Swal.fire({          
-          title: 'Generando...',
-          text: 'Reconstruyendo la factura.',
-        });
-      Swal.showLoading();
+  Swal.fire({
+    title: 'Generando...',
+    text: 'Reconstruyendo la factura.',
+  });
+  Swal.showLoading();
   try {
     // Llamar al endpoint con el id_factura seleccionado
     const response = await fetch(`/api/devolver-factura?id_factura=${encodeURIComponent(id_factura)}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            }        
-        });
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    });
     Swal.close();
     if (!response.ok) {
       throw new Error('Error en la solicitud');
@@ -289,40 +289,44 @@ document.getElementById('buscar_modal').addEventListener('click', async () => {
 
     if (data.success) {
       mostrarFacturaSeleccionada(data.result);
-      IDFACT=id_factura
+      IDFACT = id_factura;
+      IDUUID = data.result[0].uuid;
+
+
     } else {
-       Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo obtener la factura.',
-          confirmButtonColor: "#008b8b",
-          confirmButtonText: 'Aceptar'
-        });
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo obtener la factura.',
+        confirmButtonColor: "#008b8b",
+        confirmButtonText: 'Aceptar'
+      });
     }
   } catch (error) {
     console.error('Error al obtener la factura:', error);
-    
+
   }
 });
-function mostrarFacturaSeleccionada(factura){
-      STATUS_FACTURA = 2;
-      generada= true;
-      if(document.getElementById('agregar_admi')){
-      document.getElementById('agregar_admi').remove()
-      document.getElementById('nueva_factura').classList.remove('d-none')
-          let divFactFactura = document.getElementById('div_fact_factura');
-          if (divFactFactura) {
-            let newDiv = divFactFactura.cloneNode(true);
-            divFactFactura.parentNode.replaceChild(newDiv, divFactFactura);
-            if (newDiv.firstElementChild) {
-              newDiv.firstElementChild.classList.add('mascara-gris');
-            }
-            
-          }}
+function mostrarFacturaSeleccionada(factura) {
+  STATUS_FACTURA = 2;
+  generada = true;
+  if (document.getElementById('agregar_admi')) {
+    document.getElementById('agregar_admi').remove()
+    document.getElementById('nueva_factura').classList.remove('d-none')
+    let divFactFactura = document.getElementById('div_fact_factura');
+    if (divFactFactura) {
+      let newDiv = divFactFactura.cloneNode(true);
+      divFactFactura.parentNode.replaceChild(newDiv, divFactFactura);
+      if (newDiv.firstElementChild) {
+        newDiv.firstElementChild.classList.add('mascara-gris');
+      }
+
+    }
+  }
   detalles = "";
   detalles = [{
-    id_admision:factura[0].id_admision,
-    factura:factura[0].factura
+    id_admision: factura[0].id_admision,
+    factura: factura[0].factura
   }]
   document.querySelector('.btn-group').classList.add('d-none');
   document.getElementById('factura_modal').value = factura[0].factura;
@@ -342,13 +346,13 @@ function mostrarFacturaSeleccionada(factura){
   document.getElementById('iva').value = factura[0].iva16;
   document.getElementById('igtf').value = factura[0].igtf;
   document.getElementById('descuentos').value = factura[0].descuentos;
-  if(Number(factura[0].descuentos)>0){
-      document.querySelector('.descuento_div').classList.remove('d-none');
+  if (Number(factura[0].descuentos) > 0) {
+    document.querySelector('.descuento_div').classList.remove('d-none');
   }
   document.getElementById('total_factura').value = factura[0].total;
-document.getElementById('table_detalle').innerHTML='';
+  document.getElementById('table_detalle').innerHTML = '';
   generarTablaDetallesBusqueda(factura)
-  
+
 }
 function generarTablaDetallesBusqueda(data) {
   // Crear thead
@@ -405,6 +409,6 @@ function generarTablaDetallesBusqueda(data) {
 
     tbody.appendChild(row);
   });
-document.getElementById('table_detalle').appendChild(tbody);
-  
+  document.getElementById('table_detalle').appendChild(tbody);
+
 }

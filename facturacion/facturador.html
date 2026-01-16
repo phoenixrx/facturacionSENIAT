@@ -25,6 +25,11 @@
         vertical-align: middle;
     }
 
+    .custom-tooltip {
+        --bs-tooltip-bg: var(--bs-danger-bg-subtle);
+        --bs-tooltip-color: var(--bs-black);
+    }
+
     h2 {
         color: #204b5e;
     }
@@ -626,12 +631,21 @@
                 </div>
                 <div class="modal-footer">
 
-                    <div class="fac_num col-6 d-flex datos">
-                        <label for="factura_igtf" class="col-4" style="text-align: end;">IGTF</label>
-                        <input type="text" id="factura_igtf" class='totalizables_modal col-8 ' value="" readonly>
-                        <input type="hidden" value="" id="igtf_validador" class="totalizables_modal">
-                    </div>
+                    <div class="fac_num col-6 ">
+                        <div class="d-flex datos gap-1">
+                            <div class="col-2">
 
+                            </div>
+                            <div class="col-10 d-flex cobrarIgtfDiv">
+                                <button class="btn btn-sm btn-primary" id="cobrarIgtf" data-bs-toggle="tooltip"
+                                    data-bs-placement="left" data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="Debe agregar el cobro del IGTF">Cobrar IGTF <i
+                                        class="bi bi-caret-right"></i></button>
+                                <input type="text" id="factura_igtf" class='totalizables_modal' value="" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" value="" id="igtf_validador" class="totalizables_modal">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-success" id="aceptar_modal">Aceptar</button>
                 </div>

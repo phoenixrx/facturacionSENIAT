@@ -928,11 +928,20 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     registrarErrorPeticion(req, error.message)
 
   }
+  let idUuid = '';
+  try {
+    let query = `SELECT uuid FROM facturas WHERE id_factura = ?;`
+    let factura_uuid = await retornar_query(query, [id_factura])
+    idUuid = factura_uuid[0].uuid;
+  } catch (error) {
+    registrarErrorPeticion(req, error.message)
+
+  }
 
   res.json({
     success: true,
     id_factura: id_factura,
-    data
+    idUuid
   });
 
 })
@@ -1175,16 +1184,16 @@ app.post('/api/examinar-facturas', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
-  const { id_factura } = req.query;
+  const { id_factura, uuid_factura } = req.query;
 
-  if (!id_factura) {
+  if (!id_factura && !uuid_factura) {
     return res.status(400).json({
       success: false,
       message: 'Error DF01'
     });
   }
 
-  if (isNaN(id_factura)) {
+  if (isNaN(id_factura) && !uuid_factura) {
     return res.status(400).json({
       success: false,
       message: 'Error DF03'
@@ -1202,17 +1211,47 @@ app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
       factura_detalle fd ON f.id_factura = fd.id_factura
     INNER JOIN
       usuarios u ON f.id_usuario = u.id
-    WHERE 
-      f.id_factura = ?`;
+    WHERE `;
 
-  const params = [id_factura];
+  let whereClause = '';
+
+  const params = [];
+
+  if (id_factura) {
+    whereClause += ' f.id_factura = ?';
+    params.push(id_factura);
+  }
+  if (uuid_factura) {
+    whereClause += ' f.uuid = ?';
+    params.push(uuid_factura);
+  }
+
+  query += whereClause;
+
 
   try {
     const facturas = await retornar_query(query, params);
-
+    let queryPagos = `
+     SELECT cp.monto,
+     cp.nota,
+     fp.descripcion as formaPago,
+     m.simbolo
+      FROM control_pagos cp 
+      INNER JOIN  formas_pago fp ON fp.id_forma_pago = cp.id_forma_pago
+      INNER JOIN monedas m ON m.id_moneda = cp.id_moneda
+      where cp.id_externa = ? AND cp.activo='1' order by cp.id_control_pago desc;
+     `;
+    let pagos = await retornar_query(queryPagos, [facturas[0].id_admision]);
+    await retornar_query(`
+    UPDATE logs_peticiones 
+    SET request_body = ?
+    WHERE id_log_acceso = ?
+  `, [JSON.stringify(facturas[0]), req.logData.id_log_acceso]);
     res.json({
       success: true,
-      result: facturas
+      result: facturas,
+      iporigen: req.logData.ip_origen,
+      pagos: pagos
     });
   } catch (error) {
     console.log(error)
