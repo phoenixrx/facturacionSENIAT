@@ -294,7 +294,7 @@ function json_formas_pago(tabla, tipo) {
     } else {
       id_moneda = "1";
     }
-    console.log(element)
+
     if (element.dataset.credito.trim() == '1') {
       por_pagar = true;
       var monto_cred = element.children[0].children[1].innerText;

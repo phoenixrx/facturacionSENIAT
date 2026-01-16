@@ -255,7 +255,7 @@ function calcularTotales(tasa_final) {
 
     let total_usd = "0,00";
     total_usd = totales.reduce((sum, item) => sum + item.total_precio_usd_cant, 0).toFixed(2);
-    let nota = `El valor total representa USD ${total_usd} calculados en base a ${tasa_final} BS/USD `
+    let nota = `El valor total representa USD ${total_usd} (Tasa: ${tasa_final} BS/USD)`
 
     document.getElementById('total_modal').value = Number(exento + bi16 + iva16 + bi8 + iva8).toFixed(2);
     document.getElementById('total_usd_modal').value = Number(total_usd).toFixed(2);

@@ -504,19 +504,20 @@ async function fetchDescuentos(admisiones) {
         return;
     }
     const total = filtrados.reduce((suma, item) => {
-        return suma + parseFloat(item.promo_monto);
+        return suma + parseFloat(item.monto);
     }, 0);
     const table = document.getElementById("table_detalle");
     const tbody = document.createElement("tbody");
 
     filtrados.forEach(detalle => {
+
         const row = document.createElement("tr");
         row.classList.add('table-info')
         row.innerHTML = `<td>${detalle.promo}</td>
             <td class="text-center">1</td>
-            <td class="text-end">-${Number(detalle.promo_monto).toFixed(2)}</td>
-            <td class="text-end">-</td>
-            <td class="text-center">-</td>`;
+            <td class="text-end">-${Number(detalle.monto).toFixed(2)}</td>
+            <td class="text-end">-${Number(detalle.monto_us).toFixed(2)}</td>
+            <td class="text-center">E</td>`;
         tbody.appendChild(row);
     })
 
@@ -526,6 +527,8 @@ async function fetchDescuentos(admisiones) {
         Number(document.getElementById('exento').value) +
         Number(document.getElementById('base_imponible').value) +
         Number(document.getElementById('igtf').value) +
+        Number(document.getElementById('base_imponible_8').value) +
+        Number(document.getElementById('iva_8').value) +
         Number(document.getElementById('iva').value)) - total).toFixed(2)
     document.getElementById('total_modal').value = document.getElementById('total_factura').value
     document.getElementById('total_usd_modal').value = Number(Number(document.getElementById('total_modal').value) / Number(document.getElementById('tasa_modal').value)).toFixed(2)

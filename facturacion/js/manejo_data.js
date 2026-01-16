@@ -109,7 +109,6 @@ function mostrarResultados(data, tipos) {
             const totalSum = Array.from(document.querySelectorAll('.admisiones_switch:checked'))
                 .reduce((sum, switchElement) => sum + parseFloat(switchElement.getAttribute('data-monto')), 0);
             document.querySelector(".sumatoria").innerText = totalSum.toFixed(2)
-            // document.getElementById('row_'+switch_inp.id).remove()
         })
     })
 
@@ -130,9 +129,11 @@ function detalles_fatura(data) {
         </tr>
     `;
     table.appendChild(thead);
+
     if (document.getElementById('chk_ocultar_ceros').checked == true) {
-        data = data.filter(detalle => detalle.precio_bs_cant !== 0);
+        data = data.filter(detalle => Number(detalle.precio_bs_cant) !== 0);
     }
+
     data.forEach(detalle => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -221,13 +222,17 @@ function agruparPorTipo(data, formato = "tipo") {
     table.appendChild(thead);
 
     detalles.forEach(detalle => {
+
         const row = document.createElement("tr");
+        if (Number(detalle.precio_total).toFixed(2) == 0.00 && document.getElementById('chk_ocultar_ceros').checked == true) {
+            row.classList.add("d-none");
+        }
         row.classList.add("row_puntero");
         row.innerHTML = `<td>${detalle.tipo}</td>
             <td class="text-center">${detalle.cantidad_total}</td>
             <td class="text-end">${Number(detalle.precio_total).toFixed(2)}</td>
             <td class="text-end">${Number(detalle.precio_usd_total).toFixed(2)}</td>
-            <td class="text-center">${(Number(detalle.impuesto_total).toFixed(2) == 0.00) ? "E" : Number(detalle.impuesto).toFixed(2)}</td>`;
+            <td class="text-center">${(Number(detalle.impuesto_total).toFixed(2) == 0.00) ? "E" : Number(detalle.impuesto_total).toFixed(2)}</td>`;
         row.addEventListener('click', function () {
             const detallesEstudio = detalle.detalles.map(det => {
                 return `
