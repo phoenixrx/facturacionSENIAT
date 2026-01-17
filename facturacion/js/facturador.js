@@ -296,20 +296,7 @@ document.querySelectorAll('.encabezado_modif').forEach((input) => {
 })
 
 document.querySelectorAll('.numeros_p').forEach((input) => {
-    input.addEventListener("dblclick", function () {
-        if (Number(buscarPermisoFacturar("insertar")) == 1) {
-            this.readOnly = !this.readOnly;
-        } else {
-            Swal.fire({
-                title: "Permisos",
-                text: "No tienes permisos para modificar el número de la factura o el control",
-                icon: "info",
-                confirmButtonColor: "#008b8b",
-                allowOutsideClick: false
-            })
-        }
 
-    })
 })
 
 document.getElementById("num_factura").addEventListener("change", function () {

@@ -583,6 +583,21 @@ async function json_principal(desglose_pago) {
 
   let json_factura = {};
 
+  //actualizamos los numeros de control y factura
+  let consec = await consecutivos();
+  let consecutivos_caja = consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
+
+  document.getElementById("num_control").value = Number(consecutivos_caja[0].actual) + 1;
+  let num_factura = consecutivos_caja[0].num_factura;
+
+  let originalLength = num_factura.length;
+  num_factura = Number(num_factura) + 1;
+  num_factura = num_factura.toString();
+  let num_factura_formateado = num_factura.padStart(originalLength, '0');
+
+  document.getElementById("num_factura").value = num_factura_formateado;
+  document.getElementById("factura_modal").value = num_factura_formateado;
+
   json_factura.formato_factura = document.getElementById('sel_formato').value;
   json_factura.tipo_agrupamiento = document.querySelector('input[name="rad_tipo_agrupamiento"]:checked').value;
   json_factura.base_igtf = base_igtf_bs
@@ -645,6 +660,9 @@ async function facturar(desglose_pago, json_cuotas, json_factura, json_detalle) 
     icon: "info"
   })
   Swal.showLoading()
+
+
+
   const datosAEnviar = {
     desglose_pago: desglose_pago,
     json_cuotas: json_cuotas,

@@ -131,12 +131,12 @@ async function opciones() {
                 sel_formatos.appendChild(option);
             });
             if (sel_formatos.options.length > 1) {
-                sel_formatos.selectedIndex = 1; // Selecciona el primer ítem después de "Seleccione..."
+                sel_formatos.selectedIndex = 1;
             }
             let consec = await consecutivos();
             let consecutivos_caja = consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
 
-            document.getElementById("num_control").value = Number(consecutivos_caja[0].num_control) + 1;
+            document.getElementById("num_control").value = Number(consecutivos_caja[0].actual) + 1;
             let num_factura = consecutivos_caja[0].num_factura;
 
             let originalLength = num_factura.length;
@@ -146,7 +146,7 @@ async function opciones() {
 
             document.getElementById("num_factura").value = num_factura_formateado;
             document.getElementById("factura_modal").value = num_factura_formateado;
-            factura_modal
+
         }
 
     } catch (error) {

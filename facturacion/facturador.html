@@ -25,6 +25,10 @@
         vertical-align: middle;
     }
 
+    .numeros_p {
+        pointer-events: none;
+    }
+
     .custom-tooltip {
         --bs-tooltip-bg: var(--bs-danger-bg-subtle);
         --bs-tooltip-color: var(--bs-black);
@@ -200,14 +204,17 @@
                 <div class="row mb-1 mt-1">
                     <div class="col-5 text-end"><span>Control</span></div>
                     <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text"
-                            id="num_control" readonly /> </div>
+                            id="num_control" readonly data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-title="Este valor no puede ser cambiado." /> </div>
                 </div>
-                <div class="row mb-1">
+                <div class="row mb-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-title="Este valor no puede ser cambiado.">
                     <div class="col-5 text-end"><span>Factura</span></div>
                     <div class="col-7"><input class="text-end fw-bold encabezados numeros_p" type="text"
                             id="num_factura" readonly /> </div>
                 </div>
-                <div class="row mb-1">
+                <div class="row mb-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                    data-bs-title="Este valor no puede ser cambiado.">
                     <div class="col-5 text-end text-nowrap"><span>F. Atención</span></div>
                     <div class="col-7"><input class="text-end fw-bold w-100" id="fecha_atencion" type="date" readonly />
                     </div>
@@ -709,6 +716,8 @@
 <script src="js/cargar_selects.js"></script>
 <script>
     document.write('<script src="js/control_pagos.js?t=' + Date.now() + '" ><\/script>');
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 </script>
 <script src="js/anulacion.js"></script>
 <script src="js/buscar_facturas.js?v=1.0.0"></script>

@@ -482,11 +482,14 @@ app.get('/api/consecutivos', async (req, res) => {
   let sql = `
         SELECT 
             fc.*,
+            ct.actual,
             c.descripcion as caja
         FROM 
             facturas_controles fc
         INNER JOIN 
             cajas c ON fc.id_caja = c.id
+            INNER JOIN 
+            controles_talonarios ct ON ct.id_caja = c.id
         WHERE 
             fc.id_cli = ?`;
 
@@ -731,26 +734,8 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   ];
 
   let result = ""
-  try {
-    result = await retornar_query(query, params);
+  result = await retornar_query(query, params);
 
-    let query_actualizar_controles = `UPDATE facturas_controles 
-                                      SET 
-                                        num_factura=?,
-                                        num_control=?
-                                      WHERE id_caja=?`
-    let params_compr = [data.factura, data.num_control, caja]
-
-    let controles_act = await retornar_query(query_actualizar_controles, params_compr);
-
-  } catch (error) {
-    registrarErrorPeticion(req, 'Error al procesar la solicitud FA01')
-    return res.json({
-      success: false,
-      message: 'Error al procesar la solicitud FA01',
-      error: error.message
-    });
-  }
   const id_factura = result.insertId;
 
   let result_detalles = [];
@@ -788,7 +773,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     return res.json({
       success: false,
       message: 'Error al procesar la solicitud FA03',
-      error: error.message
+      error: error.message, factura: id_factura, query: query, detalleParams: json_detalle
     });
   }
 
@@ -936,6 +921,33 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
   } catch (error) {
     registrarErrorPeticion(req, error.message)
 
+  }
+
+  try {
+
+    let query_actualizar_controles = `UPDATE facturas_controles 
+                                      SET 
+                                        num_factura=?,
+                                        num_control=?
+                                      WHERE id_caja=?`
+    let params_compr = [data.factura, data.num_control, caja]
+    let query_actualizar_talonario = `UPDATE controles_talonarios 
+                                      SET 
+                                        actual=?
+                                      WHERE id_caja=?`
+    let params_talonario = [data.num_control, caja]
+
+
+    let controles_act = await retornar_query(query_actualizar_controles, params_compr);
+    controles_act = await retornar_query(query_actualizar_talonario, params_talonario);
+
+  } catch (error) {
+    registrarErrorPeticion(req, 'Error al procesar la solicitud FA01')
+    return res.json({
+      success: false,
+      message: 'Error al procesar la solicitud FA01',
+      error: error.message
+    });
   }
 
   res.json({
