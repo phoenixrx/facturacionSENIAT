@@ -1,8 +1,22 @@
 $("#modal_pagos").on("shown.bs.modal", function () {
+  $(this).find("#desglose_valor").val('');
   $(this).find("#desglose_valor").focus();
 });
 
 let IGTF = 0.03
+document.getElementById('resto_pago_bs').addEventListener('click', function () {
+  document.getElementById('desglose_valor').value = this.value;
+  document.getElementById('forma_de_pago').focus();
+  document.getElementById('moneda_desglose').value = 2;
+  fetchFormaPago()
+})
+
+document.getElementById('resto_pago_us').addEventListener('click', function () {
+  document.getElementById('desglose_valor').value = this.value;
+  document.getElementById('forma_de_pago').focus();
+  document.getElementById('moneda_desglose').value = 1;
+  fetchFormaPago()
+})
 
 function add_desgl() {
   let moneda_desg = document.getElementById("moneda_desglose");
@@ -124,6 +138,7 @@ function add_desgl() {
   document.getElementById('desglose_valor').value = '';
   document.getElementById('desglose_valor').focus();
 }
+
 document.getElementById('btn_agregar_fp').addEventListener('click', function () {
   add_desgl()
 })
@@ -201,6 +216,7 @@ function calcular_desglose() {
 
   document.getElementById('desglose_valor').focus()
 }
+
 function calcular_igtf() {
 
   var chkigtf = document.querySelectorAll('.chk-igtf')
@@ -325,6 +341,7 @@ function json_formas_pago(tabla, tipo) {
 
   return elementos;
 }
+
 let aceptar_modal = document.getElementById('aceptar_modal')
 
 aceptar_modal.addEventListener('click', function () {
@@ -781,8 +798,9 @@ function quitar_row(idRow) {
 }
 
 document.getElementById('cobrarIgtf').addEventListener('click', function () {
-  document.getElementById('moneda_desglose').value = 2 // BS
-  fetchFormaPago() //carga forma de pago de Bs
+  document.getElementById('moneda_desglose').value = 2;
+  document.getElementById('forma_de_pago').focus();
+  fetchFormaPago();
   var chkigtf = document.querySelectorAll('.chk-igtf')
   var valor_igtf = 0
   var valor_neto = 0
@@ -796,3 +814,4 @@ document.getElementById('cobrarIgtf').addEventListener('click', function () {
   document.getElementById('desglose_nota').value = "IGTF aplica sobre $" + Number(valor_neto).toFixed(2);
   document.getElementById('desglose_nota').disabled = true;
 })
+
