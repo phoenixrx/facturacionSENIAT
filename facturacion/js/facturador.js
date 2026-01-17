@@ -522,38 +522,19 @@ document.getElementById('div_anular').addEventListener('click', function () {
         denyButtonText: `Cancelar`
     }).then((result) => {
         if (result.isConfirmed) {
+            const facturaValue = document.getElementById('factura_modal').value;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://siac.empresas.historiaclinica.org/notas_contables/crear_nota_factura.php';
+            form.style.display = 'none';
 
-            Swal.fire({
-                title: "Anulacion",
-                text: "Como desea anular la factura?",
-                showDenyButton: true,
-                showCancelButton: false,
-                confirmButtonColor: "#008b8b",
-                confirmButtonText: "Anulacion directa",
-                denyButtonText: `Nota de Credito`
-            }).then((resultado) => {
-                if (resultado.isConfirmed) {
-                    anular_factura();
-                } else if (resultado.isDenied) {
-
-                    const facturaValue = document.getElementById('factura_modal').value;
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'https://siac.empresas.historiaclinica.org/notas_contables/crear_nota_factura.php';
-                    form.style.display = 'none';
-
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'bill_number';
-                    input.value = facturaValue.toString().padStart(8, '0');
-                    form.appendChild(input);
-
-                    document.body.appendChild(form);
-                    form.submit(); return;
-                }
-            })
-
-
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'bill_number';
+            input.value = facturaValue.toString().padStart(8, '0');
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit(); return;
         } else if (result.isDenied) {
             Swal.fire("No se anulo la factura", "", "info");
             return;
