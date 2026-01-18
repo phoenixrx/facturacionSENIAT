@@ -576,24 +576,19 @@ function imprimirFactura() {
             urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].path;
             break;
         case "S":
-            urlNew = opciones_formatos.formatos[1].base_url + opciones_formatos.formatos[0].factura_seguros;
+            urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].factura_seguros;
             break;
         case "E":
-            urlNew = opciones_formatos.formatos[2].base_url + opciones_formatos.formatos[0].factura_empresas;
+            urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].factura_empresas;
             break;
         case "I":
-            urlNew = opciones_formatos.formatos[2].base_url + opciones_formatos.formatos[0].factura_internos;
+            urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].factura_internos;
             break;
         default:
             urlNew = opciones_formatos.formatos[0].base_url + opciones_formatos.formatos[0].path;
             break;
     }
 
-    url = opciones_formatos.opciones[0].detalle_factura + "?id_admision=" + admisiones + "&fact_num=" + document.getElementById('factura_modal').value;
-    if (url.startsWith("../")) {
-        url = url.replace(/^(\.\.\/)+/, "");
-    }
-    window.open(BASE_FORMATO + url, "_blank");
     window.open(urlNew + "?id=" + IDUUID, "_blank");
 }
 
