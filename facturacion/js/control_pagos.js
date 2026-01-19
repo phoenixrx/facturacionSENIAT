@@ -332,8 +332,10 @@ function json_formas_pago(tabla, tipo) {
 
     elementos.push(json_pagos);
   });
-  if (has_igtf && igtf_pay == false) {
-    return "No igtf";
+  if (opciones_formatos.opciones[0].cobra_igtf != 0) {
+    if (has_igtf && igtf_pay == false) {
+      return "No igtf";
+    }
   }
   if (por_pagar == false && document.getElementById('chk_contado').checked == false) {
     return "credito error";
@@ -393,12 +395,17 @@ aceptar_modal.addEventListener('click', function () {
       base_igtf_bs += Number(element.dataset.base_igtf_bs)
     }
   })
-  if (total_cant_igtf_chk >= 1 && total_cant_igtf_row == 0) {
-    const myTooltipEl = document.getElementById('cobrarIgtf')
-    const tooltip = bootstrap.Tooltip.getOrCreateInstance(myTooltipEl)
-    tooltip.show()
-    return;
+  if (opciones_formatos.opciones[0].cobra_igtf != 0) {
+
+    if (total_cant_igtf_chk >= 1 && total_cant_igtf_row == 0) {
+      const myTooltipEl = document.getElementById('cobrarIgtf')
+      const tooltip = bootstrap.Tooltip.getOrCreateInstance(myTooltipEl)
+      tooltip.show()
+      return;
+    }
   }
+
+
 
   if (Number(document.getElementById('factura_igtf').value) != Number(total_impuesto)) {
     Swal.fire({
@@ -418,7 +425,7 @@ aceptar_modal.addEventListener('click', function () {
     });
     return;
   }
-  if (json_forma == 'No igtf') {
+  if (json_forma == 'No igtf' && opciones_formatos.opciones[0].cobra_igtf != 0) {
     Swal.fire({
       title: "No se detecto el pago del IGTF",
       text: "Debe especificar al inicio de la nota el pago del mismo, en mayusculas y debe hacerse separado del resto de pagos",

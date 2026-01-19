@@ -133,14 +133,15 @@ function detalles_fatura(data) {
     if (document.getElementById('chk_ocultar_ceros').checked == true) {
         data = data.filter(detalle => Number(detalle.precio_bs_cant) !== 0);
     }
+    let adata = agruparDetalles(data);
 
-    data.forEach(detalle => {
+    adata.forEach(detalle => {
         const row = document.createElement("tr");
         row.innerHTML = `
         <td>${detalle.estudio}</td>
-        <td class="text-center">${detalle.cantidad}</td>
-        <td class="text-end">${Number(Number(detalle.precio).toFixed(2) * Number(detalle.cantidad).toFixed(2)).toFixed(2)}</td>
-        <td class="text-end">${Number(Number(detalle.precio_usd).toFixed(2) * Number(detalle.cantidad).toFixed(2)).toFixed(2)}</td>
+        <td class="text-center">${detalle.total_cantidad}</td>
+        <td class="text-end">${Number(detalle.total_precio_bs_cant).toFixed(2)}</td>
+        <td class="text-end">${Number(detalle.total_precio_usd_cant).toFixed(2)}</td>
         <td class="text-center">${(Number(detalle.impuesto).toFixed(2) == 0.00) ? "E" : Number(detalle.impuesto).toFixed(2)}</td>
         `;
         tbody.appendChild(row);
@@ -161,6 +162,50 @@ function detalles_fatura(data) {
 
 
     marcar_max_lines()
+}
+
+function agruparDetalles(detalle) {
+    const grupos = {};
+
+    for (const item of detalle) {
+        // Clave de agrupación
+        const clave = [
+            item.impuesto,
+            item.tasa,
+            item.estudio,
+            item.grupo,
+            item.tipo
+        ].join('||');
+
+        if (!grupos[clave]) {
+            grupos[clave] = {
+                impuesto: item.impuesto,
+                tasa: item.tasa,
+                estudio: item.estudio,
+                grupo: item.grupo,
+                tipo: item.tipo,
+                total_precio: 0,           // suma de precio (string → float)
+                total_precio_usd: 0,       // suma de precio_usd (string → float)
+                total_precio_usd_cant: 0,  // suma de precio_usd_cant
+                total_precio_bs_cant: 0,   // suma de precio_bs_cant
+                total_cantidad: 0          // suma de cantidad
+            };
+        }
+
+        // Helper para convertir a número seguro
+        const toNum = (val) => {
+            const n = Number(val);
+            return isNaN(n) ? 0 : n;
+        };
+
+        grupos[clave].total_precio += toNum(item.precio);
+        grupos[clave].total_precio_usd += toNum(item.precio_usd);
+        grupos[clave].total_precio_usd_cant += toNum(item.precio_usd_cant);
+        grupos[clave].total_precio_bs_cant += toNum(item.precio_bs_cant);
+        grupos[clave].total_cantidad += toNum(item.cantidad);
+    }
+
+    return Object.values(grupos);
 }
 
 function agruparPorTipo(data, formato = "tipo") {
