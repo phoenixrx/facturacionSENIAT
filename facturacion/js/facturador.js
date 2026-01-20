@@ -557,19 +557,7 @@ function imprimirFactura() {
 
     let admisiones = detalles.map(item => item.id_admision).join(',');
 
-    var data = { 'id_admision': admisiones, 'fact_num': document.getElementById('factura_modal').value };
-    let formatos = document.getElementById('sel_formato');
-    if (formatos.value == "") {
-        Swal.fire({
-            title: "Error",
-            text: "Seleccione un formato de impresión",
-            icon: "error",
-            confirmButtonColor: "#008b8b",
-            allowOutsideClick: false,
-        });
-        formatos.focus();
-        return;
-    }
+
     let urlNew = "";
     switch (tipo_consulta) {
         case "P":

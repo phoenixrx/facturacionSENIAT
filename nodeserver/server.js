@@ -491,7 +491,7 @@ app.get('/api/consecutivos', async (req, res) => {
             INNER JOIN 
             controles_talonarios ct ON ct.id_caja = c.id
         WHERE 
-            fc.id_cli = ?`;
+            fc.id_cli = ? and ct.activo=1`;
 
   const params = [id_cli]
   try {
@@ -1196,16 +1196,16 @@ app.post('/api/examinar-facturas', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
-  const { id_factura, uuid_factura } = req.query;
+  const { id_factura, uuid_factura, factura } = req.query;
 
-  if (!id_factura && !uuid_factura) {
+  if (!id_factura && !uuid_factura && !factura) {
     return res.status(400).json({
       success: false,
       message: 'Error DF01'
     });
   }
 
-  if (isNaN(id_factura) && !uuid_factura) {
+  if (isNaN(id_factura) && !uuid_factura && !factura) {
     return res.status(400).json({
       success: false,
       message: 'Error DF03'
@@ -1241,12 +1241,40 @@ app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
     params.push(uuid_factura);
   }
 
-  query += whereClause;
+  if (factura) {
+    whereClause += ' f.factura = ? AND f.id_cli = ?';
+    let id_cli = req.id_cli;
+    params.push(factura, id_cli);
+  }
 
+  query += whereClause;
+  let facturas = [];
+  let pagos = [];
+  let clave = [];
 
   try {
-    const facturas = await retornar_query(query, params);
-    let queryPagos = `
+    facturas = await retornar_query(query, params);
+    if (facturas.error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error DF04a',
+        query: query,
+        params: params
+      });
+    }
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: 'Error DF02a',
+      error: error.message,
+      facturas: facturas,
+      pagos: pagos,
+      clave: clave
+
+    });
+  }
+  let queryPagos = `
      SELECT cp.monto,
      cp.nota,
      fp.descripcion as formaPago,
@@ -1256,26 +1284,46 @@ app.post('/api/devolver-factura', authenticateToken, async (req, res) => {
       INNER JOIN monedas m ON m.id_moneda = cp.id_moneda
       where cp.id_externa = ? AND cp.activo='1' order by cp.id_control_pago desc;
      `;
-    let pagos = await retornar_query(queryPagos, [facturas[0].id_admision]);
-    await retornar_query(`
+  try {
+    pagos = await retornar_query(queryPagos, [facturas[0].id_admision]);
+    if (pagos.error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error DF04b'
+      });
+    }
+  } catch (error) {
+
+
+  }
+  let queryClave = `
+    SELECT clave FROM admisiones WHERE id_admision=?
+    `
+  try {
+    clave = await retornar_query(queryClave, [facturas[0].id_admision]);
+    if (clave.error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Error DF04c'
+      });
+    }
+  } catch (error) {
+
+
+  }
+  await retornar_query(`
     UPDATE logs_peticiones 
     SET request_body = ?
     WHERE id_log_acceso = ?
   `, [JSON.stringify(facturas[0]), req.logData.id_log_acceso]);
-    res.json({
-      success: true,
-      result: facturas,
-      iporigen: req.logData.ip_origen,
-      pagos: pagos
-    });
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      success: false,
-      message: 'Error DF02',
-      error: error.message
-    });
-  }
+  res.json({
+    success: true,
+    result: facturas,
+    iporigen: req.logData.ip_origen,
+    pagos: pagos,
+    clave: clave
+  });
+
 });
 
 app.listen(PORT, () => {
