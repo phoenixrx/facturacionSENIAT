@@ -887,7 +887,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
         monto_pago, 
         estado, 
         factura, 
-        fecha_vencimiento, id_cli) VALUES (?,?,?,?,?,?,?,${data.id_cli})
+        fecha_vencimiento, id_factura, id_cli) VALUES (?,?,?,?,?,?,?,${id_factura},${data.id_cli})
       ;`
 
 
