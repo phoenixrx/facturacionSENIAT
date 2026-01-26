@@ -901,8 +901,19 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
         cuotas.factura,
         cuotas.fecha_vencimiento
       ];
+      try {
+        result_cuotas.push(await retornar_query(query, pagoParams))
+      } catch (error) {
+        return res.json({
+          success: false,
+          message: 'Error al procesar la solicitud FA04',
+          error: error.message,
+          result_cuotas,
+          pagoParams
+        });
+      }
 
-      result_cuotas.push(await retornar_query(query, pagoParams))
+
     }
   }
 
@@ -927,15 +938,14 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
 
     let query_actualizar_controles = `UPDATE facturas_controles 
                                       SET 
-                                        num_factura=?,
-                                        num_control=?
+                                        num_factura=?
                                       WHERE id_caja=?`
-    let params_compr = [data.factura, data.num_control, caja]
+    let params_compr = [data.factura, caja]
     let query_actualizar_talonario = `UPDATE controles_talonarios 
                                       SET 
-                                        actual=?
+                                        actual=actual+1
                                       WHERE id_caja=?`
-    let params_talonario = [data.num_control, caja]
+    let params_talonario = [caja]
 
 
     let controles_act = await retornar_query(query_actualizar_controles, params_compr);

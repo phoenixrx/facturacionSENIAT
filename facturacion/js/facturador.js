@@ -522,19 +522,11 @@ document.getElementById('div_anular').addEventListener('click', function () {
         denyButtonText: `Cancelar`
     }).then((result) => {
         if (result.isConfirmed) {
-            const facturaValue = document.getElementById('factura_modal').value;
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'https://siac.empresas.historiaclinica.org/notas_contables/crear_nota_factura.php';
-            form.style.display = 'none';
 
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'bill_number';
-            input.value = facturaValue.toString().padStart(8, '0');
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit(); return;
+            const facturaValue = document.getElementById('factura_modal').value;
+            let url = `https://siac.empresas.historiaclinica.org/?modulo=nota_credito&urlmodulo=https://siac.empresas.historiaclinica.org/notas_contables/generar_ndc.html?factura=${facturaValue}`
+            window.open(url, "_self");
+            return;
         } else if (result.isDenied) {
             Swal.fire("No se anulo la factura", "", "info");
             return;

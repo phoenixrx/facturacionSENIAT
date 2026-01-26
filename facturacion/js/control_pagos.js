@@ -611,7 +611,7 @@ async function json_principal(desglose_pago) {
   let consec = await consecutivos();
   let consecutivos_caja = consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
 
-  document.getElementById("num_control").value = Number(consecutivos_caja[0].actual) + 1;
+  document.getElementById("num_control").value = consecutivos_caja[0].actual;
   let num_factura = consecutivos_caja[0].num_factura;
 
   let originalLength = num_factura.length;
