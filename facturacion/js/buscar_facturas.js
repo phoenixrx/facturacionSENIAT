@@ -23,8 +23,8 @@ async function buscarFacturas() {
   }
 
   // Construir la URL con parámetros
-  let url = `/api/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}`;
-  if (factura) url += `&factura=${encodeURIComponent(factura)}`;
+  let url = `${HOST3}/api/facturacion/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}`;
+  if (factura) url += `&factura=${encodeURIComponent(factura.padStart(8, '0'))}`;
   if (razon_social) url += `&razon_social=${encodeURIComponent(razon_social)}`;
   if (rif) url += `&rif=${encodeURIComponent(rif)}`;
   Swal.fire({
@@ -223,8 +223,8 @@ async function cargarPagina(numeroPagina) {
   const razon_social = document.getElementById('razon_buscar').value.trim() + "%";
   const rif = document.getElementById('rif_buscar').value.trim() + "%";
 
-  let url = `/api/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}&pagina=${numeroPagina}`;
-  if (factura) url += `&factura=${encodeURIComponent(factura)}`;
+  let url = `${HOST3}/api/facturacion/examinar-facturas?id_cli=${encodeURIComponent(configs_token.id_cli)}&pagina=${numeroPagina}`;
+  if (factura) url += `&factura=${encodeURIComponent(factura.padStart(8, '0'))}`;
   if (razon_social) url += `&razon_social=${encodeURIComponent(razon_social)}`;
   if (rif) url += `&rif=${encodeURIComponent(rif)}`;
   try {
