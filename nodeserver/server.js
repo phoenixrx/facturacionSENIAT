@@ -461,9 +461,10 @@ app.get('/api/factura_admision', async (req, res) => {
   });
 });
 
-app.get('/api/consecutivos', async (req, res) => {
+app.get('/api/consecutivos', authenticateToken, async (req, res) => {
 
-  const { id_cli } = req.query;
+  const id_cli = req.user.id_cli;
+  const id_caja = req.user.caja_usuario;
 
   if (!id_cli) {
     return res.status(400).json({
@@ -492,7 +493,7 @@ app.get('/api/consecutivos', async (req, res) => {
             INNER JOIN 
             controles_talonarios ct ON ct.id_caja = c.id
         WHERE 
-            fc.id_cli = ? and ct.activo=1 and ct.actual<=ct.hasta`;
+            fc.id_cli = ? and ct.activo=1 and ct.actual<=ct.hasta and c.id=${id_caja}`;
 
   const params = [id_cli]
   try {
@@ -501,7 +502,6 @@ app.get('/api/consecutivos', async (req, res) => {
       return res.json({
         success: false,
         message: 'Error CON02 consecutivos agotados'
-
       })
     }
   } catch (error) {
@@ -511,6 +511,49 @@ app.get('/api/consecutivos', async (req, res) => {
       error: error.message
     });
   }
+
+  //revisar si el consecutivo no esta anulado
+  try {
+    let checkAnulado = await retornar_query(
+      `SELECT id FROM controles_anulados WHERE numero_control = ? AND id_cli = ? AND id_caja = ?`,
+      [consecutivos[0].actual, id_cli, id_caja]
+    )
+    if (checkAnulado) {
+      let actualizarControl = await retornar_query(
+        `UPDATE controles_talonarios SET actual = actual + 1 WHERE id_cli = ? AND id_caja = ?`,
+        [id_cli, id_caja]
+      )
+
+      if (consecutivos[0].actual + 1 > consecutivos[0].hasta) {
+        return res.json({
+          success: false,
+          message: 'Error CON02 consecutivos agotados'
+        })
+      }
+      res.json({
+        success: true,
+        consecutivos: {
+          "id": consecutivos[0].id,
+          "id_cli": consecutivos[0].id_cli,
+          "id_caja": consecutivos[0].id_caja,
+          "num_factura": consecutivos[0].num_factura,
+          "num_recibo": consecutivos[0].num_recibo,
+          "prefijo_factura": consecutivos[0].prefijo_factura,
+          "prefijo_recibo": consecutivos[0].prefijo_recibo,
+          "num_ndc": consecutivos[0].num_ndc,
+          "actual": consecutivos[0].actual + 1,
+          "hasta": consecutivos[0].hasta,
+          "caja": consecutivos[0].caja
+        }
+      });
+
+    }
+  } catch (error) {
+
+  }
+
+
+
   res.json({
     success: true,
     consecutivos: consecutivos
@@ -1209,6 +1252,7 @@ app.post('/api/examinar-facturas', authenticateToken, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error CON01',
+
       error: error.message
     });
   }

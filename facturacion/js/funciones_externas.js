@@ -4,7 +4,7 @@ let monedasObj = [];
 
 async function fetchFormaPagoMonedas() {
     const response = await fetch(
-        `${HOST2}/cargar_query`,
+        `${HOST3}/cargar_query`,
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -13,7 +13,7 @@ async function fetchFormaPagoMonedas() {
     );
     monedasObj = await response.json();
     let formasPago = await fetch(
-        `${HOST2}/cargar_query`,
+        `${HOST3}/cargar_query`,
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -22,7 +22,7 @@ async function fetchFormaPagoMonedas() {
     );
     formasPagoObj_usd = await formasPago.json();
     formasPago = await fetch(
-        `${HOST2}/cargar_query`,
+        `${HOST3}/cargar_query`,
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -41,7 +41,7 @@ async function tasa() {
         allowOutsideClick: () => false,
     });
     Swal.showLoading()
-    var url = `${HOST2}/api/bcv`;
+    var url = `${HOST3}/api/bcv`;
     try {
         let data = await fetch(url);
         let tasas = await data.json();
@@ -76,7 +76,7 @@ async function tasa() {
 async function opciones_tasa() {
     try {
         const response = await fetch(
-            "https://pruebas.siac.historiaclinica.org/cargar_query",
+            `${HOST3}/cargar_query`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -147,6 +147,7 @@ async function opciones() {
                 document.getElementById("factura_modal").setCustomValidity("Error cargando consecutivos");
                 return
             }
+
             let consecutivos_caja = consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
 
             if (consecutivos_caja.length == 0) {
@@ -193,9 +194,15 @@ async function consecutivos() {
         allowOutsideClick: () => false,
     });
     Swal.showLoading()
-    var url = `${HOST}/api/consecutivos/?id_cli=${configs_token.id_cli}`;
+    var url = `${HOST3}/api/facturacion/consecutivos`;
     try {
-        let consecutivos = await fetch(url);
+
+        let consecutivos = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         consecutivos = await consecutivos.json();
 
         if (consecutivos.error || consecutivos.success == false) {
@@ -247,7 +254,7 @@ async function fetchAdmisiones(pagina = 1, porPagina = 1000, tipos) {
             allowOutsideClick: () => false,
         });
         Swal.showLoading();
-        const response = await fetch(`${HOST}/admisiones_admidet`, {
+        const response = await fetch(`${HOST3}/api/facturacion/admisiones_admidet`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -520,7 +527,7 @@ async function fetchFormaPago() {
 async function fetchDescuentos(admisiones) {
 
     const response = await fetch(
-        `${HOST2}/api/promociones_admi/?admisiones=${admisiones}`,
+        `${HOST3}/api/promociones_admi/?admisiones=${admisiones}`,
         {
             method: "GET",
             headers: { "Content-Type": "application/json" },

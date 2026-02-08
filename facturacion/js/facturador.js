@@ -1,5 +1,7 @@
+const HOST3 = "https://siacm-be.onrender.com";
 const HOST = "https://facturacion.siac.historiaclinica.org";
 const HOST2 = "https://pruebas.siac.historiaclinica.org";
+
 const BASE_FORMATO = "https://siac.empresas.historiaclinica.org/"
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
@@ -26,7 +28,7 @@ let arreglo_pacientes = [];
 function get_config_token() {
     const token = localStorage.getItem("token");
 
-    fetch(`https://pruebas.siac.historiaclinica.org/decodifica`, {
+    fetch(`${HOST3}/decodifica`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`,

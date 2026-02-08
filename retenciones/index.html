@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,68 +8,68 @@
     <link href="../facturacion/css/sweetalert2.min.css" rel="stylesheet" />
     <script src="../facturacion/js/bootstrap.bundle.min.js"></script>
     <link href="../facturacion/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="../facturacion/js/lordicon.js"></script>     
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">     
-     <link rel="icon" type="image/x-icon" href="https://siac.empresas.historiaclinica.org/images/Imagen1.ico">
+    <script src="../facturacion/js/lordicon.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://siac.empresas.historiaclinica.org/images/Imagen1.ico">
     <title>SIAC-Retenciones</title>
 </head>
 <style>
-
-    body{
-        background-image: url("https://siacmedica.com/images/696/5902357/Honeycombshapebackgroundimage.png");    
+    body {
+        background-image: url("https://siacmedica.com/images/696/5902357/Honeycombshapebackgroundimage.png");
     }
-    .icon_ficha{
-    margin-right: 5px;
-    background: rgba( 0, 139, 139, 0.25 );
-    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-    /* navidadbackground: rgb(8 163 0 / 62%);
-    box-shadow: 0 8px 32px 0 rgb(133 135 31 / 37%);*/
-    backdrop-filter: blur( 4px );
-    -webkit-backdrop-filter: blur( 4px );
-    border-radius: 10px;
-  }
-  .sub_panel{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding-top: 1em;
-  }
-  .icon_text{
-    margin-right: 5px;
-  }
-   .panel div .fichas{
-   cursor: pointer;
-    display: flex;
-    align-items: center;
-    width: 165px;
-    /*navidadbackground: rgb(139 0 28 / 25%);
-    box-shadow: 0 8px 32px 0 rgb(135 126 31 / 72%);  */
-    background: rgba( 0, 139, 139, 0.25 );  
-    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-    backdrop-filter: blur( 4px );
-    -webkit-backdrop-filter: blur( 4px );
-    border-radius: 10px;
-  }
-  .panel div .fichas:hover{
-    box-shadow: 0 8px 32px 0 rgba(135, 133, 31, 0.37);
-    /*box-shadow: 0 8px 32px 0 rgba(55, 135, 31, 0.37);navidad */
-  }
 
+    .icon_ficha {
+        margin-right: 5px;
+        background: rgba(0, 139, 139, 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        /* navidadbackground: rgb(8 163 0 / 62%);
+    box-shadow: 0 8px 32px 0 rgb(133 135 31 / 37%);*/
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+    }
+
+    .sub_panel {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        padding-top: 1em;
+    }
+
+    .icon_text {
+        margin-right: 5px;
+    }
+
+    .panel div .fichas {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        width: 165px;
+        /*navidadbackground: rgb(139 0 28 / 25%);
+    box-shadow: 0 8px 32px 0 rgb(135 126 31 / 72%);  */
+        background: rgba(0, 139, 139, 0.25);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+    }
+
+    .panel div .fichas:hover {
+        box-shadow: 0 8px 32px 0 rgba(135, 133, 31, 0.37);
+        /*box-shadow: 0 8px 32px 0 rgba(55, 135, 31, 0.37);navidad */
+    }
 </style>
+
 <body class="container-md">
-<div class="row">
-    <h1 > <a href="" class="link-underline-dark tituloPrincipal">Sistema de Retenciones</a></h1>
-</div>
+    <div class="row">
+        <h1> <a href="" class="link-underline-dark tituloPrincipal">Sistema de Retenciones</a></h1>
+    </div>
     <div class="row panel mb-3 ">
         <div class=sub_panel id=sub_panel_1>
             <div class="fichas" id=ficha_iva>
                 <div class="icon_ficha">
-                     <lord-icon
-                        src="https://cdn.lordicon.com/adeleafr.json"
-                        trigger="hover"
-                        target='#ficha_iva'
-                        colors="primary:#121331,secondary:#ffc738,tertiary:#66ee78"
-                        style="width:50px;height:50px;">
+                    <lord-icon src="https://cdn.lordicon.com/adeleafr.json" trigger="hover" target='#ficha_iva'
+                        colors="primary:#121331,secondary:#ffc738,tertiary:#66ee78" style="width:50px;height:50px;">
                     </lord-icon>
                 </div>
                 <div class=icon_text>
@@ -76,11 +77,8 @@
                 </div>
             </div>
             <div class="fichas" id=ficha_islr>
-                <div class="icon_ficha" >
-                    <lord-icon
-                        src="https://cdn.lordicon.com/adeleafr.json"
-                        trigger="hover"
-                        target='#ficha_islr'
+                <div class="icon_ficha">
+                    <lord-icon src="https://cdn.lordicon.com/adeleafr.json" trigger="hover" target='#ficha_islr'
                         colors="primary:#121331,secondary:#66ee78,tertiary:#ffc738"
                         style="width:50px;height:50px;transform: rotate(180deg);">
                     </lord-icon>
@@ -91,10 +89,7 @@
             </div>
             <div class="fichas" id=ficha_relaciones>
                 <div class="icon_ficha">
-                    <lord-icon
-                        src="https://cdn.lordicon.com/tbabdzcy.json"
-                        trigger="hover"
-                        target='#ficha_relaciones'
+                    <lord-icon src="https://cdn.lordicon.com/tbabdzcy.json" trigger="hover" target='#ficha_relaciones'
                         style="width:50px;height:50px;">
                     </lord-icon>
 
@@ -108,89 +103,91 @@
     <div class="contenedorPrincipal">
         <h3 class="m-3">Seleccione un módulo para empezar...</h3>
     </div>
-    
+
 
 </body>
+
 </html>
-<script>    
+<script>
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    const HOST = "https://siacm-be.onrender.com";
     window.configs_token = [];
-    
+
     if (token) {
-        
-      localStorage.setItem("token", token);
-      
-      get_config_token()
-      
+
+        localStorage.setItem("token", token);
+
+        get_config_token()
+
     }
 
-    function get_config_token () {
+    function get_config_token() {
         const token = localStorage.getItem("token");
 
-        fetch(`https://pruebas.siac.historiaclinica.org/decodifica`, {
-          method: "GET",
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
+        fetch(`${HOST}/decodifica`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         })
-        .then((response) => response.json())
-        .then((data) => {            
-            configs_token = data;
-            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-            const expirationTime = configs_token.exp; // Expiration time in seconds
-            const timeRemaining = expirationTime - currentTime;
-      
-            if (timeRemaining <= 0) {
-                console.log("Token has already expired.");
-                window.location.href = 'https://siac.empresas.historiaclinica.org/login.php'
-                return;
-              }
-              /*
-              if(buscarPermisoFacturar("abrir")!="1"){
-                const botonera = document.querySelector('.botonera');
-                if (botonera) {
-                    botonera.remove();
+            .then((response) => response.json())
+            .then((data) => {
+                configs_token = data;
+                const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+                const expirationTime = configs_token.exp; // Expiration time in seconds
+                const timeRemaining = expirationTime - currentTime;
+
+                if (timeRemaining <= 0) {
+                    console.log("Token has already expired.");
+                    window.location.href = 'https://siac.empresas.historiaclinica.org/login.php'
+                    return;
                 }
-                Swal.fire({
-                    title: "Permisos",
-                    text: "No tienes permisos para facturar",
-                    icon: "info",
-                    confirmButtonColor: "#008b8b",
-                    allowOutsideClick: false
-                }).then(() => {
-                    window.location.href = "https://siac.empresas.historiaclinica.org/index.php";
-                })
-                return;
-              }
-            primera_carga();*/
-        })
-        
-            return configs_token;
+                /*
+                if(buscarPermisoFacturar("abrir")!="1"){
+                  const botonera = document.querySelector('.botonera');
+                  if (botonera) {
+                      botonera.remove();
+                  }
+                  Swal.fire({
+                      title: "Permisos",
+                      text: "No tienes permisos para facturar",
+                      icon: "info",
+                      confirmButtonColor: "#008b8b",
+                      allowOutsideClick: false
+                  }).then(() => {
+                      window.location.href = "https://siac.empresas.historiaclinica.org/index.php";
+                  })
+                  return;
+                }
+              primera_carga();*/
+            })
+
+        return configs_token;
     }
 
-document.getElementById("ficha_iva").addEventListener("click",function (){
-    
-    document.getElementById("sub_panel_1").style.display="none";
-    document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - IVA <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
-    document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="iva/retencionIva.html" style="width:100%;height:665px;"></object>';
-})
-document.getElementById("ficha_islr").addEventListener("click",function (){
-    document.getElementById("sub_panel_1").style.display="none";
-    document.querySelector(".tituloPrincipal").innerHTML="Sistema de Retenciones - ISLR <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
-    document.querySelector(".contenedorPrincipal").innerHTML='<object type="text/html" data="islr/retencionIslr.html" style="width:100%;height:665px;"></object>';
-})
+    document.getElementById("ficha_iva").addEventListener("click", function () {
 
-document.getElementById("ficha_relaciones").addEventListener("click",function (){
-     const token = localStorage.getItem("token");
-            if (token) {
-                const url = `https://facturacion.siac.historiaclinica.org/retenciones/reportes/reporte.html?token=${encodeURIComponent(token)}`;
-                window.open(url, "_blank");
-            } else {
-                activar_modal("Token no encontrado, vuelva a iniciar session", "err");
-            }
-    
-})
+        document.getElementById("sub_panel_1").style.display = "none";
+        document.querySelector(".tituloPrincipal").innerHTML = "Sistema de Retenciones - IVA <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
+        document.querySelector(".contenedorPrincipal").innerHTML = '<object type="text/html" data="iva/retencionIva.html" style="width:100%;height:665px;"></object>';
+    })
+    document.getElementById("ficha_islr").addEventListener("click", function () {
+        document.getElementById("sub_panel_1").style.display = "none";
+        document.querySelector(".tituloPrincipal").innerHTML = "Sistema de Retenciones - ISLR <i class='bi bi-arrow-return-left' style='font-size: smaller;'></i>";
+        document.querySelector(".contenedorPrincipal").innerHTML = '<object type="text/html" data="islr/retencionIslr.html" style="width:100%;height:665px;"></object>';
+    })
+
+    document.getElementById("ficha_relaciones").addEventListener("click", function () {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const url = `https://facturacion.siac.historiaclinica.org/retenciones/reportes/reporte.html?token=${encodeURIComponent(token)}`;
+            window.open(url, "_blank");
+        } else {
+            activar_modal("Token no encontrado, vuelva a iniciar session", "err");
+        }
+
+    })
 
 
 </script>
