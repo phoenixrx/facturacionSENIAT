@@ -1,13 +1,13 @@
-document.getElementById('btn_new_iva').addEventListener('click', function() {    
+document.getElementById('btn_new_iva').addEventListener('click', function () {
     limpiarTodo();
     document.getElementById("rif_iva").focus()
     document.getElementById('btn_sav_iva').classList.remove('pe-none')
     document.getElementById("num_comprobante").classList.remove("is-valid");
 })
 
-document.getElementById('btn_sav_iva').addEventListener('click', function() {
-    
-    if(contribuyente == 0){
+document.getElementById('btn_sav_iva').addEventListener('click', function () {
+
+    if (contribuyente == 0) {
         Swal.fire({
             title: 'Debe seleccionar un proveedor',
             icon: 'info',
@@ -16,7 +16,7 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         return;
     }
 
-    if(retencionIva != 0){
+    if (retencionIva != 0) {
         Swal.fire({
             title: 'Esta retención ya fue creada',
             icon: 'info',
@@ -24,7 +24,7 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         });
         return;
     }
-    
+
     recalcular();
 
     let baseImponible = parseFloat(document.getElementById("totalBaseImponible").value) || 0;
@@ -36,18 +36,7 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
     let totalDocumento = parseFloat(document.getElementById("totalDocumento").value) || 0;
 
     // Validaciones
-    if(baseImponible < 1){
-        Swal.fire({
-            title: 'Debe ingresar una base imponible',
-            icon: 'info',
-            confirmButtonText: 'Ok'
-        });
-        document.getElementById("totalBaseImponible").focus();
-        document.getElementById("totalBaseImponible").classList.add("is-invalid");
-        return;
-    }    
-
-    if(document.getElementById("numeroDocumento").value.length < 3){
+    if (document.getElementById("numeroDocumento").value.length < 3) {
         Swal.fire({
             title: 'Debe ingresar un número de documento',
             icon: 'info',
@@ -58,7 +47,7 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         return;
     }
 
-    if(document.getElementById("numeroControl").value.length < 3){
+    if (document.getElementById("numeroControl").value.length < 3) {
         Swal.fire({
             title: 'Debe ingresar un número de control',
             icon: 'info',
@@ -68,18 +57,9 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         document.getElementById("numeroControl").classList.add("is-invalid");
         return;
     }
-    
-    if(totalIva < 1){
-        Swal.fire({
-            title: 'El documento no posee IVA',
-            icon: 'info',
-            confirmButtonText: 'Ok'
-        });
-        document.getElementById("totalBaseImponible").focus();
-        document.getElementById("totalBaseImponible").classList.add("is-invalid");
-        return;
-    }
-    if(totalDocumento < 1){
+
+
+    if (totalDocumento <= 0) {
         Swal.fire({
             title: 'El documento no posee un total válido',
             icon: 'info',
@@ -90,7 +70,60 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         return;
     }
 
-    // Preparar datos según la estructura del endpoint
+    let detalles = [];
+    let rowDetalles = document.querySelectorAll(".rowRetencion");
+    if (rowDetalles.length > 0) {
+
+        rowDetalles.forEach(row => {
+            detalles.push({
+                base_imponible: row.dataset.baseImponible,
+                alicuota: row.dataset.alicuota,
+                porcentaje_retener: row.dataset.porcentajeRetener,
+                total_iva_retenido: row.dataset.totalIvaRetenido,
+                total_iva: row.dataset.totalIva,
+                total_documento: row.dataset.totalDocumento,
+                total_pagado: row.dataset.totalPagado,
+                id_cli: row.dataset.idCli
+            });
+            totalIva += parseFloat(row.dataset.totalIva);
+            baseImponible += parseFloat(row.dataset.baseImponible);
+            totalIvaRetenido += parseFloat(row.dataset.totalIvaRetenido);
+        });
+    } else {
+        detalles.push({
+            base_imponible: baseImponible,
+            alicuota: alicuota,
+            porcentaje_retener: porcentajeRetener,
+            total_iva_retenido: totalIvaRetenido,
+            total_iva: totalIva,
+            total_documento: totalDocumento,
+            total_pagado: totalDocumento,
+            id_cli: contribuyente
+        });
+    }
+
+    if (totalIva <= 0) {
+        Swal.fire({
+            title: 'El documento no posee IVA',
+            icon: 'info',
+            confirmButtonText: 'Ok'
+        });
+        document.getElementById("totalBaseImponible").focus();
+        document.getElementById("totalBaseImponible").classList.add("is-invalid");
+        return;
+    }
+
+    if (baseImponible < 1) {
+        Swal.fire({
+            title: 'Debe ingresar una base imponible',
+            icon: 'info',
+            confirmButtonText: 'Ok'
+        });
+        document.getElementById("totalBaseImponible").focus();
+        document.getElementById("totalBaseImponible").classList.add("is-invalid");
+        return;
+    }
+
     let data = {
         id_proveedor: contribuyente,
         fecha_retencion: document.getElementById("fecha_operacion").value,
@@ -107,9 +140,10 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         porcent_retencion: porcentajeRetener,
         base_imponible: baseImponible,
         alicuota: alicuota,
-        id_usuario:  parent.configs_token.id_usuario,        
+        id_usuario: parent.configs_token.id_usuario,
         total_pagado: totalDocumento, // Asumiendo que el total pagado es igual al total del documento
-        id_cli:  parent.configs_token.id_cli
+        id_cli: parent.configs_token.id_cli,
+        detalles: detalles
     };
     this.classList.add('pe-none')
     Swal.fire({
@@ -129,68 +163,68 @@ document.getElementById('btn_sav_iva').addEventListener('click', function() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then(result => {
-        Swal.close();
-        if (result.success) {
-            Swal.fire({
-                title: 'Éxito',
-                text: 'Retención guardada correctamente',
-                icon: 'success',
-                allowOutsideClick: false,
-            });
-            // Si el endpoint retorna algún número de comprobante
-            if (result.data && result.data.insertId && result.numeroComprobante) {   
-                retencionIva = result.data.insertId;                
-                document.getElementById("num_comprobante").value = result.numeroComprobante;
-                document.getElementById("fechaEmision").value = result.fechaEmision;
-                let invalidos = document.querySelectorAll('.is-invalid');
-                invalidos.forEach(input => {
-                    input.classList.remove('is-invalid');
+        .then(response => response.json())
+        .then(result => {
+            Swal.close();
+            if (result.success) {
+                Swal.fire({
+                    title: 'Éxito',
+                    text: 'Retención guardada correctamente',
+                    icon: 'success',
+                    allowOutsideClick: false,
                 });
-                document.getElementById("num_comprobante").classList.add("is-valid");
+                // Si el endpoint retorna algún número de comprobante
+                if (result.data && result.data.insertId && result.numeroComprobante) {
+                    retencionIva = result.data.insertId;
+                    document.getElementById("num_comprobante").value = result.numeroComprobante;
+                    document.getElementById("fechaEmision").value = result.fechaEmision;
+                    let invalidos = document.querySelectorAll('.is-invalid');
+                    invalidos.forEach(input => {
+                        input.classList.remove('is-invalid');
+                    });
+                    document.getElementById("num_comprobante").classList.add("is-valid");
 
+                }
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: result.error || 'Error al guardar la retención',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+                this.classList.remove('pe-none')
             }
-        } else {
+        })
+        .catch(error => {
+            Swal.close();
             Swal.fire({
-                title: 'Error',
-                text: result.error || 'Error al guardar la retención',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor',
                 icon: 'error',
                 confirmButtonText: 'Ok'
             });
             this.classList.remove('pe-none')
-        }
-    })
-    .catch(error => {
-        Swal.close();
-        Swal.fire({
-            title: 'Error de conexión',
-            text: 'No se pudo conectar con el servidor',
-            icon: 'error',
-            confirmButtonText: 'Ok'
+            console.error('Error:', error);
         });
-        this.classList.remove('pe-none')
-        console.error('Error:', error);
-    });
 });
 
 document.querySelectorAll('.retencionInput').forEach(item => {
     item.addEventListener('change', event => {
-        if(retencionIva == 0){
+        if (retencionIva == 0) {
             return;
         }
         let c = item.dataset.campo;
         let v = null;
         v = item.value;
-        actualizarRetencion(c,v, item)
+        actualizarRetencion(c, v, item)
 
     })
 })
 
-async function actualizarRetencion(c,v, elemento) {  
+async function actualizarRetencion(c, v, elemento) {
     Swal.fire({
         title: 'Actualizando...',
-        icon:'info',
+        icon: 'info',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -200,36 +234,36 @@ async function actualizarRetencion(c,v, elemento) {
         `https://facturacion.siac.historiaclinica.org/api/retenciones/iva/${retencionIva}`,
         {
             method: "PUT",
-            headers: { 
-                "Content-Type": "application/json", 
+            headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             },
             body: JSON.stringify({ c: c, v: v })
         }
     );
-    const retencion = await response.json();  
+    const retencion = await response.json();
     Swal.close()
     if (retencion.error) {
         Swal.fire({
-                title: 'Error',
-                text: retencion.error,
-                icon:'info',
-                allowOutsideClick: false,                
-            });            
-            elemento.classList.add("is-invalid");        
-            return;
+            title: 'Error',
+            text: retencion.error,
+            icon: 'info',
+            allowOutsideClick: false,
+        });
+        elemento.classList.add("is-invalid");
+        return;
     }
     elemento.classList.add("is-valid");
-    return;   
+    return;
 }
 
-function limpiarTodo(){
-    contribuyente=0;
-    retencionIva=0;
+function limpiarTodo() {
+    contribuyente = 0;
+    retencionIva = 0;
     document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
         input.value = '';
     });
- 
+
     document.getElementById('juridico').checked = true;
     document.getElementById('natural').checked = false;
     document.getElementById('contribuyenteResidente').checked = true;
@@ -250,8 +284,8 @@ function limpiarTodo(){
     recalcular();
 }
 
-document.getElementById('btn_delete_iva').addEventListener('click', async function() {
-    if(retencionIva == 0){
+document.getElementById('btn_delete_iva').addEventListener('click', async function () {
+    if (retencionIva == 0) {
         Swal.fire({
             title: 'Debe seleccionar una retención',
             icon: 'info',
@@ -276,38 +310,38 @@ document.getElementById('btn_delete_iva').addEventListener('click', async functi
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    Swal.fire(
-                        '¡Anulada!',
-                        'La retención ha sido anulada.',
-                        'success'
-                    );
-                    limpiarTodo();
-                } else {
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        Swal.fire(
+                            '¡Anulada!',
+                            'La retención ha sido anulada.',
+                            'success'
+                        );
+                        limpiarTodo();
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: result.error || 'Error al anular la retención',
+                            icon: 'error',
+                            confirmButtonText: 'Ok'
+                        });
+                    }
+                })
+                .catch(error => {
                     Swal.fire({
-                        title: 'Error',
-                        text: result.error || 'Error al anular la retención',
+                        title: 'Error de conexión',
+                        text: 'No se pudo conectar con el servidor',
                         icon: 'error',
                         confirmButtonText: 'Ok'
                     });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Error de conexión',
-                    text: 'No se pudo conectar con el servidor',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
+                    console.error('Error:', error);
                 });
-                console.error('Error:', error);
-            });
         }
     });
 });
-document.getElementById('btn_print_iva').addEventListener('click', function() {
-    if(retencionIva == 0){
+document.getElementById('btn_print_iva').addEventListener('click', function () {
+    if (retencionIva == 0) {
         Swal.fire({
             title: 'Debe seleccionar una retención',
             icon: 'info',

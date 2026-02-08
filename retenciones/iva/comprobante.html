@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../../facturacion/js/sweetalert2.all.min.js"></script>
     <link href="../../facturacion/css/sweetalert2.min.css" rel="stylesheet" />
-    <script src="../auxiliares.js"></script>   
+    <script src="../auxiliares.js"></script>
     <script src="../../facturacion/js/bootstrap.bundle.min.js"></script>
-    <link href="../../facturacion/css/bootstrap.min.css" rel="stylesheet" />    
+    <link href="../../facturacion/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="https://siac.empresas.historiaclinica.org/images/Imagen1.ico">
     <title>SIAC-Comprobante IVA</title>
 </head>
@@ -15,18 +16,21 @@
     html {
         background-color: lightgrey;
     }
-    td{
-        padding: .2rem!important;
+
+    td {
+        padding: .2rem !important;
     }
-    .totales{
+
+    .totales {
         font-size: large;
         font-weight: bold;
     }
-    .totales>span{
+
+    .totales>span {
         font-size: large;
         font-weight: bold;
     }
-   
+
     body {
         overflow-y: scroll;
         background-color: white;
@@ -42,39 +46,52 @@
         font-size: 10pt;
         box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
     }
-    span, b, .nota {
+
+    span,
+    b,
+    .nota {
         font-size: 8pt;
     }
-    tr, th, th>span {
+
+    tr,
+    th,
+    th>span {
         font-size: 7pt;
     }
-    div.nota{
+
+    div.nota {
         line-height: 75%;
     }
+
     @media print {
         body {
-            box-shadow: none;                  
+            box-shadow: none;
         }
+
         html {
-        background-color: white!important;
-        transform: rotate(90deg);
+            background-color: white !important;
+            transform: rotate(90deg);
         }
     }
 </style>
 <div class="d-print-none" style="padding: .375rem .75rem !Important;position: fixed;
     top: 2.5em;
     right: 0;z-index:1022">
-    <button type="button" class="btn btn-success d-print-none" id="cargarExcel" >Excel</button>
-    <button type="button" class="btn btn-danger d-print-none" id="cargarPdf" >PDF</button>   
+    <button type="button" class="btn btn-success d-print-none" id="cargarExcel">Excel</button>
+    <button type="button" class="btn btn-danger d-print-none" id="cargarPdf">PDF</button>
 </div>
-<body class="hoja d-flex flex-column">    
+
+<body class="hoja d-flex flex-column">
     <div class="row mt-3">
         <div class="col-10">
             <h4 class="text-center mb-1">COMPROBANTE DE RETENCIÓN DE IMPUESTO AL VALOR AGREGADO I.V.A.</h4>
-        <div class="text-center nota"><small class="text-muted ">Ley IVA - Articulo 11:  La administracion Tributaria podrá designar como responsable del pago del impuesto, en calidad de agentes de retencion, a quienes por sus funciones públicas o por razon de sus actividades privadas intervengan en operaciones gravadas con el impuesto establecido en este decreto cn Rango, Valor y Fuerza de Ley</small></div>
+            <div class="text-center nota"><small class="text-muted ">Ley IVA - Articulo 11: La administracion Tributaria
+                    podrá designar como responsable del pago del impuesto, en calidad de agentes de retencion, a quienes
+                    por sus funciones públicas o por razon de sus actividades privadas intervengan en operaciones
+                    gravadas con el impuesto establecido en este decreto cn Rango, Valor y Fuerza de Ley</small></div>
         </div>
         <div class="col-2 logo"></div>
-    </div>    
+    </div>
     <hr class="my-3">
     <div class="row">
         <div class="col-2"></div>
@@ -161,12 +178,12 @@
             </table>
         </div>
     </div>
-    <div class="row mt-1 mb-3 mx-1">  
-          
+    <div class="row mt-1 mb-3 mx-1">
+
         <div class="col-6 border text-end totales">Total pagado Bs. <span id="totalPagado"></span></div>
         <div class="col-6 border totales">Total retenido Bs. <span id="totalRetenido"></span></div>
     </div>
-    <div class="row mt-3">        
+    <div class="row mt-3">
         <div class="col-6 mt-3 text-center ">
             ___________________________________________<br>
             El agente de Retención
@@ -179,16 +196,18 @@
     <footer class="mt-auto">
         <div class="row border-top border-bottom border-2 border-dark mx-1">
             <b><small>Este comprobante se emite cumpliendo con lo establecido en la Providencia
-                Administrativa SNAT/2025/000054 de fecha 02/07/2025, publicada en Gaceta Oficial N° 43.171 de Fecha
-                16 de Julio de 2025</small>
+                    Administrativa SNAT/2025/000054 de fecha 02/07/2025, publicada en Gaceta Oficial N° 43.171 de Fecha
+                    16 de Julio de 2025</small>
             </b>
         </div>
         <div>
-            <small class="text-muted">SIACmedica - Retenciones IVA <span id="version">1.0.0</span> Software administrativo clinico desarrollado por JSH13 CodeStudio, C.A. - www.siacmedica.com</small>
+            <small class="text-muted">SIACmedica - Retenciones IVA <span id="version">1.0.0</span> Software
+                administrativo clinico desarrollado por JSH13 CodeStudio, C.A. - www.siacmedica.com</small>
         </div>
     </footer>
 
 </body>
+
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -269,7 +288,7 @@
                 // Llenar encabezado
                 document.getElementById('num_comprobante').textContent = primerComprobante.numero_comprobante;
                 document.getElementById('fechaEmision').textContent = formatearFecha(primerComprobante.fecha_creacion);
-                
+
                 const fechaRetencion = new Date(primerComprobante.fecha_retencion);
                 document.getElementById('periodoFiscal').textContent = `Año: ${fechaRetencion.getFullYear()} Mes: ${String(fechaRetencion.getMonth() + 1).padStart(2, '0')}`;
 
@@ -300,37 +319,44 @@
                     totalBaseImponible += parseFloat(data.base_imponible);
                     totalImpuestoIva += parseFloat(data.total_iva);
                     totalIvaRetenidoAcumulado += parseFloat(data.total_iva_retenido);
-                    let tipoD =""
-                    switch (data.id_tipo_documento ) {
+                    let tipoD = ""
+                    switch (data.id_tipo_documento) {
                         case 1:
-                            tipoD='Factura';
+                            tipoD = 'Factura';
                             break;
                         case 2:
-                            tipoD='NDD';
+                            tipoD = 'NDD';
                             break;
                         case 3:
-                            tipoD='NDC';
+                            tipoD = 'NDC';
                             break;
                         default:
                             break;
                     }
-                    filasHtml += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${formatearFecha(data.fecha_retencion)}</td>
-                        <td>${tipoD}</td>
+                    let detalle = data.detalles;
+                    let totalExento = formatearMonto(data.total_exento);
+                    let totalCompra = formatearMonto(data.total_documento);
+                    detalle.forEach((detalle, index) => {
+                        filasHtml += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${formatearFecha(data.fecha_retencion)}</td>
+                            <td>${tipoD}</td>
                         <td>${data.numero_documento}</td>
                         <td>${data.numero_control}</td>
                         <td>${data.numero_afectado}</td>
                         <td>${data.tipo}</td>
-                        <td>${formatearMonto(data.total_documento)}</td>
-                        <td>${formatearMonto(data.total_exento)}</td>
-                        <td>${formatearMonto(data.base_imponible)}</td>
-                        <td>${formatearMonto(data.alicuota)}</td>
-                        <td>${formatearMonto(data.total_iva)}</td>
-                        <td>${formatearMonto(data.total_iva_retenido)}</td>
+                        <td>${totalCompra}</td>
+                        <td>${totalExento}</td>
+                        <td>${formatearMonto(detalle.base_imponible)}</td>
+                        <td>${formatearMonto(detalle.alicuota)}</td>
+                        <td>${formatearMonto(detalle.total_impuesto)}</td>
+                        <td>${formatearMonto(detalle.total_retenido)}</td>
                     </tr>
                     `;
+                        totalExento = "-"
+                        totalCompra = "-"
+                    });
                 });
 
                 cuerpoTabla.innerHTML = filasHtml;
@@ -356,7 +382,7 @@
                 // Logo
                 if (primerComprobante.logo) {
                     const logoContainer = document.querySelector('.logo');
-                    let logo=primerComprobante.logo.replace('../', '');
+                    let logo = primerComprobante.logo.replace('../', '');
                     logoContainer.innerHTML = `<img src="https://siac.empresas.historiaclinica.org/${logo}" alt="Logo" style="max-width: auto; height: 50px;">`;
                 }
 
@@ -369,88 +395,88 @@
         }
     }
 
-    
-document.getElementById('cargarPdf').addEventListener('click', function() {
-    generarPDF(this.dataset.nombre)
-})
 
-document.getElementById('cargarExcel').addEventListener('click', function() {
-    tabletoExcel('comprobante')
-})
+    document.getElementById('cargarPdf').addEventListener('click', function () {
+        generarPDF(this.dataset.nombre)
+    })
 
-function generarPDF(nombre) {
-    // Ocultar elementos no deseados
-    const elementosOcultos = document.querySelectorAll('.d-print-none');
-    elementosOcultos.forEach(el => el.classList.add('d-none'));
-    
-    // Guardar estilos originales del body
-    const originalStyles = {
-        boxShadow: document.body.style.boxShadow,
-        margin: document.body.style.margin,
-        width: document.body.style.width,
-        maxWidth: document.body.style.maxWidth
-    };
-    
-    // Temporalmente ajustar el body para la captura
-    document.body.style.boxShadow = 'none';
-    document.body.style.margin = '0';
-    document.body.style.width = '100%';
-    document.body.style.maxWidth = '100%';
-    
-    const options = {
-        scale: 1,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        scrollX: 0,
-        scrollY: 0,
-        onclone: function(clonedDoc) {
-            // Asegurar que el clone también tenga los estilos ajustados
-            clonedDoc.body.style.boxShadow = 'none';
-            clonedDoc.body.style.margin = '0';
-            clonedDoc.body.style.width = '100%';
-            clonedDoc.body.style.maxWidth = '100%';
-            clonedDoc.body.style.padding = '0';
-        }
-    };
+    document.getElementById('cargarExcel').addEventListener('click', function () {
+        tabletoExcel('comprobante')
+    })
 
-    setTimeout(() => {
-        // Capturar solo el contenido del body, no todo el viewport
-        html2canvas(document.body, options).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            
-            const pdf = new jspdf.jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'letter'
+    function generarPDF(nombre) {
+        // Ocultar elementos no deseados
+        const elementosOcultos = document.querySelectorAll('.d-print-none');
+        elementosOcultos.forEach(el => el.classList.add('d-none'));
+
+        // Guardar estilos originales del body
+        const originalStyles = {
+            boxShadow: document.body.style.boxShadow,
+            margin: document.body.style.margin,
+            width: document.body.style.width,
+            maxWidth: document.body.style.maxWidth
+        };
+
+        // Temporalmente ajustar el body para la captura
+        document.body.style.boxShadow = 'none';
+        document.body.style.margin = '0';
+        document.body.style.width = '100%';
+        document.body.style.maxWidth = '100%';
+
+        const options = {
+            scale: 1,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            onclone: function (clonedDoc) {
+                // Asegurar que el clone también tenga los estilos ajustados
+                clonedDoc.body.style.boxShadow = 'none';
+                clonedDoc.body.style.margin = '0';
+                clonedDoc.body.style.width = '100%';
+                clonedDoc.body.style.maxWidth = '100%';
+                clonedDoc.body.style.padding = '0';
+            }
+        };
+
+        setTimeout(() => {
+            // Capturar solo el contenido del body, no todo el viewport
+            html2canvas(document.body, options).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+
+                const pdf = new jspdf.jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'letter'
+                });
+
+                // Dimensiones del PDF (formato carta: 216x279 mm)
+                const pdfWidth = 279;
+                const pdfHeight = 216;
+
+                // Calcular relación de aspecto
+                const aspectRatio = canvas.width / canvas.height;
+
+                // Ajustar para que ocupe el 98% del ancho del PDF
+                const imgWidth = pdfWidth * 0.98;
+                const imgHeight = imgWidth / aspectRatio;
+
+                // Centrar en la página
+                const x = (pdfWidth - imgWidth) / 2;
+                const y = (pdfHeight - imgHeight) / 2;
+
+                pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+                pdf.save(nombre + '.pdf');
+
+                // Restaurar elementos y estilos
+                elementosOcultos.forEach(el => el.classList.remove('d-none'));
+                document.body.style.boxShadow = originalStyles.boxShadow;
+                document.body.style.margin = originalStyles.margin;
+                document.body.style.width = originalStyles.width;
+                document.body.style.maxWidth = originalStyles.maxWidth;
             });
-            
-            // Dimensiones del PDF (formato carta: 216x279 mm)
-            const pdfWidth = 279;
-            const pdfHeight = 216;
-            
-            // Calcular relación de aspecto
-            const aspectRatio = canvas.width / canvas.height;
-            
-            // Ajustar para que ocupe el 98% del ancho del PDF
-            const imgWidth = pdfWidth * 0.98;
-            const imgHeight = imgWidth / aspectRatio;
-            
-            // Centrar en la página
-            const x = (pdfWidth - imgWidth) / 2;
-            const y = (pdfHeight - imgHeight) / 2;
-            
-            pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
-            pdf.save(nombre + '.pdf');
-            
-            // Restaurar elementos y estilos
-            elementosOcultos.forEach(el => el.classList.remove('d-none'));
-            document.body.style.boxShadow = originalStyles.boxShadow;
-            document.body.style.margin = originalStyles.margin;
-            document.body.style.width = originalStyles.width;
-            document.body.style.maxWidth = originalStyles.maxWidth;
-        });
-    }, 200);
-}
+        }, 200);
+    }
 
 
 </script>

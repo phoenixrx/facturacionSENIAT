@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,136 +8,143 @@
     <link href="../../facturacion/css/sweetalert2.min.css" rel="stylesheet" />
     <script src="../../facturacion/js/bootstrap.bundle.min.js"></script>
     <link href="../../facturacion/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="../../facturacion/js/lordicon.js"></script>  
-     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">         
+    <script src="../../facturacion/js/lordicon.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <title>SIAC-Retenciones IVA</title>
 </head>
 <style>
+    img.botonera {
+        width: 30px;
+        height: 30px;
+    }
 
-img.botonera {
-  width: 30px;
-  height: 30px;
-}
-.svg.disk_save.botonera:hover{
-  outline-color: aliceblue;
-  outline-style: ridge;
-  border-radius: 3px;
-  background-color: aliceblue;
-}
-.svg.disk_save.botonera{
-  cursor: pointer;
-}
-.svg.disk_save.botonera.pe-none{
-    background: lightgrey;
-}
+    .svg.disk_save.botonera:hover {
+        outline-color: aliceblue;
+        outline-style: ridge;
+        border-radius: 3px;
+        background-color: aliceblue;
+    }
 
-.botoneras div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  
-}
+    .svg.disk_save.botonera {
+        cursor: pointer;
+    }
 
-aside div.botonera {
-  /* width: 0px; */
-  font-size: small;
-  padding: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: white;
-  box-shadow: rgba(6, 24, 44, 0.4) -1px -1px 0px 1px,
-    rgba(6, 24, 44, 0.65) -1px -5px 6px -1px,
-    rgba(255, 255, 255, 0.08) 0px 0px 0px inset;
-  border-right: solid rgba(6, 24, 44, 0.4) 1px;
-  gap: 5px;
-}
-.botoneras {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  background-color: white;
-}
-.contribTitle{
-    position: relative;
-    top: -10px;
-    left: 10px;
-    width: fit-content;
-}
-.modal-xl {
-    --bs-modal-width: 800px!important;
-} 
-#tablaResultadosBusqueda th {
-    font-size: 0.85rem;
-    white-space: nowrap;
-}
-#tablaResultadosBusqueda td {
-    font-size: 0.8rem;
-    vertical-align: middle;
-}
-.form-check-input {
-    margin: 0;
-    cursor: pointer;
-}
-.table-danger {
-    background-color: #ffebee !important;
-}
-.table-danger:hover {
-    background-color: #ffcdd2 !important;
-}
-.badge {
-    font-size: 0.75rem;
-}
+    .svg.disk_save.botonera.pe-none {
+        background: lightgrey;
+    }
 
-/* Estilos para filas seleccionadas */
-#cuerpoTablaResultados tr {
-    transition: background-color 0.15s ease;
-}
+    .botoneras div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
-#cuerpoTablaResultados tr:hover {
-    background-color: #f8f9fa !important;
-}
+    }
 
-#cuerpoTablaResultados tr.table-danger:hover {
-    background-color: #ffcdd2 !important;
-}
+    aside div.botonera {
+        /* width: 0px; */
+        font-size: small;
+        padding: 5px;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: white;
+        box-shadow: rgba(6, 24, 44, 0.4) -1px -1px 0px 1px,
+            rgba(6, 24, 44, 0.65) -1px -5px 6px -1px,
+            rgba(255, 255, 255, 0.08) 0px 0px 0px inset;
+        border-right: solid rgba(6, 24, 44, 0.4) 1px;
+        gap: 5px;
+    }
 
-/* Estilo para fila seleccionada */
-#cuerpoTablaResultados tr.selected {
-    background-color: #e3f2fd !important;
-}
+    .botoneras {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        background-color: white;
+    }
 
-#cuerpoTablaResultados tr.table-danger.selected {
-    background-color: #ffcdd2 !important;
-}
+    .contribTitle {
+        position: relative;
+        top: -10px;
+        left: 10px;
+        width: fit-content;
+    }
 
-/* Evitar selección de texto al hacer clic */
-#cuerpoTablaResultados tr {
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
+    .modal-xl {
+        --bs-modal-width: 800px !important;
+    }
+
+    #tablaResultadosBusqueda th {
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    #tablaResultadosBusqueda td {
+        font-size: 0.8rem;
+        vertical-align: middle;
+    }
+
+    .form-check-input {
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .table-danger {
+        background-color: #ffebee !important;
+    }
+
+    .table-danger:hover {
+        background-color: #ffcdd2 !important;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+    }
+
+    /* Estilos para filas seleccionadas */
+    #cuerpoTablaResultados tr {
+        transition: background-color 0.15s ease;
+    }
+
+    #cuerpoTablaResultados tr:hover {
+        background-color: #f8f9fa !important;
+    }
+
+    #cuerpoTablaResultados tr.table-danger:hover {
+        background-color: #ffcdd2 !important;
+    }
+
+    /* Estilo para fila seleccionada */
+    #cuerpoTablaResultados tr.selected {
+        background-color: #e3f2fd !important;
+    }
+
+    #cuerpoTablaResultados tr.table-danger.selected {
+        background-color: #ffcdd2 !important;
+    }
+
+    /* Evitar selección de texto al hacer clic */
+    #cuerpoTablaResultados tr {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
 </style>
+
 <body>
-    <div class="ms-3 me-3">                         
+    <div class="ms-3 me-3">
         <div class="row border border-secondary-subtle mt-2 rounded-1 contribuyente">
             <span class="bg-white contribTitle">Datos del contribuyente</span>
             <div class="row mb-2">
                 <div class="col">
                     <div class="form-floating">
-                        <input type="text" 
-                            class="form-control" 
-                            id="rif_iva" 
-                            placeholder="RIF" 
-                            maxlength="15" 
-                            autocomplete="off"
-                            data-bs-toggle="tooltip" data-bs-placement="top"
+                        <input type="text" class="form-control" id="rif_iva" placeholder="RIF" maxlength="15"
+                            autocomplete="off" data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
                             data-bs-title="RIF del proveedor, normalmente J123456789.">
                         <label for="rif_iva">RIF</label>
@@ -144,114 +152,102 @@ aside div.botonera {
                 </div>
                 <div class="col-8">
                     <div class="form-floating">
-                        <input type="text" class="form-control contribuyenteInput" id="razon_social" placeholder="Razon Social" readonly disabled>
+                        <input type="text" class="form-control contribuyenteInput" id="razon_social"
+                            placeholder="Razon Social" readonly disabled>
                         <label>Razon Social</label>
                     </div>
                 </div>
-                <div class="col-1 align-content-center">                    
-                    <a role="button" class="btn btn-outline-danger" href="http://contribuyente.seniat.gob.ve/BuscaRif/BuscaRif.jsp" target="_blank">SENIAT</a>
+                <div class="col-1 align-content-center">
+                    <a role="button" class="btn btn-outline-danger"
+                        href="http://contribuyente.seniat.gob.ve/BuscaRif/BuscaRif.jsp" target="_blank">SENIAT</a>
                 </div>
 
             </div>
             <div class="row mb-2">
                 <div class="col-2">
                     <div class="form-check">
-                        <input id="juridico" 
-                            class="form-check-input tipoContribuyenteJ contribuyenteInput" 
-                            data-campo="is_juridico"
-                            type="radio" name="tipoContribuyente" value="1" checked >
+                        <input id="juridico" class="form-check-input tipoContribuyenteJ contribuyenteInput"
+                            data-campo="is_juridico" type="radio" name="tipoContribuyente" value="1" checked>
                         <label class="form-check-label" for="juridico">
                             Juridico
                         </label>
                     </div>
                     <div class="form-check">
-                        <input id="natural"
-                            class="form-check-input tipoContribuyenteN contribuyenteInput" 
-                            data-campo="is_juridico"
-                            type="radio" name="tipoContribuyente"  value="0" >
+                        <input id="natural" class="form-check-input tipoContribuyenteN contribuyenteInput"
+                            data-campo="is_juridico" type="radio" name="tipoContribuyente" value="0">
                         <label class="form-check-label" for="natural">
                             Natural
                         </label>
                     </div>
                 </div>
-                
+
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input contribuyenteInput" 
-                        data-campo="is_residente"
-                        type="checkbox" role="switch" id="contribuyenteResidente" checked>
+                    <input class="form-check-input contribuyenteInput" data-campo="is_residente" type="checkbox"
+                        role="switch" id="contribuyenteResidente" checked>
                     <label class="form-check-label" for="contribuyenteResidente">
                         Residente
                     </label>
                 </div>
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input contribuyenteInput" 
-                        data-campo="is_agente"
-                        type="checkbox" role="switch" id="agenteRetencion" >
+                    <input class="form-check-input contribuyenteInput" data-campo="is_agente" type="checkbox"
+                        role="switch" id="agenteRetencion">
                     <label class="form-check-label" for="agenteRetencion">
                         Agente de Retención
                     </label>
                 </div>
                 <div class="form-check col form-switch align-content-center">
-                    <input class="form-check-input contribuyenteInput" type="checkbox" 
-                        data-campo="is_contribuyente"
+                    <input class="form-check-input contribuyenteInput" type="checkbox" data-campo="is_contribuyente"
                         role="switch" id="contribuyenteRetencion" checked>
                     <label class="form-check-label" for="contribuyenteRetencion">
                         Contribuyente IVA
                     </label>
                 </div>
                 <div class="col">
-                     <div class="form-floating">
-                        <input type="text" 
-                            class="form-control contribuyenteInput" 
-                            id="retencion_iva" 
-                            data-campo="porcentaje_retencion"
-                            placeholder="porcentaje" 
-                            value="100">
+                    <div class="form-floating">
+                        <input type="text" class="form-control contribuyenteInput" id="retencion_iva"
+                            data-campo="porcentaje_retencion" placeholder="porcentaje" value="100">
                         <label>% Retener</label>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row retencion   border-secondary-subtle rounded-top row border-end border-start">
             <div class="row mb-2 mt-2">
                 <div class="col">
-                    <div class="form-floating">                                                         
-                            <input type="date" name="fecha_operacion" id="fecha_operacion"
-                                class=" form_actu_admi form-date form-control retencionInput"
-                                data-campo='fecha_retencion' required />
-                            <label for="fecha_operacion">F. operacion: </label>
-                        </div>
-                        <script> 
-                            function toDateInputValue(dateObject){
-                                const local = new Date(dateObject);
-                                local.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
-                                return local.toJSON().slice(0,10);
-                            };
-                            document.getElementById("fecha_operacion").value = toDateInputValue(new Date());
-                                    
-                                                
-                        </script>
+                    <div class="form-floating">
+                        <input type="date" name="fecha_operacion" id="fecha_operacion"
+                            class=" form_actu_admi form-date form-control retencionInput" data-campo='fecha_retencion'
+                            required />
+                        <label for="fecha_operacion">F. operacion: </label>
+                    </div>
+                    <script>
+                        function toDateInputValue(dateObject) {
+                            const local = new Date(dateObject);
+                            local.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
+                            return local.toJSON().slice(0, 10);
+                        };
+                        document.getElementById("fecha_operacion").value = toDateInputValue(new Date());
+
+
+                    </script>
                 </div>
                 <div class="col">
                     <div class="form-floating">
-                        <select class="form-select retencionInput" 
-                            data-campo='tipo'
-                            id="tipoRetencion" >                            
+                        <select class="form-select retencionInput" data-campo='tipo' id="tipoRetencion">
                             <option selected value="C">Compra</option>
-                            <option value="V">Venta</option>                            
+                            <option value="V">Venta</option>
                         </select>
                         <label>Tipo</label>
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-floating">
-                        <select class="form-select retencionInput" 
-                            data-campo='id_tipo_documento'
-                            id="documentoRetencion">                            
+                        <select class="form-select retencionInput" data-campo='id_tipo_documento'
+                            id="documentoRetencion">
                             <option selected value="1">Factura</option>
-                            <option  value="2">NDD</option>
-                            <option  value="3">NDC</option>                            
+                            <option value="2">NDD</option>
+                            <option value="3">NDC</option>
                         </select>
                         <label>Documento</label>
                     </div>
@@ -259,422 +255,409 @@ aside div.botonera {
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="numeroDocumento"
-                            data-campo='numero_documento'
+                    <div class="form-floating">
+                        <input type="text" id="numeroDocumento" data-campo='numero_documento'
                             class=" form-control retencionInput" required placeholder="Numero Doc." />
-                        <label for="numeroDocumento">Numero Documento:</label>
+                        <label for="numeroDocumento">Num Doc:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="numeroControl"
-                            data-campo='numero_control'
+                    <div class="form-floating">
+                        <input type="text" id="numeroControl" data-campo='numero_control'
                             class=" form-control retencionInput" required placeholder="Numero Cont." />
-                        <label >Numero Control:</label>
+                        <label>Num Control:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="numeroDocumentoAf"
-                            data-campo='numero_afectado'
-                            class=" form-control retencionInput" required placeholder="Numero doc." value="0"/>
-                        <label >Num. doc. afectado:</label>
+                    <div class="form-floating">
+                        <input type="text" id="numeroDocumentoAf" data-campo='numero_afectado'
+                            class=" form-control retencionInput" required placeholder="Numero doc." value="0" />
+                        <label>N° doc. afectado:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="numeroExpediente"
-                            data-campo='numero_expediente'
-                            class=" form-control retencionInput" required placeholder="Numero Exp." value="0"/>
-                        <label >Numero Expediente:</label>
+                    <div class="form-floating">
+                        <input type="text" id="numeroExpediente" data-campo='numero_expediente'
+                            class=" form-control retencionInput" required placeholder="Numero Exp." value="0" />
+                        <label>N° Expediente:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating">
+                        <input type="text" id="totalExento" class="form-control valores" required placeholder="Exento."
+                            value="0" data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-custom-class="custom-tooltip"
+                            data-bs-title="Despues de guardar, no se puede actualizar este campo" />
+                        <label>Total Exento:</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating">
+                        <input type="text" id="totalDocumento" class="form-control valores" required
+                            placeholder="Total Documento" disabled readonly />
+                        <label>Total Documento:</label>
                     </div>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalBaseImponible"
-                            class="form-control valores" required placeholder="Exento." 
-                            data-bs-toggle="tooltip" data-bs-placement="top"
+                    <div class="form-floating">
+                        <input type="text" id="totalBaseImponible" class="form-control valores" required
+                            placeholder="Exento." data-bs-toggle="tooltip" data-bs-placement="top"
                             data-bs-custom-class="custom-tooltip"
-                            data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
-                        <label >Total Base Imponible:</label>
+                            data-bs-title="Despues de guardar, no se puede actualizar este campo" />
+                        <label>Ttl BI:</label>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="form-floating">
+                        <select id="alicuota" class="form-select valores" required>
+                            <option value="31">31</option>
+                            <option value="16" selected>16</option>
+                            <option value="8">8</option>
+                        </select>
+                        <label for="alicuota">Alicuota %:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalExento"
-                            class="form-control valores" required placeholder="Exento." value="0"
-                            data-bs-toggle="tooltip" data-bs-placement="top"
-                            data-bs-custom-class="custom-tooltip"
-                            data-bs-title="Despues de guardar, no se puede actualizar este campo"/>
-                        <label >Total Exento:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalIva"
-                            class=" form-control valores" required placeholder="TotalIva." disabled/>
+                    <div class="form-floating">
+                        <input type="text" id="totalIva" class=" form-control valores" required placeholder="TotalIva."
+                            disabled />
                         <label>Total IVA:</label>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalDocumento"
-                            class="form-control valores" required placeholder="Total Documento" disabled readonly/>
-                        <label >Total Documento:</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="number" id="alicuota"
-                            class="form-control valores" required placeholder="alicuota" value="16" readonly disabled/>
-                        <label >Alicuota %:</label>
+                <div class="col-2">
+                    <div class="form-floating">
+                        <input type="text" id="porcentajeRetener" class="form-control valores" required
+                            placeholder="Numero Con" value=100 disabled readonly />
+                        <label>% Retenido:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="porcentajeRetener"
-                            class="form-control valores" required placeholder="Numero Con"  value=100 disabled readonly  />
-                        <label >% Retenido:</label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalIvaRetenido"
-                            class=" form-control" required placeholder="IVA retenido." disabled readonly />
+                    <div class="form-floating">
+                        <input type="text" id="totalIvaRetenido" class=" form-control" required
+                            placeholder="IVA retenido." disabled readonly />
                         <label>IVA retenido:</label>
                     </div>
                 </div>
-                
+                <div class="col-1 justify-content-center d-flex align-items-center">
+                    <button type="button" class="btn btn-primary" onclick="agregarRetencion()">Agregar</button>
+                </div>
+
+            </div>
+            <div class="row mb-2 divDetalle d-none">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Base Imponible</th>
+                            <th>IVA</th>
+                            <th>% Retener</th>
+                            <th>IVA Retenido</th>
+                            <th>Total IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detalleRetencion">
+
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="row resultado mt-3  border-secondary-subtle rounded-bottom row border-end border-bottom border-start"> 
+        <div
+            class="row resultado mt-3  border-secondary-subtle rounded-bottom row border-end border-bottom border-start">
             <div class="row mb-2">
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="num_comprobante"
-                            class="form-control" placeholder="numero" readonly  disabled/>
+                    <div class="form-floating">
+                        <input type="text" id="num_comprobante" class="form-control" placeholder="numero" readonly
+                            disabled />
                         <label>Comprobante:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="fechaEmision"
-                            class="form-control" placeholder="Numero Con" readonly disabled/>
+                    <div class="form-floating">
+                        <input type="text" id="fechaEmision" class="form-control" placeholder="Numero Con" readonly
+                            disabled />
                         <label>F. Emision:</label>
                     </div>
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalPagado"
-                            class="form-control" placeholder="numero" readonly  disabled/>
+                    <div class="form-floating">
+                        <input type="text" id="totalPagado" class="form-control" placeholder="numero" readonly
+                            disabled />
                         <label>Total Pagado:</label>
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-floating">                                                         
-                        <input type="text" id="totalRetener"
-                            class="form-control" placeholder="Numero Con" readonly disabled/>
+                    <div class="form-floating">
+                        <input type="text" id="totalRetener" class="form-control" placeholder="Numero Con" readonly
+                            disabled />
                         <label>Total Retener Comprobante:</label>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div id="botones" class="botoneras mt-3">
             <div>
-                <lord-icon
-                    id="btn_new_iva"
-                    src="../../images/plus-circle.json"
-                    trigger="hover"
+                <lord-icon id="btn_new_iva" src="../../images/plus-circle.json" trigger="hover"
                     style="width:30px;height:30px" class="svg disk_save botonera">
                 </lord-icon>
                 <span>Nueva</span>
             </div>
             <div>
-                <lord-icon
-                    id="btn_sav_iva"
-                    src="../../images/pendrive-storage.json"
-                    trigger="morph"
-                    state="morph-put-in"
-                    style="width:30px;height:30px" class="svg disk_save botonera">
+                <lord-icon id="btn_sav_iva" src="../../images/pendrive-storage.json" trigger="morph"
+                    state="morph-put-in" style="width:30px;height:30px" class="svg disk_save botonera">
                 </lord-icon>
-            <span>Guardar</span>
+                <span>Guardar</span>
             </div>
             <div>
-                <lord-icon
-                    id="btn_delete_iva"
-                    src="../../images/trash-bin.json"
-                    trigger="morph"
-                    state="morph-trash-in"
+                <lord-icon id="btn_delete_iva" src="../../images/trash-bin.json" trigger="morph" state="morph-trash-in"
                     style="width:30px;height:30px" class="svg disk_save botonera">
                 </lord-icon>
                 <span>Anular</span>
             </div>
             <div>
-                <lord-icon
-                    id="btn_search_iva"
-                    src="../../images/wired-lineal-19-magnifier-zoom-search.json"
-                    trigger="morph"
-                    state="morph-check"
-                    style="width:30px;height:30px" class="svg disk_save botonera"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalBuscarComprobante">
+                <lord-icon id="btn_search_iva" src="../../images/wired-lineal-19-magnifier-zoom-search.json"
+                    trigger="morph" state="morph-check" style="width:30px;height:30px" class="svg disk_save botonera"
+                    data-bs-toggle="modal" data-bs-target="#modalBuscarComprobante">
                 </lord-icon>
                 <span>Buscar</span>
             </div>
             <div>
-                <lord-icon
-                    id="btn_print_iva"
-                    src="../../images/wired-lineal-732-printer.json"
-                    trigger="hover"
+                <lord-icon id="btn_print_iva" src="../../images/wired-lineal-732-printer.json" trigger="hover"
                     style="width:30px;height:30px" class="svg disk_save botonera ">
                 </lord-icon>
                 <span>Imprimir</span>
             </div>
-        </div>   
+        </div>
     </div>
 
     <div class="modal fade" id="modalProveedor" tabindex="-1">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Proveedor</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-2">
-                    <div class="col-2 mb-2">
-                        <div class="form-floating">
-                            <input type="text" 
-                                class="form-control" 
-                                id="rifProveedor" 
-                                placeholder="RIF" 
-                                maxlength="15" 
-                                autocomplete="off"
-                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                data-bs-custom-class="custom-tooltip"
-                                data-bs-title="RIF del proveedor, normalmente J123456789.">
-                            <label for="rifProveedor">RIF</label>
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Proveedor</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-2">
+                        <div class="col-2 mb-2">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="rifProveedor" placeholder="RIF"
+                                    maxlength="15" autocomplete="off" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-custom-class="custom-tooltip"
+                                    data-bs-title="RIF del proveedor, normalmente J123456789.">
+                                <label for="rifProveedor">RIF</label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control contribuyenteInput" id="razonSocialProveedor"
+                                    placeholder="Razon Social">
+                                <label>Razon Social</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control contribuyenteInput" id="telefonoProveedor"
+                                    placeholder="Razon Social">
+                                <label>Telefono:</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control contribuyenteInput" id="correoProveedor"
+                                    placeholder="Razon Social">
+                                <label>Correo:</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="direccionProveedor" placeholder="direccion"
+                                    maxlength="100" autocomplete="off">
+                                <label for="direccionProveedor">Dirección</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control contribuyenteInput" id="contactoProveedor"
+                                    placeholder="contacto">
+                                <label>Persona Contacto</label>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control contribuyenteInput"
+                                    id="telefonoContactoProveedor" placeholder="telefono contacto">
+                                <label>Telf. Contacto:</label>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-4">
-                        <div class="form-floating">
-                            <input type="text" class="form-control contribuyenteInput" id="razonSocialProveedor" placeholder="Razon Social">
-                            <label>Razon Social</label>
+                    <div class="row mb-2 mt-2">
+                        <div class="col-2">
+                            <div class="form-check">
+                                <input id="juridicoContribuyente" class="form-check-input contribuyenteInput"
+                                    data-campo="is_juridico" type="radio" name="tipoContribuyenteCrear" value="1"
+                                    checked>
+                                <label class="form-check-label" for="juridicoContribuyente">
+                                    Juridico
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input id="naturalContribuyente" class="form-check-input  contribuyenteInput"
+                                    data-campo="is_juridico" type="radio" name="tipoContribuyenteCrear" value="0">
+                                <label class="form-check-label" for="naturalContribuyente">
+                                    Natural
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-floating">
-                            <input type="text" class="form-control contribuyenteInput" id="telefonoProveedor" placeholder="Razon Social">
-                            <label>Telefono:</label>
+
+                        <div class="form-check col form-switch align-content-center">
+                            <input class="form-check-input contribuyenteInput" data-campo="is_residente" type="checkbox"
+                                role="switch" id="proveedorResidente" checked>
+                            <label class="form-check-label" for="proveedorResidente">
+                                Residente
+                            </label>
                         </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-floating">
-                            <input type="text" class="form-control contribuyenteInput" id="correoProveedor" placeholder="Razon Social">
-                            <label>Correo:</label>
+                        <div class="form-check col form-switch align-content-center">
+                            <input class="form-check-input contribuyenteInput" data-campo="is_agente" type="checkbox"
+                                role="switch" id="proveedorAgenteRetencion">
+                            <label class="form-check-label" for="proveedorAgenteRetencion">
+                                Agente de Retención
+                            </label>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-floating">
-                            <input type="text" 
-                                class="form-control" 
-                                id="direccionProveedor" 
-                                placeholder="direccion" 
-                                maxlength="100" 
-                                autocomplete="off">
-                            <label for="direccionProveedor">Dirección</label>
+                        <div class="form-check col form-switch align-content-center">
+                            <input class="form-check-input contribuyenteInput" type="checkbox"
+                                data-campo="is_contribuyente" role="switch" id="proveedorRetencion" checked>
+                            <label class="form-check-label" for="proveedorRetencion">
+                                Contribuyente IVA
+                            </label>
                         </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-floating">
-                            <input type="text" class="form-control contribuyenteInput" id="contactoProveedor" placeholder="contacto">
-                            <label>Persona Contacto</label>
-                        </div>
-                    </div>
-                    <div class="col-3">
-                        <div class="form-floating">
-                            <input type="text" class="form-control contribuyenteInput" id="telefonoContactoProveedor" placeholder="telefono contacto">
-                            <label>Telf. Contacto:</label>
+                        <div class="col">
+                            <div class="form-floating">
+                                <input type="text" class="form-control contribuyenteInput" id="retencion_ivaProveedor"
+                                    data-campo="porcentaje_retencion" placeholder="porcentaje" value="100">
+                                <label>% Retener</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row mb-2 mt-2">
-                    <div class="col-2">
-                        <div class="form-check">
-                            <input id="juridicoContribuyente" 
-                                class="form-check-input contribuyenteInput" 
-                                data-campo="is_juridico"
-                                type="radio" name="tipoContribuyenteCrear" value="1" checked >
-                            <label class="form-check-label" for="juridicoContribuyente">
-                                Juridico
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input id="naturalContribuyente"
-                                class="form-check-input  contribuyenteInput" 
-                                data-campo="is_juridico"
-                                type="radio" name="tipoContribuyenteCrear"  value="0" >
-                            <label class="form-check-label" for="naturalContribuyente">
-                                Natural
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-check col form-switch align-content-center">
-                        <input class="form-check-input contribuyenteInput" 
-                            data-campo="is_residente"
-                            type="checkbox" role="switch" id="proveedorResidente" checked>
-                        <label class="form-check-label" for="proveedorResidente">
-                            Residente
-                        </label>
-                    </div>
-                    <div class="form-check col form-switch align-content-center">
-                        <input class="form-check-input contribuyenteInput" 
-                            data-campo="is_agente"
-                            type="checkbox" role="switch" id="proveedorAgenteRetencion" >
-                        <label class="form-check-label" for="proveedorAgenteRetencion">
-                            Agente de Retención
-                        </label>
-                    </div>
-                    <div class="form-check col form-switch align-content-center">
-                        <input class="form-check-input contribuyenteInput" type="checkbox" 
-                            data-campo="is_contribuyente"
-                            role="switch" id="proveedorRetencion" checked>
-                        <label class="form-check-label" for="proveedorRetencion">
-                            Contribuyente IVA
-                        </label>
-                    </div>
-                    <div class="col">
-                        <div class="form-floating">
-                            <input type="text" 
-                                class="form-control contribuyenteInput" 
-                                id="retencion_ivaProveedor" 
-                                data-campo="porcentaje_retencion"
-                                placeholder="porcentaje" 
-                                value="100">
-                            <label>% Retener</label>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        id="btnCancelarProveedor">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarProveedor"
+                        data-bs-dismiss="modal">Guardar</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btnCancelarProveedor">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="btnGuardarProveedor" data-bs-dismiss="modal">Guardar</button>
-            </div>
             </div>
         </div>
     </div>
-<!-- Modal Búsqueda de Comprobantes -->
-<div class="modal fade" id="modalBuscarComprobante" tabindex="-1" aria-labelledby="modalBuscarComprobanteLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalBuscarComprobanteLabel">
-                    <i class="bi bi-search"></i> Buscar Comprobantes
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">                
-                <div class="row mb-2">
-                    <div class="col-md-4 form-floating">                        
-                        <select class="form-select" id="filtroBusqueda">
-                            <option value="proveedor_nombre" selected>Nombre Proveedor</option>
-                            <option value="proveedor_rif">RIF Proveedor</option>
-                            <option value="numero_comprobante">Número Comprobante</option>
-                        </select>
-                        <label for="filtroBusqueda" class="form-label">Buscar por:</label>
+    <!-- Modal Búsqueda de Comprobantes -->
+    <div class="modal fade" id="modalBuscarComprobante" tabindex="-1" aria-labelledby="modalBuscarComprobanteLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBuscarComprobanteLabel">
+                        <i class="bi bi-search"></i> Buscar Comprobantes
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-2">
+                        <div class="col-md-4 form-floating">
+                            <select class="form-select" id="filtroBusqueda">
+                                <option value="proveedor_nombre" selected>Nombre Proveedor</option>
+                                <option value="proveedor_rif">RIF Proveedor</option>
+                                <option value="numero_comprobante">Número Comprobante</option>
+                            </select>
+                            <label for="filtroBusqueda" class="form-label">Buscar por:</label>
+                        </div>
+                        <div class="col-md-8">
+
+                            <div class="input-group form-floating">
+
+                                <input type="text" class="form-control" id="terminoBusqueda"
+                                    placeholder="Escriba para buscar..." autocomplete="off">
+                                <label for="terminoBusqueda" class="form-label">Término de búsqueda</label>
+                                <span class="input-group-text bg-transparent">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                            </div>
+                            <div class="form-text">
+                                <span id="textoAyuda">
+                                    Buscar por nombre del proveedor
+                                </span>
+                                <span class="float-end" id="contadorBusqueda">0 resultados</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-8">
-                        
-                        <div class="input-group form-floating">
-                            
-                            <input type="text" class="form-control" id="terminoBusqueda" 
-                                   placeholder="Escriba para buscar..." autocomplete="off">
-                                   <label for="terminoBusqueda" class="form-label">Término de búsqueda</label>
-                            <span class="input-group-text bg-transparent">
-                                <i class="bi bi-search"></i>
-                            </span>
+
+                    <hr class="my-3">
+
+                    <!-- Resultados de Búsqueda -->
+                    <div>
+
+
+                        <!-- Loading -->
+                        <div id="loadingBusqueda" class="text-center d-none">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Buscando...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Buscando comprobantes...</p>
                         </div>
-                        <div class="form-text">
-                            <span id="textoAyuda">
-                                Buscar por nombre del proveedor
-                            </span>
-                            <span class="float-end" id="contadorBusqueda">0 resultados</span>
+
+                        <!-- Mensaje sin resultados -->
+                        <div id="sinResultados" class="alert alert-info d-none">
+                            <i class="bi bi-info-circle"></i> No se encontraron comprobantes. Intente con otros
+                            términos.
                         </div>
+
+                        <!-- Mensaje inicial -->
+                        <div id="mensajeInicial" class="alert alert-light">
+                            <i class="bi bi-lightbulb"></i> Escriba en el campo de búsqueda para comenzar.
+                        </div>
+
+                        <!-- Tabla de resultados -->
+                        <div class="table-responsive d-none" id="contenedorTabla">
+                            <table class="table table-sm table-hover" id="tablaResultadosBusqueda">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40px;">Sel.</th>
+                                        <th>Comprobante</th>
+                                        <th>Proveedor</th>
+                                        <th>RIF</th>
+                                        <th>Fecha</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cuerpoTablaResultados">
+                                    <!-- Los resultados se cargarán aquí dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        <nav aria-label="Paginación de resultados" class="mt-3 d-none" id="contenedorPaginacion">
+                            <ul class="pagination pagination-sm justify-content-center" id="paginacionResultados">
+                                <!-- La paginación se generará dinámicamente -->
+                            </ul>
+                        </nav>
                     </div>
                 </div>
-
-                <hr class="my-3">
-
-                <!-- Resultados de Búsqueda -->
-                <div >
-          
-                    
-                    <!-- Loading -->
-                    <div id="loadingBusqueda" class="text-center d-none">
-                        <div class="spinner-border spinner-border-sm text-primary" role="status">
-                            <span class="visually-hidden">Buscando...</span>
-                        </div>
-                        <p class="mt-2 text-muted">Buscando comprobantes...</p>
-                    </div>
-
-                    <!-- Mensaje sin resultados -->
-                    <div id="sinResultados" class="alert alert-info d-none">
-                        <i class="bi bi-info-circle"></i> No se encontraron comprobantes. Intente con otros términos.
-                    </div>
-
-                    <!-- Mensaje inicial -->
-                    <div id="mensajeInicial" class="alert alert-light">
-                        <i class="bi bi-lightbulb"></i> Escriba en el campo de búsqueda para comenzar.
-                    </div>
-
-                    <!-- Tabla de resultados -->
-                    <div class="table-responsive d-none" id="contenedorTabla">
-                        <table class="table table-sm table-hover" id="tablaResultadosBusqueda">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 40px;">Sel.</th>
-                                    <th>Comprobante</th>
-                                    <th>Proveedor</th>
-                                    <th>RIF</th>
-                                    <th>Fecha</th>
-                                    <th>Total</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cuerpoTablaResultados">
-                                <!-- Los resultados se cargarán aquí dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Paginación -->
-                    <nav aria-label="Paginación de resultados" class="mt-3 d-none" id="contenedorPaginacion">
-                        <ul class="pagination pagination-sm justify-content-center" id="paginacionResultados">
-                            <!-- La paginación se generará dinámicamente -->
-                        </ul>
-                    </nav>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cerrar
+                    </button>
+                    <button type="button" class="btn btn-success d-none" id="btnSeleccionarComprobante">
+                        <i class="bi bi-check2-square"></i> Seleccionar
+                    </button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x-circle"></i> Cerrar
-                </button>
-                <button type="button" class="btn btn-success d-none" id="btnSeleccionarComprobante">
-                    <i class="bi bi-check2-square"></i> Seleccionar
-                </button>
             </div>
         </div>
     </div>
-</div>
 
 
 
@@ -682,14 +665,87 @@ aside div.botonera {
 
 <script>
 
-let contribuyente = 0;
-let retencionIva =0;
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    let contribuyente = 0;
+    let retencionIva = 0;
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    function agregarRetencion() {
+        let baseImponible = parseFloat(document.getElementById("totalBaseImponible").value) || 0;
+        let alicuota = parseFloat(document.getElementById("alicuota").value) || 0;
+        let porcentajeRetener = parseFloat(document.getElementById("porcentajeRetener").value) || 0;
+        let totalIva = baseImponible * (alicuota / 100);
+        let totalIvaRetenido = totalIva * (porcentajeRetener / 100);
 
+        if (porcentajeRetener <= 0 || porcentajeRetener > 100) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error',
+                text: 'El porcentaje de retención debe ser mayor a 0 y menor o igual a 100',
+            })
+            return;
+        }
+
+        if (baseImponible <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error',
+                text: 'La base imponible debe ser mayor a 0',
+            })
+            return;
+        }
+
+        if (alicuota != 8 && alicuota != 16 && alicuota != 31) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error',
+                text: 'La alicuota debe ser 8 16 o 31',
+            })
+            return;
+        }
+
+        let rowDetalles = document.querySelectorAll(`.rowRetencion[data-alicuota="${alicuota}"]`);
+        if (rowDetalles.length > 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error',
+                text: 'Ya existe una retención con esta alícuota',
+            })
+            return;
+        }
+
+        let row = document.createElement("tr");
+        row.id = Math.random().toString(36).substring(2, 8);
+        row.dataset.baseImponible = baseImponible;
+        row.classList.add("rowRetencion");
+        row.dataset.alicuota = alicuota;
+        row.dataset.porcentajeRetener = porcentajeRetener;
+        row.dataset.totalIva = Number(totalIva).toFixed(2);
+        row.dataset.totalIvaRetenido = Number(totalIvaRetenido).toFixed(2);
+        row.innerHTML = `
+        <td>${Number(baseImponible).toFixed(2)}</td>
+        <td>${Number(alicuota).toFixed(2)}</td>
+        <td>${Number(porcentajeRetener).toFixed(2)}</td>
+        <td>${Number(totalIva).toFixed(2)}</td>
+        <td>${Number(totalIvaRetenido).toFixed(2)}</td>
+        <td><button type="button" class="btn btn-sm btn-danger" onclick="eliminarRetencion('${row.id}')">Eliminar</button></td>
+    `;
+        document.getElementById("detalleRetencion").appendChild(row);
+        document.querySelector(".divDetalle").classList.remove("d-none");
+        document.getElementById("totalBaseImponible").value = 0;
+        document.getElementById("alicuota").value = 16;
+        document.getElementById("totalIvaRetenido").value = 0;
+        document.getElementById("totalIva").value = 0;
+
+        recalcular();
+
+    }
+    function eliminarRetencion(elemento) {
+        let row = document.getElementById(elemento);
+        row.remove();
+    }
 </script>
 <script src="proveedores.js?v=1"></script>
 <script src="calculos.js"></script>
 <script src="retenciones.js"></script>
 <script src="buscar.js?v=1.0.0"></script>
-<script src="../auxiliares.js"></script>   
+<script src="../auxiliares.js"></script>

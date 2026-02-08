@@ -483,6 +483,7 @@ app.get('/api/consecutivos', async (req, res) => {
         SELECT 
             fc.*,
             ct.actual,
+            ct.hasta,
             c.descripcion as caja
         FROM 
             facturas_controles fc
@@ -491,11 +492,18 @@ app.get('/api/consecutivos', async (req, res) => {
             INNER JOIN 
             controles_talonarios ct ON ct.id_caja = c.id
         WHERE 
-            fc.id_cli = ? and ct.activo=1`;
+            fc.id_cli = ? and ct.activo=1 and ct.actual<=ct.hasta`;
 
   const params = [id_cli]
   try {
     consecutivos = await retornar_query(sql, params);
+    if (consecutivos.error) {
+      return res.json({
+        success: false,
+        message: 'Error CON02 consecutivos agotados'
+
+      })
+    }
   } catch (error) {
     res.json({
       success: false,
@@ -701,7 +709,7 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
                       cuotas,
                       formato_factura,
                       tipo_agrupamiento,
-                      descuentos, bi8, iva8) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                      descuentos, bi8, iva8, id_caja) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
   const params = [
     data.paciente,
@@ -730,7 +738,8 @@ app.post('/api/facturar', authenticateToken, async (req, res) => {
     data.tipo_agrupamiento,
     data.descuentos,
     data.bi8,
-    data.iva8
+    data.iva8,
+    req.user.caja_usuario
   ];
 
   let result = ""

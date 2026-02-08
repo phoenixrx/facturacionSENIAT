@@ -1,20 +1,20 @@
 let buscandoProveedor = false;
 let proveedor_info = {};
-let proveedor_iva =0;
-let proveedor_islr =0;
+let proveedor_iva = 0;
+let proveedor_islr = 0;
 
-document.getElementById('rif_iva').addEventListener('keydown', function(event) {
+document.getElementById('rif_iva').addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
-        event.preventDefault(); 
+        event.preventDefault();
         document.getElementById("numeroDocumento").focus()
         buscarProveedor(this.value);
     }
 });
-document.getElementById('rif_iva').addEventListener('blur', function(event) {   
-        buscarProveedor(this.value);
+document.getElementById('rif_iva').addEventListener('blur', function (event) {
+    buscarProveedor(this.value);
 });
 
-async function buscarProveedor(rif) {  
+async function buscarProveedor(rif) {
     if (buscandoProveedor) {
         return;
     }
@@ -26,65 +26,65 @@ async function buscarProveedor(rif) {
     }
     Swal.fire({
         title: 'Buscando...',
-        icon:'info',
+        icon: 'info',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
         }
     });
-    
-    contribuyente=0;
 
+    contribuyente = 0;
+    let id_cli = parent.configs_token.id_cli
     const response = await fetch(
-        `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${rif}?id_cli=${parent.configs_token.id_cli}`,
+        `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${rif}?id_cli=${id_cli}`,
         {
             method: "GET",
-            headers: { 
-                "Content-Type": "application/json", 
+            headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             },
         }
     );
-    const proveedor = await response.json();  
-    buscandoProveedor=false;
+    const proveedor = await response.json();
+    buscandoProveedor = false;
     Swal.close()
     if (proveedor.error == "No data") {
-            Swal.fire({
-                    title: 'Proveedor no encontrado',
-                    text: '¿Desea crearlo?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí',
-                    cancelButtonText: 'No',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                     crearProveedor(rif);
-                    }else{
-                        document.getElementById("rif_iva").value=""
-                    }
-                });
-            return;
-                }
+        Swal.fire({
+            title: 'Proveedor no encontrado',
+            text: '¿Desea crearlo?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'No',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                crearProveedor(rif);
+            } else {
+                document.getElementById("rif_iva").value = ""
+            }
+        });
+        return;
+    }
     if (proveedor.error) {
         Swal.fire({
-                title: 'Error',
-                text: proveedor.error,
-                icon:'info',
-                allowOutsideClick: false,                
-            });
-            return;
-    }    
+            title: 'Error',
+            text: proveedor.error,
+            icon: 'info',
+            allowOutsideClick: false,
+        });
+        return;
+    }
     proveedor_iva = proveedor.iva[0];
     proveedor_islr = proveedor.islr[0];
     proveedor_info = proveedor.data[0];
     document.getElementById("razon_social").value = proveedor.data[0].nombre;
-    if(proveedor.data[0].is_juridico){
+    if (proveedor.data[0].is_juridico) {
         document.querySelector(".tipoContribuyenteJ").checked = true;
-    }else{
+    } else {
         document.querySelector(".tipoContribuyenteN").checked = true;
     }
-    
-    contribuyente= proveedor.data[0].id_proveedor;
+
+    contribuyente = proveedor.data[0].id_proveedor;
     document.getElementById('rif_iva').value = proveedor.data[0].RIF;
     document.getElementById('retencion_iva').value = proveedor.data[0].porcentaje_retencion;
     document.getElementById('porcentajeRetener').value = proveedor.data[0].porcentaje_retencion;
@@ -105,17 +105,17 @@ document.querySelectorAll('.contribuyenteInput').forEach(item => {
         } else {
             v = item.value;
         }
-        actualizarProveedor(c,v);
+        actualizarProveedor(c, v);
     })
 })
 
-async function actualizarProveedor(c,v) {
-    if (contribuyente==0) {
+async function actualizarProveedor(c, v) {
+    if (contribuyente == 0) {
         return;
     }
     Swal.fire({
         title: 'Actualizando...',
-        icon:'info',
+        icon: 'info',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -125,48 +125,48 @@ async function actualizarProveedor(c,v) {
         `https://facturacion.siac.historiaclinica.org/api/proveedores/proveedores/${contribuyente}`,
         {
             method: "PUT",
-            headers: { 
-                "Content-Type": "application/json", 
+            headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             },
             body: JSON.stringify({ c: c, v: v })
         }
     );
-    const proveedor = await response.json();  
+    const proveedor = await response.json();
     Swal.close()
     if (proveedor.error) {
         Swal.fire({
-                title: 'Error',
-                text: proveedor.error,
-                icon:'info',
-                allowOutsideClick: false,                
-            });
-            return;
-    }    
+            title: 'Error',
+            text: proveedor.error,
+            icon: 'info',
+            allowOutsideClick: false,
+        });
+        return;
+    }
 }
 
 async function crearProveedor(rif) {
     const myModalProveedor = new bootstrap.Modal('#modalProveedor', {
         keyboard: false
-    })    
+    })
     myModalProveedor.show();
-    document.getElementById('rifProveedor').value= rif;
+    document.getElementById('rifProveedor').value = rif;
     document.getElementById('retencion_ivaProveedor').value = 100;
     document.getElementById('razonSocialProveedor').focus();
 }
 
-document.getElementById("btnCancelarProveedor").addEventListener("click", function(event) {
+document.getElementById("btnCancelarProveedor").addEventListener("click", function (event) {
     event.preventDefault();
     console.log(contribuyente)
-    contribuyente=0;
-    document.getElementById("rif_iva").value="";
-    document.getElementById("razon_social").value="";
+    contribuyente = 0;
+    document.getElementById("rif_iva").value = "";
+    document.getElementById("razon_social").value = "";
     document.getElementById("rif_iva").focus()
 });
 
-document.getElementById("btnGuardarProveedor").addEventListener("click", async function(event) {
+document.getElementById("btnGuardarProveedor").addEventListener("click", async function (event) {
     event.preventDefault();
-    document.getElementById("rif_iva").value="";
+    document.getElementById("rif_iva").value = "";
     const rif = document.getElementById('rifProveedor').value;
     const razonsocial = document.getElementById('razonSocialProveedor').value;
     const telefono = document.getElementById('telefonoProveedor').value;
@@ -203,7 +203,7 @@ document.getElementById("btnGuardarProveedor").addEventListener("click", async f
                 telefono,
                 correo,
                 direccion,
-                id_cli:  parent.configs_token.id_cli,
+                id_cli: parent.configs_token.id_cli,
                 contacto,
                 telefcontact,
                 porcentaje_retencion,
@@ -224,9 +224,9 @@ document.getElementById("btnGuardarProveedor").addEventListener("click", async f
             icon: 'success',
             allowOutsideClick: false,
         });
-        document.getElementById("rif_iva").value=rif;
+        document.getElementById("rif_iva").value = rif;
         buscarProveedor(rif);
-    }else {
+    } else {
         Swal.fire({
             title: 'Error',
             text: nuevoProveedor.error,
@@ -234,6 +234,6 @@ document.getElementById("btnGuardarProveedor").addEventListener("click", async f
             allowOutsideClick: false,
         });
     }
-        
-    });
+
+});
 

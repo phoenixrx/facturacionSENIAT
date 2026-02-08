@@ -134,7 +134,39 @@ async function opciones() {
                 sel_formatos.selectedIndex = 1;
             }
             let consec = await consecutivos();
+
+            if (!consec) {
+                document.getElementById("num_control").value = "";
+                document.getElementById("num_factura").value = "";
+                document.getElementById("factura_modal").value = "";
+                document.getElementById("num_control").classList.add("is-invalid");
+                document.getElementById("num_control").setCustomValidity("Error cargando consecutivos");
+                document.getElementById("num_factura").classList.add("is-invalid");
+                document.getElementById("num_factura").setCustomValidity("Error cargando consecutivos");
+                document.getElementById("factura_modal").classList.add("is-invalid");
+                document.getElementById("factura_modal").setCustomValidity("Error cargando consecutivos");
+                return
+            }
             let consecutivos_caja = consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
+
+            if (consecutivos_caja.length == 0) {
+                Swal.fire({
+                    title: `Error al cargar los consecutivos`,
+                    text: "Error CON02 consecutivos agotados",
+                    icon: 'error',
+                    allowOutsideClick: () => false,
+                });
+                document.getElementById("num_control").value = "";
+                document.getElementById("num_factura").value = "";
+                document.getElementById("factura_modal").value = "";
+                document.getElementById("num_control").classList.add("is-invalid");
+                document.getElementById("num_control").setCustomValidity("Error cargando consecutivos");
+                document.getElementById("num_factura").classList.add("is-invalid");
+                document.getElementById("num_factura").setCustomValidity("Error cargando consecutivos");
+                document.getElementById("factura_modal").classList.add("is-invalid");
+                document.getElementById("factura_modal").setCustomValidity("Error cargando consecutivos");
+                return
+            }
 
             document.getElementById("num_control").value = consecutivos_caja[0].actual;
             let num_factura = consecutivos_caja[0].num_factura;
@@ -169,14 +201,17 @@ async function consecutivos() {
         if (consecutivos.error || consecutivos.success == false) {
             Swal.update({
                 title: `Error al cargar los consecutivos`,
-                text: "Debe cargar los consecutivos manualmente",
+                text: "Error CON02 consecutivos agotados",
                 icon: 'error',
                 allowOutsideClick: () => false,
             });
-
+            document.getElementById("num_control").value = "";
+            document.getElementById("num_factura").value = "";
+            document.getElementById("factura_modal").value = "";
+            document.getElementById("num_control").classList.add("is-invalid");
+            document.getElementById("num_factura").classList.add("is-invalid");
+            document.getElementById("factura_modal").classList.add("is-invalid");
             Swal.hideLoading()
-            document.getElementById("num_control").readOnly = false;
-            document.getElementById("num_factura").readOnly = false;
         } else {
             Swal.close()
             return consecutivos;

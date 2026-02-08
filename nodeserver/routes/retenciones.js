@@ -6,30 +6,30 @@ const { authenticateToken } = require('../middlewares/autenticarToken');
 function isValidDate(dateString) {
     const regex = /^\d{4}-\d{2}-\d{2}$/;
     if (!regex.test(dateString)) return false;
-    
+
     const date = new Date(dateString);
     return date instanceof Date && !isNaN(date);
 }
 
 // GET /api/retenciones 
-router.post('/iva', authenticateToken, async (req, res) => {    
+router.post('/iva', authenticateToken, async (req, res) => {
     const {
         id_proveedor, fecha_retencion, tipo, id_tipo_documento, numero_documento,
         numero_control, numero_afectado, numero_expediente, total_exento,
         total_documento, total_iva, total_iva_retenido, porcent_retencion,
-        base_imponible, alicuota, total_pagado, id_usuario, id_cli
+        base_imponible, alicuota, total_pagado, id_usuario, id_cli, detalles
     } = req.body;
-    
+
     // Validación de campos obligatorios
     const camposObligatorios = [
-        'id_proveedor', 'fecha_retencion', 'tipo', 'id_tipo_documento', 
+        'id_proveedor', 'fecha_retencion', 'tipo', 'id_tipo_documento',
         'numero_documento', 'numero_control', 'numero_afectado', 'numero_expediente',
         'total_documento', 'total_iva', 'total_iva_retenido', 'porcent_retencion',
-        'base_imponible', 'alicuota', 'id_usuario', 'id_cli'
+        'base_imponible', 'alicuota', 'id_usuario', 'id_cli', 'detalles'
     ];
-    
+
     const camposFaltantes = camposObligatorios.filter(campo => !req.body[campo]);
-    
+
     if (camposFaltantes.length > 0) {
         return res.status(400).json({
             success: false,
@@ -49,19 +49,19 @@ router.post('/iva', authenticateToken, async (req, res) => {
         return res.status(400).json({
             success: false,
             error: 'El porcentaje de retención debe estar entre 0 y 100.'
-        });        
+        });
     }
- 
+
     if (Number(alicuota) < 0 || Number(alicuota) > 100) {
         return res.status(400).json({
             success: false,
             error: 'La alícuota debe estar entre 0 y 100.'
-        });        
+        });
     }
- 
+
     const montos = ['total_exento', 'total_documento', 'total_iva', 'total_iva_retenido', 'base_imponible', 'total_pagado', 'id_usuario'];
     const montosNegativos = montos.filter(campo => req.body[campo] && Number(req.body[campo]) < 0);
-    
+
     if (montosNegativos.length > 0) {
         return res.status(400).json({
             success: false,
@@ -83,7 +83,7 @@ router.post('/iva', authenticateToken, async (req, res) => {
         const valor = req.body[campo];
         return valor && (!Number.isInteger(Number(valor)) || Number(valor) < 0);
     });
-    
+
     if (enterosInvalidos.length > 0) {
         return res.status(400).json({
             success: false,
@@ -100,8 +100,8 @@ router.post('/iva', authenticateToken, async (req, res) => {
         LIMIT 1
         `;
 
-        const resultado_buscar = await retornar_query(query_buscar_id,[id_cli]);
-        if(resultado_buscar.length<1){
+        const resultado_buscar = await retornar_query(query_buscar_id, [id_cli]);
+        if (resultado_buscar.length < 1) {
             return res.status(400).json({
                 success: false,
                 error: 'No se ha configurado el número de comprobante para retenciones de IVA. Por favor, configurelo en Opciones > Retenciones.'
@@ -115,7 +115,7 @@ router.post('/iva', authenticateToken, async (req, res) => {
         const month = String(fecha.getMonth() + 1).padStart(2, '0');
         const formattedId = String(numero_comprobante_iva).padStart(8, '0');
         const numeroComprobante = `${year}-${month}-${formattedId}`
-        
+
         const query = `
         INSERT INTO retenciones_iva 
         (id_proveedor, fecha_retencion, tipo, id_tipo_documento, numero_documento, 
@@ -124,12 +124,12 @@ router.post('/iva', authenticateToken, async (req, res) => {
          base_imponible, alicuota, total_pagado,  
          id_usuario, id_cli, numero_comprobante, numero_comprobante_plano )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  ?, ?, ?,?)`;
-        
+
         const valores = [
             id_proveedor, fecha_retencion, tipo.toUpperCase(), id_tipo_documento, numero_documento,
             numero_control, numero_afectado, numero_expediente, total_exento,
             total_documento, total_iva, total_iva_retenido, porcent_retencion,
-            base_imponible, alicuota, total_pagado,id_usuario, id_cli,
+            base_imponible, alicuota, total_pagado, id_usuario, id_cli,
             numeroComprobante, numero_comprobante_iva
         ];
 
@@ -143,11 +143,37 @@ router.post('/iva', authenticateToken, async (req, res) => {
         await retornar_query(query_actualizar, [id_cli]);
 
         let dia = String(fecha.getDate()).padStart(2, '0');
+
+        let queryDetalles = `
+INSERT INTO retenciones_iva_detalle
+(base_imponible,
+alicuota,
+total_impuesto,
+porcentaje_retencion,
+total_retenido,
+id_retencion)
+VALUES
+(?,?,?,?,?,?);
+`
+
+        detalles.forEach(detalle => {
+            const valores = [
+                detalle.base_imponible,
+                detalle.alicuota,
+                detalle.total_iva,
+                detalle.porcentaje_retener,
+                detalle.total_iva_retenido,
+                resultado.insertId
+            ];
+            retornar_query(queryDetalles, valores);
+        });
+
+
         return res.json({
             success: true,
             data: resultado,
-            numeroComprobante:numeroComprobante,
-            fechaEmision: `${dia}/${month}/${year}`,         
+            numeroComprobante: numeroComprobante,
+            fechaEmision: `${dia}/${month}/${year}`,
             message: 'Retención de IVA creada exitosamente'
         });
     } catch (error) {
@@ -158,18 +184,18 @@ router.post('/iva', authenticateToken, async (req, res) => {
     }
 });
 
-router.put('/iva/:id', authenticateToken,async (req, res) => {    
-    const {id} = req.params;    
-    const {c,v} = req.body;
-    
-    if(isNaN(id)){
+router.put('/iva/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { c, v } = req.body;
+
+    if (isNaN(id)) {
         return res.status(400).json({
             success: false,
             error: 'Faltan datos para procesar la solicitud'
         });
     }
 
-    let camposValidos=['numero_expediente','numero_afectado','numero_control',
+    let camposValidos = ['numero_expediente', 'numero_afectado', 'numero_control',
         'numero_documento', 'id_tipo_documento', 'tipo', 'fecha_retencion',];
 
     if (!camposValidos.includes(c)) {
@@ -180,10 +206,10 @@ router.put('/iva/:id', authenticateToken,async (req, res) => {
     }
 
     try {
-        
+
         const query = `UPDATE retenciones_iva SET ${c} = ? WHERE id=?;`
-        
-        const resultado = await retornar_query(query,[ v, id]);
+
+        const resultado = await retornar_query(query, [v, id]);
 
         return res.json({
             success: true,
@@ -197,10 +223,10 @@ router.put('/iva/:id', authenticateToken,async (req, res) => {
     }
 });
 
-router.delete('/iva/:id', authenticateToken, async (req, res) => {    
-    const {id} = req.params;    
-    
-    if(isNaN(id)){
+router.delete('/iva/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    if (isNaN(id)) {
         return res.status(400).json({
             success: false,
             error: 'Faltan datos para procesar la solicitud'
@@ -208,10 +234,10 @@ router.delete('/iva/:id', authenticateToken, async (req, res) => {
     }
 
     try {
-        
+
         const query = `UPDATE retenciones_iva SET activo=0 WHERE id=?;`
-        
-        const resultado = await retornar_query(query,[id]);
+
+        const resultado = await retornar_query(query, [id]);
 
         return res.json({
             success: true,
@@ -300,7 +326,7 @@ router.get('/iva', async (req, res) => {
             params.push(`${id}`);
         }
 
-        if(proveedor_id){
+        if (proveedor_id) {
             query += ` AND p.id_proveedor = ?`;
             params.push(`${proveedor_id}`);
         }
@@ -337,7 +363,7 @@ router.get('/iva', async (req, res) => {
             // Si hay error en count, asumir 0 resultados
             countResult = [{ total: 0 }];
         }
-        
+
         const total = countResult[0]?.total || 0;
         const totalPages = Math.ceil(total / limit);
         const offset = (page - 1) * limit;
@@ -402,7 +428,7 @@ router.get('/iva', async (req, res) => {
 
     } catch (error) {
         console.error('Error en búsqueda de comprobantes:', error);
-       
+
         return res.status(500).json({
             success: false,
             error: 'Error interno del servidor al buscar comprobantes'
@@ -410,15 +436,15 @@ router.get('/iva', async (req, res) => {
     }
 });
 
-router.get('/comprobante-iva/:id', async (req, res) => {
-    const {id} = req.params;       
-    if(isNaN(id)){
+router.get('/comprobante-iva/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    if (isNaN(id)) {
         return res.status(400).json({
             success: false,
             error: 'Faltan datos para procesar la solicitud'
         });
     }
-    try {       
+    try {
 
         let query = `
             SELECT 
@@ -437,15 +463,21 @@ router.get('/comprobante-iva/:id', async (req, res) => {
             INNER JOIN perfil_usuario_basico ab ON ri.id_cli = ab.id_usuario
             WHERE ri.id =?
         `;
-        
+
         let resultados;
         try {
             resultados = await retornar_query(query, [id]);
+
+            let queryDetalles = `
+                SELECT * FROM retenciones_iva_detalle WHERE id_retencion=?
+            `;
+            let resultadosDetalles = await retornar_query(queryDetalles, [id]);
+            resultados[0].detalles = resultadosDetalles;
         } catch (error) {
             return res.json({
-            success: false,
-            data: error
-        });
+                success: false,
+                data: error
+            });
         }
 
         return res.json({
@@ -461,21 +493,21 @@ router.get('/comprobante-iva/:id', async (req, res) => {
     }
 });
 
-router.get('/codigos-islr', async (req, res) => {    
-    try {       
+router.get('/codigos-islr', async (req, res) => {
+    try {
 
         let query = `
             SELECT * FROM retenciones_codigos_isrl WHERE activo=?
         `;
-        
+
         let resultados;
         try {
             resultados = await retornar_query(query, [1]);
         } catch (error) {
             return res.json({
-            success: false,
-            data: error
-        });
+                success: false,
+                data: error
+            });
         }
 
         return res.json({
@@ -491,13 +523,13 @@ router.get('/codigos-islr', async (req, res) => {
     }
 });
 
-router.post('/islr', authenticateToken, async (req, res) => {    
+router.post('/islr', authenticateToken, async (req, res) => {
     const {
         id_retenciones_ut, id_retenciones_decretos, id_proveedor, id_concepto,
         doc_num, control_num, fecha_operacion, monto_sujeto, porcent_imponible,
         total_ut, porcent_aplicable, sustraendo, total_retener, total_pagar, id_cli, id_usuario, tipo_retencion
     } = req.body;
-    
+
     // Validación de campos obligatorios
     const camposObligatorios = [
         'id_retenciones_ut', 'id_retenciones_decretos', 'id_proveedor', 'id_concepto',
@@ -505,9 +537,9 @@ router.post('/islr', authenticateToken, async (req, res) => {
         'total_ut', 'porcent_aplicable', 'total_retener', 'total_pagar',
         'id_cli', 'id_usuario'
     ];
-    
+
     const camposFaltantes = camposObligatorios.filter(campo => !req.body[campo]);
-    
+
     if (camposFaltantes.length > 0) {
         return res.status(400).json({
             success: false,
@@ -520,20 +552,20 @@ router.post('/islr', authenticateToken, async (req, res) => {
         return res.status(400).json({
             success: false,
             error: 'El porcentaje imponible debe estar entre 0 y 100.'
-        });        
+        });
     }
- 
+
     if (Number(porcent_aplicable) < 0 || Number(porcent_aplicable) > 100) {
         return res.status(400).json({
             success: false,
             error: 'El porcentaje aplicable debe estar entre 0 y 100.'
-        });        
+        });
     }
 
     // Validación de montos no negativos
     const montos = ['monto_sujeto', 'total_ut', 'sustraendo', 'total_retener', 'total_pagar'];
     const montosNegativos = montos.filter(campo => req.body[campo] && Number(req.body[campo]) < 0);
-    
+
     if (montosNegativos.length > 0) {
         return res.status(400).json({
             success: false,
@@ -556,7 +588,7 @@ router.post('/islr', authenticateToken, async (req, res) => {
         const valor = req.body[campo];
         return valor && (!Number.isInteger(Number(valor)) || Number(valor) < 0);
     });
-    
+
     if (enterosInvalidos.length > 0) {
         return res.status(400).json({
             success: false,
@@ -574,7 +606,7 @@ router.post('/islr', authenticateToken, async (req, res) => {
         `;
 
         const resultado_buscar = await retornar_query(query_buscar_id, [id_cli]);
-        if(resultado_buscar.length < 1) {
+        if (resultado_buscar.length < 1) {
             return res.status(400).json({
                 success: false,
                 error: 'No se ha configurado el número de comprobante para retenciones de ISLR. Por favor, configurelo en Opciones > Retenciones.'
@@ -589,7 +621,7 @@ router.post('/islr', authenticateToken, async (req, res) => {
         const month = String(fecha.getMonth() + 1).padStart(2, '0');
         const formattedId = String(numero_comprobante_islr).padStart(8, '0');
         const numeroComprobante = `${year}-${month}-${formattedId}`;
-        
+
         // Query para insertar la retención ISLR
         const query = `
         INSERT INTO retenciones_islr 
@@ -598,7 +630,7 @@ router.post('/islr', authenticateToken, async (req, res) => {
          total_ut, porcent_aplicable, sustraendo, total_retener, total_pagar, 
          numero_comprobante, id_cli, id_usuario, numero_comprobante_plano, tipo_retencion)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
-        
+
         const valores = [
             id_retenciones_ut, id_retenciones_decretos, id_proveedor, id_concepto,
             doc_num, control_num, fecha_operacion, monto_sujeto, porcent_imponible,
@@ -618,12 +650,12 @@ router.post('/islr', authenticateToken, async (req, res) => {
 
         // Formatear fecha de emisión
         let dia = String(fecha.getDate()).padStart(2, '0');
-        
+
         return res.json({
             success: true,
             data: resultado,
             numeroComprobante: numeroComprobante,
-            fechaEmision: `${dia}/${month}/${year}`,         
+            fechaEmision: `${dia}/${month}/${year}`,
             message: 'Retención de ISLR creada exitosamente'
         });
     } catch (error) {
@@ -634,18 +666,18 @@ router.post('/islr', authenticateToken, async (req, res) => {
     }
 });
 
-router.put('/islr/:id', authenticateToken, async (req, res) => {    
-    const {id} = req.params;    
-    const {c,v} = req.body;
-    
-    if(isNaN(id)){
+router.put('/islr/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { c, v } = req.body;
+
+    if (isNaN(id)) {
         return res.status(400).json({
             success: false,
             error: 'Faltan datos para procesar la solicitud'
         });
     }
 
-    let camposValidos=['doc_num','control_num','tipo_retencion',
+    let camposValidos = ['doc_num', 'control_num', 'tipo_retencion',
         'fecha_operacion'];
 
     if (!camposValidos.includes(c)) {
@@ -656,10 +688,10 @@ router.put('/islr/:id', authenticateToken, async (req, res) => {
     }
 
     try {
-        
+
         const query = `UPDATE retenciones_islr SET ${c} = ? WHERE id=?;`
-        
-        const resultado = await retornar_query(query,[ v, id]);
+
+        const resultado = await retornar_query(query, [v, id]);
 
         return res.json({
             success: true,
@@ -673,10 +705,10 @@ router.put('/islr/:id', authenticateToken, async (req, res) => {
     }
 });
 
-router.delete('/islr/:id', authenticateToken, async (req, res) => {    
-    const {id} = req.params;    
-    
-    if(isNaN(id)){
+router.delete('/islr/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+
+    if (isNaN(id)) {
         return res.status(400).json({
             success: false,
             error: 'Faltan datos para procesar la solicitud'
@@ -684,10 +716,10 @@ router.delete('/islr/:id', authenticateToken, async (req, res) => {
     }
 
     try {
-        
+
         const query = `UPDATE retenciones_islr SET activo=0 WHERE id=?;`
-        
-        const resultado = await retornar_query(query,[id]);
+
+        const resultado = await retornar_query(query, [id]);
 
         return res.json({
             success: true,
@@ -779,7 +811,7 @@ router.get('/islr', async (req, res) => {
             params.push(`${id_cli}`);
         }
 
-        if(proveedor_id){
+        if (proveedor_id) {
             query += ` AND p.id_proveedor = ?`;
             params.push(`${proveedor_id}`);
         }
@@ -816,7 +848,7 @@ router.get('/islr', async (req, res) => {
             // Si hay error en count, asumir 0 resultados
             countResult = [{ total: 0 }];
         }
-        
+
         const total = countResult[0]?.total || 0;
         const totalPages = Math.ceil(total / limit);
         const offset = (page - 1) * limit;
@@ -881,7 +913,7 @@ router.get('/islr', async (req, res) => {
 
     } catch (error) {
         console.error('Error en búsqueda de comprobantes:', error);
-       
+
         return res.status(500).json({
             success: false,
             error: 'Error interno del servidor al buscar comprobantes'
@@ -890,14 +922,14 @@ router.get('/islr', async (req, res) => {
 });
 
 router.get('/comprobante-islr/:id', async (req, res) => {
-    const {id} = req.params;       
-    if(isNaN(id)){
+    const { id } = req.params;
+    if (isNaN(id)) {
         return res.status(400).json({
             success: false,
             error: 'Faltan datos para procesar la solicitud'
         });
     }
-    try {       
+    try {
 
         let query = `
             SELECT 
@@ -918,15 +950,15 @@ router.get('/comprobante-islr/:id', async (req, res) => {
             INNER JOIN retenciones_codigos_isrl icr ON ri.id_concepto = icr.id
             WHERE ri.id =?
         `;
-        
+
         let resultados;
         try {
             resultados = await retornar_query(query, [id]);
         } catch (error) {
             return res.json({
-            success: false,
-            data: error
-        });
+                success: false,
+                data: error
+            });
         }
 
         return res.json({

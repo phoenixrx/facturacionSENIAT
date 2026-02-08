@@ -611,6 +611,24 @@ async function json_principal(desglose_pago) {
   let consec = await consecutivos();
   let consecutivos_caja = consec.consecutivos.filter(item => item.id_caja == configs_token.caja_usuario);
 
+  if (consecutivos.error || consecutivos.success == false) {
+    Swal.close()
+    Swal.fire({
+      title: `Error al cargar los consecutivos`,
+      text: "Error CON02 consecutivos agotados",
+      icon: 'error',
+      confirmButtonColor: "#008b8b",
+    });
+    document.getElementById("num_control").value = "";
+    document.getElementById("num_factura").value = "";
+    document.getElementById("factura_modal").value = "";
+    document.getElementById("num_control").classList.add("is-invalid");
+    document.getElementById("num_factura").classList.add("is-invalid");
+    document.getElementById("factura_modal").classList.add("is-invalid");
+    Swal.hideLoading()
+    return;
+  }
+
   document.getElementById("num_control").value = consecutivos_caja[0].actual;
   let num_factura = consecutivos_caja[0].num_factura;
 
